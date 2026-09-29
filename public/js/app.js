@@ -51,7 +51,11 @@ const botonMenu = document.getElementById('boton-menu');
 const panelPersonalizar = document.getElementById('personalizar');
 const botonesColor = document.querySelectorAll('.color[data-color]');
 const selectorColor = document.getElementById('selector-color');
-const textoCodigoColor = document.getElementById('codigo-color');
+const textoCodigoColor = document.getElementById('codigo-color'); // el campo donde se puede escribir el código
+const botonColorLibre = document.querySelector('.color--libre');
+const textoNombreColor = document.getElementById('nombre-color');
+const textoDetalleColor = document.getElementById('detalle-color');
+const avisoColor = document.getElementById('aviso-color');
 const inputLogo = document.getElementById('input-logo');
 const botonLogo = document.getElementById('boton-logo');
 const botonQuitarLogo = document.getElementById('boton-quitar-logo');
@@ -399,18 +403,67 @@ function conectarContador(areaTexto, contador) {
 // =============================================================
 
 // ---------- Color ----------
+// Tres formas de elegir: un color rápido, el círculo "Otro…" (el selector
+// del navegador) o escribiendo el código. Las tres terminan en elegirColor().
 
-// Círculos de colores rápidos
+// Colores rápidos
 for (const boton of botonesColor) {
   boton.addEventListener('click', function () {
     elegirColor(boton.dataset.color); // viene de data-color="..." en el HTML
   });
 }
 
-// Círculo arcoíris: cualquier color ('input' se dispara mientras se mueve el selector)
+// "Otro…": cualquier color ('input' se dispara mientras se mueve el selector)
 selectorColor.addEventListener('input', function () {
   elegirColor(selectorColor.value);
 });
+
+// Escribiendo el código: se aplica en cuanto es un color válido (#RRGGBB)
+textoCodigoColor.addEventListener('input', function () {
+  let codigo = textoCodigoColor.value.trim();
+  if (!codigo.startsWith('#')) {
+    codigo = '#' + codigo; // se acepta escribirlo sin el #
+  }
+
+  if (esCodigoDeColor(codigo)) {
+    textoCodigoColor.classList.remove('invalido');
+    elegirColor(codigo);
+  } else if (codigo.length >= 7) {
+    textoCodigoColor.classList.add('invalido'); // ya está completo pero no es un color
+  }
+});
+
+// Al salir del campo, si quedó a medias, vuelve a mostrar el color actual
+textoCodigoColor.addEventListener('blur', function () {
+  textoCodigoColor.classList.remove('invalido');
+  textoCodigoColor.value = colorActual();
+});
+
+/** true si el texto es un color como '#7A1428' (# y 6 letras/números del 0 al F). */
+function esCodigoDeColor(texto) {
+  return /^#[0-9a-fA-F]{6}$/.test(texto);
+}
+
+/** El color que se está usando ahora (el de por defecto si no se eligió otro). */
+function colorActual() {
+  if (colorBanda === '') {
+    return COLOR_POR_DEFECTO;
+  }
+  return colorBanda;
+}
+
+/**
+ * true si el color es muy claro (casi blanco o amarillo muy pálido).
+ * Se calcula el brillo con la fórmula de siempre: el verde pesa más
+ * porque el ojo lo ve más brillante.
+ */
+function esColorClaro(color) {
+  const rojo = parseInt(color.substring(1, 3), 16);   // '#7A1428' -> '7A' -> 122
+  const verde = parseInt(color.substring(3, 5), 16);
+  const azul = parseInt(color.substring(5, 7), 16);
+  const brillo = (rojo * 0.299 + verde * 0.587 + azul * 0.114) / 255; // de 0 (negro) a 1 (blanco)
+  return brillo > 0.72;
+}
 
 function elegirColor(color) {
   color = color.toUpperCase();
@@ -420,29 +473,60 @@ function elegirColor(color) {
   }
 
   // El único estilo que cambia JavaScript: la variable --color-banda del CSS.
-  // Con ella se pintan la banda de la vista en miniatura y la muestra del título.
+  // Con ella se pintan la muestra grande, el círculo "Otro…" y la del título del panel.
   panelPersonalizar.style.setProperty('--color-banda', color);
-  textoCodigoColor.textContent = color;
   selectorColor.value = color.toLowerCase();
+  if (document.activeElement !== textoCodigoColor) {
+    textoCodigoColor.value = color; // (si lo está escribiendo, no se le cambia)
+  }
 
-  // Marca el círculo elegido (si es un color libre, no se marca ninguno)
+  // 1. Marca el color rápido elegido; si no es ninguno, se marca "Otro…"
+  let botonElegido = null;
   for (const boton of botonesColor) {
     if (boton.dataset.color === color) {
       boton.classList.add('activo');
+      botonElegido = boton;
     } else {
       boton.classList.remove('activo');
     }
   }
+  if (botonElegido === null) {
+    botonColorLibre.classList.add('activo');
+  } else {
+    botonColorLibre.classList.remove('activo');
+  }
 
-  programarMiniVista();
+  // 2. Nombre y detalle del color elegido
+  if (botonElegido !== null) {
+    textoNombreColor.textContent = botonElegido.dataset.nombre;
+  } else {
+    textoNombreColor.textContent = 'Color personalizado';
+  }
+  if (color === COLOR_POR_DEFECTO) {
+    textoDetalleColor.textContent = 'Color por defecto';
+  } else {
+    textoDetalleColor.textContent = 'Así saldrá en el documento';
+  }
+
+  // 3. Aviso si es muy claro (y la ✓ del círculo se pone oscura para que se vea)
+  if (esColorClaro(color)) {
+    mostrar(avisoColor);
+    botonColorLibre.classList.add('color--claro');
+  } else {
+    ocultar(avisoColor);
+    botonColorLibre.classList.remove('color--claro');
+  }
+
+  programarMiniVista(120); // un clic en un color: la miniatura responde rápido
 }
 
 // ---------- Encabezado y título ----------
 // Al escribir, se actualiza la miniatura (ver "Vista en miniatura" más abajo)
 
-inputEncabezado1.addEventListener('input', programarMiniVista);
-inputEncabezado2.addEventListener('input', programarMiniVista);
-inputTitulo.addEventListener('input', programarMiniVista);
+// (Se envuelve en function () {} para que el evento no llegue como "espera")
+inputEncabezado1.addEventListener('input', function () { programarMiniVista(); });
+inputEncabezado2.addEventListener('input', function () { programarMiniVista(); });
+inputTitulo.addEventListener('input', function () { programarMiniVista(); });
 
 // ---------- Logo ----------
 
@@ -533,12 +617,12 @@ let numeroDePeticion = 0; // para ignorar respuestas viejas si llegan tarde
  * (por ejemplo, mientras se escribe), se espera de nuevo: así no se
  * hace una petición por cada tecla.
  */
-function programarMiniVista() {
+function programarMiniVista(espera = 350) {
   if (!panelPersonalizar.open) {
     return; // el panel está cerrado: no hace falta
   }
   clearTimeout(temporizadorMiniVista);
-  temporizadorMiniVista = setTimeout(actualizarMiniVista, 350);
+  temporizadorMiniVista = setTimeout(actualizarMiniVista, espera); // espera en milisegundos
 }
 
 async function actualizarMiniVista() {
@@ -586,7 +670,7 @@ panelPersonalizar.addEventListener('toggle', function () {
 });
 
 // Si escribes en "Uno a la vez" con el panel abierto, la miniatura también cambia
-formIndividual.addEventListener('input', programarMiniVista);
+formIndividual.addEventListener('input', function () { programarMiniVista(600); });
 
 
 // =============================================================

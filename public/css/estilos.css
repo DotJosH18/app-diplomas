@@ -291,35 +291,72 @@ body > main { flex: 1; width: 100%; }
 .personalizar__etiqueta { margin: 14px 0 8px; font-size: .8rem; font-weight: 700; color: #3a3d50; }
 .personalizar__etiqueta:first-child { margin-top: 12px; }
 
-/* Círculos de color */
-.colores { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
+/* ---------- Elegir color ---------- */
+/* Cada color: un círculo con su nombre debajo */
+.colores { display: flex; flex-wrap: wrap; gap: 6px 4px; }
 .color {
-  width: 34px; height: 34px; border-radius: 50%; cursor: pointer; padding: 0;
-  border: 3px solid var(--blanco); box-shadow: 0 0 0 1px var(--borde);
+  display: flex; flex-direction: column; align-items: center; gap: 4px; width: 62px;
+  padding: 0; border: 0; background: none; cursor: pointer; font: inherit;
+}
+/* El círculo se dibuja con ::before (el color de fondo va en cada data-color) */
+.color::before {
+  content: ''; width: 34px; height: 34px; border-radius: 50%;
+  background: var(--fondo-color); border: 3px solid var(--blanco); box-shadow: 0 0 0 1px var(--borde);
   transition: transform .15s, box-shadow .15s;
 }
-.color:hover { transform: scale(1.1); }
-.color.activo { box-shadow: 0 0 0 2px var(--dorado); transform: scale(1.1); }
-.color[data-color="#141B5B"] { background: #141B5B; }
-.color[data-color="#7A1428"] { background: #7A1428; }
-.color[data-color="#0F4C81"] { background: #0F4C81; }
-.color[data-color="#1F5E3B"] { background: #1F5E3B; }
-.color[data-color="#5B2A86"] { background: #5B2A86; }
-.color[data-color="#8C7418"] { background: #8C7418; }
-.color[data-color="#222222"] { background: #222222; }
+.color span { font-size: .68rem; line-height: 1.2; color: var(--gris); text-align: center; }
+.color:hover::before { transform: scale(1.1); }
+.color:focus-visible { outline: none; }
+.color:focus-visible::before { box-shadow: 0 0 0 2px var(--azul); }
 
-/* Círculo arcoíris para elegir cualquier color */
-.color--libre {
-  display: inline-block; position: relative;
-  background: conic-gradient(#e53935, #fdd835, #43a047, #1e88e5, #8e24aa, #e53935);
+/* Elegido: aro dorado, nombre en negrita y una ✓ encima del círculo */
+.color.activo::before { box-shadow: 0 0 0 2px var(--dorado); transform: scale(1.1); }
+.color.activo span { color: var(--texto); font-weight: 700; }
+.color.activo::after {
+  content: '✓'; position: absolute; margin-top: 8px;
+  color: var(--blanco); font-weight: 700; font-size: .95rem; pointer-events: none;
 }
+.color { position: relative; }
+/* Si el color es muy claro, la ✓ va oscura para que se vea */
+.color.activo.color--claro::after { color: var(--texto); }
+
+.color[data-color="#141B5B"] { --fondo-color: #141B5B; }
+.color[data-color="#7A1428"] { --fondo-color: #7A1428; }
+.color[data-color="#0F4C81"] { --fondo-color: #0F4C81; }
+.color[data-color="#1F5E3B"] { --fondo-color: #1F5E3B; }
+.color[data-color="#5B2A86"] { --fondo-color: #5B2A86; }
+.color[data-color="#8C7418"] { --fondo-color: #8C7418; }
+.color[data-color="#222222"] { --fondo-color: #222222; }
+
+/* "Otro…": arcoíris; cuando se elige un color propio, toma ese color */
+.color--libre { --fondo-color: conic-gradient(#e53935, #fdd835, #43a047, #1e88e5, #8e24aa, #e53935); }
+.color--libre::before { background: var(--fondo-color); }
+.color--libre.activo { --fondo-color: var(--color-banda); }
 .color--libre input {
-  position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer;
+  position: absolute; top: 0; left: 50%; width: 40px; height: 40px; transform: translateX(-50%);
+  opacity: 0; cursor: pointer;
 }
-.codigo-color {
-  font: 600 .8rem ui-monospace, monospace; color: var(--gris);
-  background: var(--fondo); padding: 4px 8px; border-radius: 6px;
+
+/* Línea con el color elegido: muestra grande, nombre y código */
+.color-elegido {
+  display: flex; align-items: center; gap: 12px; margin-top: 12px; padding: 10px 12px;
+  background: var(--fondo); border-radius: 10px; max-width: 400px;
 }
+.color-elegido__muestra {
+  width: 38px; height: 38px; border-radius: 8px; flex-shrink: 0;
+  background: var(--color-banda); box-shadow: inset 0 0 0 1px #00000026;
+  transition: background .2s;
+}
+.color-elegido__texto { flex: 1; display: flex; flex-direction: column; line-height: 1.3; }
+.color-elegido__texto small { color: var(--gris); font-size: .75rem; }
+.color-elegido__codigo { display: flex; flex-direction: column; font-size: .68rem; color: var(--gris); font-weight: 600; }
+.color-elegido__codigo input {
+  width: 92px; margin-top: 2px; padding: 6px 8px; border: 1px solid var(--borde); border-radius: 6px;
+  font: 600 .85rem ui-monospace, monospace; text-transform: uppercase; background: var(--blanco);
+}
+.color-elegido__codigo input:focus { outline: 2px solid var(--azul); outline-offset: -1px; }
+.color-elegido__codigo input.invalido { border-color: var(--rojo); outline-color: var(--rojo); }
+.nota--aviso { color: #9a5b00; }
 
 /* Logo */
 .carga-logo { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }

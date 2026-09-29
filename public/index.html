@@ -119,18 +119,36 @@
           <!-- Color: data-color es el color que se usa en el PDF -->
           <p class="personalizar__etiqueta" data-modulos="reconocimientos lugares">Color de la banda</p>
           <p class="personalizar__etiqueta" data-modulos="placas">Color de la cinta (la dorada no cambia)</p>
-          <div class="colores" data-modulos="reconocimientos lugares placas">
-            <button type="button" class="color activo" data-color="#141B5B" title="Azul UNICAH (por defecto)"></button>
-            <button type="button" class="color" data-color="#7A1428" title="Vino"></button>
-            <button type="button" class="color" data-color="#0F4C81" title="Azul rey"></button>
-            <button type="button" class="color" data-color="#1F5E3B" title="Verde"></button>
-            <button type="button" class="color" data-color="#5B2A86" title="Morado"></button>
-            <button type="button" class="color" data-color="#8C7418" title="Dorado"></button>
-            <button type="button" class="color" data-color="#222222" title="Negro"></button>
-            <label class="color color--libre" title="Elegir otro color">
-              <input id="selector-color" type="color" value="#141B5B" />
-            </label>
-            <span id="codigo-color" class="codigo-color">#141B5B</span>
+          <div data-modulos="reconocimientos lugares placas">
+            <!-- Colores rápidos: data-color es el color del PDF y data-nombre lo que se muestra.
+                 Para agregar uno, copia un botón y agrega su color en estilos.css (.color[data-color="…"]) -->
+            <div class="colores">
+              <button type="button" class="color activo" data-color="#141B5B" data-nombre="Azul UNICAH"><span>Azul UNICAH</span></button>
+              <button type="button" class="color" data-color="#7A1428" data-nombre="Vino"><span>Vino</span></button>
+              <button type="button" class="color" data-color="#0F4C81" data-nombre="Azul rey"><span>Azul rey</span></button>
+              <button type="button" class="color" data-color="#1F5E3B" data-nombre="Verde"><span>Verde</span></button>
+              <button type="button" class="color" data-color="#5B2A86" data-nombre="Morado"><span>Morado</span></button>
+              <button type="button" class="color" data-color="#8C7418" data-nombre="Dorado"><span>Dorado</span></button>
+              <button type="button" class="color" data-color="#222222" data-nombre="Negro"><span>Negro</span></button>
+              <!-- Cualquier otro color: el círculo abre el selector del navegador -->
+              <label class="color color--libre">
+                <input id="selector-color" type="color" value="#141B5B" aria-label="Elegir otro color" />
+                <span>Otro…</span>
+              </label>
+            </div>
+
+            <!-- El color elegido: muestra grande, nombre y código (el código se puede escribir) -->
+            <div class="color-elegido">
+              <span class="color-elegido__muestra" aria-hidden="true"></span>
+              <div class="color-elegido__texto">
+                <strong id="nombre-color">Azul UNICAH</strong>
+                <small id="detalle-color">Color por defecto</small>
+              </div>
+              <label class="color-elegido__codigo">Código
+                <input id="codigo-color" maxlength="7" value="#141B5B" spellcheck="false" />
+              </label>
+            </div>
+            <p id="aviso-color" class="nota nota--aviso oculto">Este color es muy claro: el texto encima o junto a él podría no leerse bien.</p>
           </div>
 
           <!-- Encabezado: las 2 líneas de arriba del diploma -->

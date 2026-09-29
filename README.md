@@ -240,8 +240,13 @@ En el generador, **"Personalizar diseño"** permite elegir:
   - La dibuja el servidor (`POST /api/:modulo/miniatura`) con los datos de ejemplo del módulo, o con lo que ya escribiste en "Uno a la vez".
   - Se actualiza sola, un momento después de cambiar el color, el encabezado, el título, el logo o los datos del formulario.
   - Solo se pide mientras el panel está abierto.
-- **Color de la banda:**
-  - Hay 7 colores rápidos, o puedes elegir cualquier otro con el círculo arcoíris.
+- **Color de la banda** (y de la cinta en Placas):
+  - **Colores rápidos:** hay 7, cada uno con su nombre debajo. El elegido lleva una ✓ y su nombre en negrita.
+  - **"Otro…":** el círculo arcoíris abre el selector de color del navegador. Al elegir, el círculo toma ese color.
+  - **Código:** también se puede escribir el código del color (ej. `#7A1428` o `7A1428`). Se aplica en cuanto está completo; si no es válido, el campo se marca en rojo.
+  - **Color elegido:** una línea lo muestra en grande, con su nombre y su código.
+  - **Colores muy claros:** aparece un aviso, porque el texto encima o junto a ellos podría no leerse.
+  - **Agregar un color rápido:** copia un botón `.color` en `index.html` (con su `data-color` y `data-nombre`) y agrega su línea `.color[data-color="…"]` en `estilos.css`.
 - **Encabezado** (Reconocimientos y Lugares): las 2 líneas de arriba del diploma, "UNIVERSIDAD CATÓLICA DE HONDURAS" y "NUESTRA SEÑORA REINA DE LA PAZ".
   - Cada línea acepta máximo 45 caracteres y siempre sale en mayúsculas.
   - Si una línea es larga, su letra se achica para que quepa en una sola línea.
