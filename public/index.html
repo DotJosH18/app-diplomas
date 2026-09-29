@@ -86,7 +86,75 @@
           <span class="opcion__texto">Reconocimiento con cintas azul y dorada, marco dorado y el logo de fondo.</span>
           <span class="opcion__campos">Pide: nombre y descripción</span>
         </button>
+
+        <!-- Herramienta (no es un diploma): data-herramienta en lugar de data-modulo -->
+        <button class="opcion opcion--herramienta" data-herramienta="quitar-fondo" data-titulo="Quitar fondo de logos">
+          <img class="opcion__imagen" src="img/muestra-quitar-fondo.png" alt="Ejemplo de logo sin fondo" />
+          <span class="opcion__titulo">Quitar fondo de logos</span>
+          <span class="opcion__texto">Deja un logo con fondo transparente (PNG) para usarlo en los diplomas.</span>
+          <span class="opcion__campos">Pide: una imagen PNG o JPG</span>
+        </button>
       </div>
+    </section>
+
+    <!-- ==================== HERRAMIENTA: QUITAR FONDO DE LOGOS ====================
+         Todo se hace en el navegador (js/quitar-fondo.js): la imagen no se envía al servidor. -->
+    <section id="herramienta-fondo" class="herramienta oculto">
+      <div class="herramienta__intro">
+        <h2 class="herramienta__titulo">Quitar el fondo de un logo</h2>
+        <p class="nota">Sube una imagen PNG o JPG. El color del fondo se detecta solo; si algo no queda bien, ajusta la tolerancia o haz clic sobre el fondo de la imagen original. La imagen no sale de tu computadora.</p>
+      </div>
+
+      <!-- Paso 1: elegir la imagen -->
+      <div id="zona-fondo" class="zona" tabindex="0">
+        <input id="input-fondo" type="file" accept=".png,.jpg,.jpeg,.webp" hidden />
+        <p class="zona__titulo">Arrastra aquí la imagen del logo</p>
+        <p class="zona__texto">o <u>haz clic para buscarla</u> · PNG, JPG o WEBP</p>
+      </div>
+
+      <!-- Paso 2: ajustar y descargar -->
+      <div id="editor-fondo" class="editor-fondo oculto">
+        <div class="editor-fondo__imagenes">
+          <figure class="editor-fondo__cuadro">
+            <figcaption>Original <small>haz clic sobre el fondo para elegir su color</small></figcaption>
+            <canvas id="lienzo-original" class="editor-fondo__lienzo editor-fondo__lienzo--original"></canvas>
+          </figure>
+          <figure class="editor-fondo__cuadro">
+            <figcaption>Sin fondo <small>los cuadritos son la parte transparente</small></figcaption>
+            <div class="transparente">
+              <canvas id="lienzo-resultado" class="editor-fondo__lienzo"></canvas>
+            </div>
+          </figure>
+        </div>
+
+        <div class="tarjeta editor-fondo__controles">
+          <p class="personalizar__etiqueta">Color del fondo</p>
+          <div class="fondo-detectado">
+            <span class="fondo-detectado__muestra" aria-hidden="true"></span>
+            <strong id="codigo-fondo">#FFFFFF</strong>
+            <small id="origen-fondo">detectado automáticamente</small>
+          </div>
+
+          <label class="control-deslizable">
+            <span>Tolerancia <strong id="valor-tolerancia">25</strong></span>
+            <input id="tolerancia-fondo" type="range" min="0" max="80" value="25" />
+          </label>
+          <p class="nota">Más alta = también quita colores parecidos al fondo (sombras, bordes difusos). Si se borra parte del logo, bájala.</p>
+
+          <label class="casilla"><input id="solo-exterior" type="checkbox" checked /><span>Quitar solo el fondo de afuera <small>(conserva los blancos dentro del logo)</small></span></label>
+          <label class="casilla"><input id="suavizar-bordes" type="checkbox" checked /> Suavizar los bordes</label>
+          <label class="casilla"><input id="recortar-sobrante" type="checkbox" checked /> Recortar el espacio vacío alrededor</label>
+
+          <div class="acciones">
+            <button type="button" id="boton-otra-imagen" class="boton">Otra imagen</button>
+            <button type="button" id="boton-usar-logo" class="boton">Usar como logo en los diplomas</button>
+            <button type="button" id="boton-descargar-png" class="boton boton--principal">Descargar PNG</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Mensajes (fuera del editor, para que también se vean antes de elegir imagen) -->
+      <p id="mensaje-fondo" class="mensaje"></p>
     </section>
 
     <!-- ==================== GENERADOR (se ve después de elegir el tipo) ==================== -->
@@ -100,7 +168,7 @@
         <span>
           <strong>Personalizar diseño</strong>
           <small data-modulos="reconocimientos lugares">Opcional · color de la banda, encabezado y logo</small>
-          <small data-modulos="placas">Opcional · color de la cinta, encabezado y logo de fondo</small>
+          <small data-modulos="placas">Opcional · colores, encabezado y logo de fondo</small>
           <small data-modulos="duelo">Opcional · título y logo</small>
           <small data-modulos="agradecimientos">Opcional · logo</small>
         </span>
@@ -116,39 +184,95 @@
         </figure>
 
         <div class="personalizar__controles">
-          <!-- Color: data-color es el color que se usa en el PDF -->
-          <p class="personalizar__etiqueta" data-modulos="reconocimientos lugares">Color de la banda</p>
-          <p class="personalizar__etiqueta" data-modulos="placas">Color de la cinta (la dorada no cambia)</p>
-          <div data-modulos="reconocimientos lugares placas">
-            <!-- Colores rápidos: data-color es el color del PDF y data-nombre lo que se muestra.
-                 Para agregar uno, copia un botón y agrega su color en estilos.css (.color[data-color="…"]) -->
+          <!-- ===== Selectores de color =====
+               Cada bloque .selector-color es un selector completo (colores rápidos,
+               "Otro…" y código). data-campo es el nombre con que se envía al servidor
+               y data-por-defecto el color de siempre. data-aviso-claro="si" muestra un
+               aviso con colores muy claros (solo donde ese color pinta texto).
+               Para agregar un color rápido, copia un botón: su círculo se pinta solo
+               con su data-color. -->
+          <div class="selector-color" data-modulos="reconocimientos lugares placas" data-campo="colorBanda" data-por-defecto="#141B5B" data-aviso-claro="si">
+            <p class="personalizar__etiqueta" data-modulos="reconocimientos lugares">Color de la banda</p>
+            <p class="personalizar__etiqueta" data-modulos="placas">Cinta principal y campus</p>
             <div class="colores">
-              <button type="button" class="color activo" data-color="#141B5B" data-nombre="Azul UNICAH"><span>Azul UNICAH</span></button>
+              <button type="button" class="color" data-color="#141B5B" data-nombre="Azul UNICAH"><span>Azul UNICAH</span></button>
               <button type="button" class="color" data-color="#7A1428" data-nombre="Vino"><span>Vino</span></button>
               <button type="button" class="color" data-color="#0F4C81" data-nombre="Azul rey"><span>Azul rey</span></button>
               <button type="button" class="color" data-color="#1F5E3B" data-nombre="Verde"><span>Verde</span></button>
               <button type="button" class="color" data-color="#5B2A86" data-nombre="Morado"><span>Morado</span></button>
               <button type="button" class="color" data-color="#8C7418" data-nombre="Dorado"><span>Dorado</span></button>
               <button type="button" class="color" data-color="#222222" data-nombre="Negro"><span>Negro</span></button>
-              <!-- Cualquier otro color: el círculo abre el selector del navegador -->
               <label class="color color--libre">
-                <input id="selector-color" type="color" value="#141B5B" aria-label="Elegir otro color" />
+                <input type="color" class="selector-color__libre" aria-label="Elegir otro color" />
                 <span>Otro…</span>
               </label>
             </div>
-
-            <!-- El color elegido: muestra grande, nombre y código (el código se puede escribir) -->
             <div class="color-elegido">
               <span class="color-elegido__muestra" aria-hidden="true"></span>
               <div class="color-elegido__texto">
-                <strong id="nombre-color">Azul UNICAH</strong>
-                <small id="detalle-color">Color por defecto</small>
+                <strong class="color-elegido__nombre"></strong>
+                <small class="color-elegido__detalle"></small>
               </div>
               <label class="color-elegido__codigo">Código
-                <input id="codigo-color" maxlength="7" value="#141B5B" spellcheck="false" />
+                <input class="color-elegido__input" maxlength="7" spellcheck="false" />
               </label>
             </div>
-            <p id="aviso-color" class="nota nota--aviso oculto">Este color es muy claro: el texto encima o junto a él podría no leerse bien.</p>
+            <p class="nota nota--aviso color-elegido__aviso oculto">Este color es muy claro: el texto encima o junto a él podría no leerse bien.</p>
+          </div>
+
+          <div class="selector-color" data-modulos="placas" data-campo="colorSecundario" data-por-defecto="#E9B82F">
+            <p class="personalizar__etiqueta">Cinta secundaria, marco y adornos</p>
+            <div class="colores">
+              <button type="button" class="color" data-color="#E9B82F" data-nombre="Dorado"><span>Dorado</span></button>
+              <button type="button" class="color" data-color="#C9A227" data-nombre="Oro viejo"><span>Oro viejo</span></button>
+              <button type="button" class="color" data-color="#B8BCC6" data-nombre="Plata"><span>Plata</span></button>
+              <button type="button" class="color" data-color="#B87333" data-nombre="Bronce"><span>Bronce</span></button>
+              <button type="button" class="color" data-color="#C0392B" data-nombre="Rojo"><span>Rojo</span></button>
+              <button type="button" class="color" data-color="#5DADE2" data-nombre="Celeste"><span>Celeste</span></button>
+              <button type="button" class="color" data-color="#141B5B" data-nombre="Azul UNICAH"><span>Azul UNICAH</span></button>
+              <label class="color color--libre">
+                <input type="color" class="selector-color__libre" aria-label="Elegir otro color" />
+                <span>Otro…</span>
+              </label>
+            </div>
+            <div class="color-elegido">
+              <span class="color-elegido__muestra" aria-hidden="true"></span>
+              <div class="color-elegido__texto">
+                <strong class="color-elegido__nombre"></strong>
+                <small class="color-elegido__detalle"></small>
+              </div>
+              <label class="color-elegido__codigo">Código
+                <input class="color-elegido__input" maxlength="7" spellcheck="false" />
+              </label>
+            </div>
+            <p class="nota nota--aviso color-elegido__aviso oculto">Este color es muy claro: el texto encima o junto a él podría no leerse bien.</p>
+          </div>
+
+          <div class="selector-color" data-modulos="placas" data-campo="colorNombre" data-por-defecto="#9A7A16" data-aviso-claro="si">
+            <p class="personalizar__etiqueta">Nombre y firmas</p>
+            <div class="colores">
+              <button type="button" class="color" data-color="#9A7A16" data-nombre="Dorado oscuro"><span>Dorado oscuro</span></button>
+              <button type="button" class="color" data-color="#141B5B" data-nombre="Azul UNICAH"><span>Azul UNICAH</span></button>
+              <button type="button" class="color" data-color="#1B1D2A" data-nombre="Negro"><span>Negro</span></button>
+              <button type="button" class="color" data-color="#7A1428" data-nombre="Vino"><span>Vino</span></button>
+              <button type="button" class="color" data-color="#1F5E3B" data-nombre="Verde"><span>Verde</span></button>
+              <button type="button" class="color" data-color="#6B4E16" data-nombre="Bronce oscuro"><span>Bronce oscuro</span></button>
+              <label class="color color--libre">
+                <input type="color" class="selector-color__libre" aria-label="Elegir otro color" />
+                <span>Otro…</span>
+              </label>
+            </div>
+            <div class="color-elegido">
+              <span class="color-elegido__muestra" aria-hidden="true"></span>
+              <div class="color-elegido__texto">
+                <strong class="color-elegido__nombre"></strong>
+                <small class="color-elegido__detalle"></small>
+              </div>
+              <label class="color-elegido__codigo">Código
+                <input class="color-elegido__input" maxlength="7" spellcheck="false" />
+              </label>
+            </div>
+            <p class="nota nota--aviso color-elegido__aviso oculto">Este color es muy claro: el texto encima o junto a él podría no leerse bien.</p>
           </div>
 
           <!-- Encabezado: las 2 líneas de arriba del diploma -->
@@ -457,5 +581,6 @@
   </footer>
 
   <script src="js/app.js"></script>
+  <script src="js/quitar-fondo.js"></script>
 </body>
 </html>

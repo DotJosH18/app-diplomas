@@ -8,6 +8,7 @@ Aplicación en Node.js que genera diplomas y documentos en PDF. Tiene **tres mó
 | **Lugares**         | Del 1º al 7º lugar de un concurso o evento | Lugar obtenido, Evento, Descripción. **Sin nombre de persona** |
 | **Comunicado de duelo** | Comunicar el fallecimiento de una persona | Nombre, 3 puntos y Despedida (ya vienen escritos). Hoja vertical estilo "COMUNICADO", **sin banda ni firmas** |
 | **Agradecimientos** | Agradecer a una persona, familia o institución | Nombre, Descripción, Título (opcional), Campus y Fecha. Hoja **oficio vertical** con fondo de pergamino, **sin firmas** |
+| **Quitar fondo de logos** (herramienta) | Dejar un logo con fondo transparente | Una imagen PNG, JPG o WEBP. Se hace en el navegador |
 | **Placas** | Reconocimiento más formal | Igual que Reconocimientos. Cintas azul y dorada, marco dorado, **logo transparente de fondo** y firmas con rúbrica |
 
 Al abrir la página aparece un **menú** para elegir el tipo de documento. Después de elegir, en todos puedes:
@@ -246,7 +247,7 @@ En el generador, **"Personalizar diseño"** permite elegir:
   - **Código:** también se puede escribir el código del color (ej. `#7A1428` o `7A1428`). Se aplica en cuanto está completo; si no es válido, el campo se marca en rojo.
   - **Color elegido:** una línea lo muestra en grande, con su nombre y su código.
   - **Colores muy claros:** aparece un aviso, porque el texto encima o junto a ellos podría no leerse.
-  - **Agregar un color rápido:** copia un botón `.color` en `index.html` (con su `data-color` y `data-nombre`) y agrega su línea `.color[data-color="…"]` en `estilos.css`.
+  - **Agregar un color rápido:** copia un botón `.color` en `index.html` (con su `data-color` y `data-nombre`); su círculo se pinta solo.
 - **Encabezado** (Reconocimientos y Lugares): las 2 líneas de arriba del diploma, "UNIVERSIDAD CATÓLICA DE HONDURAS" y "NUESTRA SEÑORA REINA DE LA PAZ".
   - Cada línea acepta máximo 45 caracteres y siempre sale en mayúsculas.
   - Si una línea es larga, su letra se achica para que quepa en una sola línea.
@@ -317,6 +318,31 @@ pdf.service            dibujarBarraLateral usa el color y el logo, y dibujarEnca
 - **Dónde cambiar textos fijos, colores, posiciones, tamaños y el marco:** en `src/modulos/agradecimientos/agradecimientos.config.js`.
 - **Letras:** Cormorant Garamond (título, nombre y pie), Fondamento (descripción) y Montserrat (CONCEDIDO A y fecha). Fondamento no tiene negrita, por eso la negrita se dibuja repasando el borde de las letras (`grosorNegrita` en `escribirJustificado`).
 
+## Herramienta: quitar el fondo de un logo
+
+Es la última tarjeta del menú. No genera diplomas: deja un logo con **fondo transparente** (PNG) para usarlo en ellos.
+
+- **Todo pasa en el navegador:** se hace con `<canvas>`, que ya viene en todos. La imagen **no se envía al servidor** y no hay que instalar nada. El código está en `public/js/quitar-fondo.js`, con cada paso explicado.
+- **Cómo funciona:**
+  1. Detecta el color del fondo: el más repetido en el borde de la imagen. También puedes hacer clic sobre el fondo, en la imagen original, para elegirlo.
+  2. Marca como fondo los píxeles parecidos a ese color, según la **tolerancia**.
+     - Con **"Quitar solo el fondo de afuera"** (activado por defecto) empieza en los bordes y avanza a los vecinos parecidos, como el balde de pintura de Paint. Así los blancos DENTRO del logo (por ejemplo, la paloma) se conservan.
+     - Si lo desactivas, quita ese color en toda la imagen.
+  3. **Suavizar los bordes:** los píxeles del borde quedan semitransparentes, para que no se vea serruchado.
+  4. **Recortar el espacio vacío:** quita el espacio transparente de alrededor.
+- **Descargar PNG:** baja el resultado.
+- **Usar como logo en los diplomas:** lo deja como el logo de "Personalizar diseño", igual que "Subir logo". Luego eliges un diploma y ya sale con ese logo.
+
+## Selectores de color
+
+En el HTML, cada color que se puede cambiar es un bloque `.selector-color`:
+
+- **`data-campo`:** con qué nombre se envía al servidor (`colorBanda`, `colorSecundario`, `colorNombre`).
+- **`data-por-defecto`:** el color de siempre.
+- **`data-aviso-claro="si"`:** muestra un aviso si se elige un color muy claro. Se usa solo donde el color pinta texto.
+
+Todos funcionan con el mismo código (`prepararSelectorColor` y `elegirColor` en `app.js`). Para agregar un color rápido, copia un botón `.color` con su `data-color` y `data-nombre`: el círculo se pinta solo.
+
 ## Pestañas y vista previa del Excel
 
 - **Orden de las pestañas:** primero **"Uno a la vez"** (se abre por defecto) y después **"Desde Excel"**.
@@ -372,7 +398,11 @@ En todos los módulos, si la **Fecha** se deja vacía se usa **la fecha de hoy**
   - Encima de cada línea va una **rúbrica** en cursiva, que se arma sola del nombre del firmante: quita los títulos que terminan en punto (Mte., MSc., Dr.) y deja el primer nombre y el último apellido. Por ejemplo, "Mte. Darío Martín Henríquez" → "Darío Henríquez". Ver `rubricaDe` en `placas.pdf.js`.
   - Con 2 firmantes, van a los lados. Con Firmante 3, las 3 van en la misma fila.
 - **Personalizar diseño:**
-  - El **color** cambia la cinta azul y el texto del campus; la dorada no cambia.
+  - **Tres colores**, cada uno con su selector:
+    - **Cinta principal y campus:** el azul.
+    - **Cinta secundaria, marco y adornos:** el dorado.
+    - **Nombre y firmas:** el dorado oscuro.
+  - En el PDF, `armarPaleta` (`placas.pdf.js`) junta los colores elegidos con los de `placas.config.js`.
   - El **encabezado** cambia las 2 primeras líneas.
   - El **logo** cambia la marca de agua.
 - **Descargar como imagen:** tiene el botón "Descargar imagen (PNG)".

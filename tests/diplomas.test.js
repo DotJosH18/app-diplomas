@@ -569,3 +569,20 @@ test('POST /api/:modulo/miniatura devuelve una imagen, aunque falten datos', asy
     .expect('Content-Type', /png/);
   assert.equal(res.body.readUInt32BE(16), 841); // escala 1: ancho de la hoja A4 horizontal (841.89 puntos)
 });
+
+// ---------- Colores de Placas ----------
+
+test('placas acepta sus 3 colores y rechaza un color inválido', async () => {
+  const datos = { nombre: 'Ana López', descripcion: 'Gracias.' };
+  await request(app)
+    .post('/api/placas')
+    .send({ ...datos, colorBanda: '#225400', colorSecundario: '#B8BCC6', colorNombre: '#1F2F7A' })
+    .expect(200)
+    .expect('Content-Type', /pdf/);
+
+  const res = await request(app)
+    .post('/api/placas')
+    .send({ ...datos, colorSecundario: 'plateado' })
+    .expect(400);
+  assert.match(res.body.error, /cinta secundaria/);
+});

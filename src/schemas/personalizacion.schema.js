@@ -8,14 +8,26 @@ import { z } from 'zod';
 const LIMITE_TITULO = 24;      // con 24 letras todavía cabe en una línea
 const LIMITE_ENCABEZADO = 45;  // cada línea del encabezado del diploma
 
-export const personalizacionSchema = z.object({
-  // Color de la banda en formato hexadecimal: '#141B5B'
-  colorBanda: z
+/**
+ * Un color opcional en formato hexadecimal: '#141B5B'.
+ * Vacío o sin enviar = el color por defecto del diseño.
+ */
+function colorOpcional(etiqueta) {
+  return z
     .string()
     .trim()
-    .regex(/^#[0-9a-fA-F]{6}$/, 'El color de la banda no es válido (ejemplo: #141B5B)')
+    .regex(/^#[0-9a-fA-F]{6}$/, `El color de ${etiqueta} no es válido (ejemplo: #141B5B)`)
     .optional()
-    .or(z.literal('')),   // vacío = color por defecto
+    .or(z.literal(''));
+}
+
+export const personalizacionSchema = z.object({
+  // Color de la banda (o de la cinta principal en Placas)
+  colorBanda: colorOpcional('la banda'),
+
+  // Solo Placas: cinta secundaria + marco + adornos, y el nombre + las firmas
+  colorSecundario: colorOpcional('la cinta secundaria'),
+  colorNombre: colorOpcional('el nombre'),
 
   // Título del comunicado de duelo: 'COMUNICADO', 'NOTA DE DUELO'…
   // (los diplomas no lo usan). Vacío = el título por defecto.

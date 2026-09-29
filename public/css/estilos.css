@@ -234,7 +234,8 @@ body > main { flex: 1; width: 100%; }
 .vista__vacia { position: absolute; inset: 0; z-index: 0; display: grid; place-items: center; margin: 0; color: var(--gris); }
 
 /* ---------- Personalizar (color de banda y logo) ---------- */
-/* --color-banda es el ÚNICO valor que cambia JavaScript (el color elegido) */
+/* Variables que cambia JavaScript: --color-banda (la muestra del título del panel),
+   --color-elegido (en cada selector de color) y --fondo-color (en cada círculo de color) */
 .personalizar {
   --color-banda: #141B5B;
   background: var(--blanco); border-radius: var(--radio); box-shadow: var(--sombra); margin-bottom: 20px;
@@ -263,7 +264,8 @@ body > main { flex: 1; width: 100%; }
    Mide lo mismo para hojas horizontales y verticales: la imagen se ajusta
    dentro del cuadro sin deformarse (object-fit: contain). */
 .mini-vista {
-  position: relative; margin: 12px 0 0; height: 300px;
+  position: sticky; top: 16px;   /* se queda a la vista mientras bajas por los controles */
+  margin: 12px 0 0; height: 300px;
   display: flex; align-items: center; justify-content: center;
   background: #eceaf2; border-radius: 10px; padding: 12px;
 }
@@ -272,6 +274,8 @@ body > main { flex: 1; width: 100%; }
   box-shadow: 0 6px 20px #14185026, 0 0 0 1px var(--borde); background: var(--blanco);
   transition: opacity .2s;
 }
+/* Antes de la primera imagen no se muestra nada (ni el icono de imagen rota) */
+.mini-vista__imagen:not([src]) { display: none; }
 /* Mientras se genera la nueva, la anterior se ve más clara */
 .mini-vista.cargando .mini-vista__imagen { opacity: .45; }
 .mini-vista__estado {
@@ -292,7 +296,11 @@ body > main { flex: 1; width: 100%; }
 .personalizar__etiqueta:first-child { margin-top: 12px; }
 
 /* ---------- Elegir color ---------- */
-/* Cada color: un círculo con su nombre debajo */
+/* Cada selector (.selector-color) es un bloque completo; si hay varios, se separan */
+.selector-color + .selector-color { margin-top: 18px; padding-top: 4px; border-top: 1px dashed var(--borde); }
+
+/* Cada color: un círculo con su nombre debajo.
+   --fondo-color lo pone JavaScript con el data-color de cada botón. */
 .colores { display: flex; flex-wrap: wrap; gap: 6px 4px; }
 .color {
   display: flex; flex-direction: column; align-items: center; gap: 4px; width: 62px;
@@ -320,18 +328,10 @@ body > main { flex: 1; width: 100%; }
 /* Si el color es muy claro, la ✓ va oscura para que se vea */
 .color.activo.color--claro::after { color: var(--texto); }
 
-.color[data-color="#141B5B"] { --fondo-color: #141B5B; }
-.color[data-color="#7A1428"] { --fondo-color: #7A1428; }
-.color[data-color="#0F4C81"] { --fondo-color: #0F4C81; }
-.color[data-color="#1F5E3B"] { --fondo-color: #1F5E3B; }
-.color[data-color="#5B2A86"] { --fondo-color: #5B2A86; }
-.color[data-color="#8C7418"] { --fondo-color: #8C7418; }
-.color[data-color="#222222"] { --fondo-color: #222222; }
-
 /* "Otro…": arcoíris; cuando se elige un color propio, toma ese color */
 .color--libre { --fondo-color: conic-gradient(#e53935, #fdd835, #43a047, #1e88e5, #8e24aa, #e53935); }
 .color--libre::before { background: var(--fondo-color); }
-.color--libre.activo { --fondo-color: var(--color-banda); }
+.color--libre.activo { --fondo-color: var(--color-elegido); } /* --color-elegido: el color de ese selector */
 .color--libre input {
   position: absolute; top: 0; left: 50%; width: 40px; height: 40px; transform: translateX(-50%);
   opacity: 0; cursor: pointer;
@@ -344,7 +344,7 @@ body > main { flex: 1; width: 100%; }
 }
 .color-elegido__muestra {
   width: 38px; height: 38px; border-radius: 8px; flex-shrink: 0;
-  background: var(--color-banda); box-shadow: inset 0 0 0 1px #00000026;
+  background: var(--color-elegido); box-shadow: inset 0 0 0 1px #00000026;
   transition: background .2s;
 }
 .color-elegido__texto { flex: 1; display: flex; flex-direction: column; line-height: 1.3; }
@@ -377,12 +377,57 @@ body > main { flex: 1; width: 100%; }
 /* Placas: 3 botones como el comunicado */
 [data-modulo="placas"] .acciones { display: grid; grid-template-columns: 1fr; }
 
+/* ---------- Herramienta: quitar fondo de logos ---------- */
+.herramienta__intro { margin-bottom: 16px; }
+.herramienta__titulo { margin: 0 0 4px; color: var(--azul); font-size: 1.3rem; }
+.opcion--herramienta .opcion__imagen { background: var(--fondo); }
+
+.editor-fondo { display: grid; grid-template-columns: 1fr 360px; gap: 20px; align-items: start; }
+.editor-fondo__imagenes { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.editor-fondo__cuadro {
+  margin: 0; background: var(--blanco); border-radius: var(--radio); box-shadow: var(--sombra); padding: 12px;
+  display: flex; flex-direction: column; gap: 10px;
+}
+.editor-fondo__cuadro figcaption { font-weight: 700; font-size: .85rem; color: var(--azul); }
+.editor-fondo__cuadro figcaption small { display: block; font-weight: 400; color: var(--gris); font-size: .72rem; }
+/* El tamaño real del lienzo (canvas) lo pone JavaScript; aquí solo se limita cómo se ve */
+.editor-fondo__lienzo { display: block; max-width: 100%; max-height: 380px; margin: auto; }
+.editor-fondo__lienzo--original { cursor: crosshair; }
+
+/* Cuadritos grises y blancos: así se ve lo que es transparente */
+.transparente {
+  display: grid; place-items: center; min-height: 200px; border-radius: 8px; padding: 8px;
+  background-color: #ffffff;
+  background-image:
+    linear-gradient(45deg, #d9d8e2 25%, transparent 25%, transparent 75%, #d9d8e2 75%),
+    linear-gradient(45deg, #d9d8e2 25%, transparent 25%, transparent 75%, #d9d8e2 75%);
+  background-size: 16px 16px;
+  background-position: 0 0, 8px 8px;
+}
+
+.fondo-detectado { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.fondo-detectado__muestra {
+  width: 30px; height: 30px; border-radius: 6px; box-shadow: inset 0 0 0 1px #00000033;
+  background: var(--color-fondo, #ffffff); /* --color-fondo lo pone JavaScript */
+}
+.fondo-detectado strong { font: 600 .85rem ui-monospace, monospace; }
+.fondo-detectado small { color: var(--gris); font-size: .75rem; }
+
+.control-deslizable { display: flex; flex-direction: column; gap: 6px; margin-top: 16px; font-size: .85rem; font-weight: 600; }
+.control-deslizable input { width: 100%; accent-color: var(--azul); }
+.casilla { display: flex; gap: 8px; align-items: flex-start; margin-top: 10px; font-size: .85rem; cursor: pointer; }
+.casilla input { margin-top: 3px; accent-color: var(--azul); }
+.casilla small { color: var(--gris); }
+.editor-fondo__controles .acciones { justify-content: stretch; }
+.editor-fondo__controles .acciones .boton { flex: 1 1 100%; }
+
 /* ---------- Pantallas pequeñas ---------- */
 @media (max-width: 1000px) {
   .menu__opciones { grid-template-columns: repeat(2, 1fr); }
 }
 @media (max-width: 800px) {
   .personalizar__contenido { grid-template-columns: 1fr; }
+  .editor-fondo, .editor-fondo__imagenes { grid-template-columns: 1fr; }
   .individual { grid-template-columns: 1fr; }
   .vista { position: relative; top: 0; }
 }

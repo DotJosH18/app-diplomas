@@ -6,6 +6,7 @@
 //
 //    req.personalizacion = {
 //      colorBanda: '#7A1428' o '' (vacío = color por defecto),
+//      colorSecundario, colorNombre: igual (solo los usa Placas),
 //      encabezado1: 'UNIVERSIDAD …' o '' (vacío = texto por defecto; lo usan los diplomas),
 //      encabezado2: 'NUESTRA SEÑORA …' o '' (igual que la línea 1),
 //      titulo:     'NOTA DE DUELO' o '' (vacío = título por defecto; solo lo usa el comunicado),
@@ -22,6 +23,8 @@ export default function leerPersonalizacion(req, res, next) {
   // 1. Color, encabezado y título: se revisan con el esquema
   const resultado = personalizacionSchema.safeParse({
     colorBanda: body.colorBanda,
+    colorSecundario: body.colorSecundario,
+    colorNombre: body.colorNombre,
     titulo: body.titulo,
     encabezado1: body.encabezado1,
     encabezado2: body.encabezado2,
@@ -39,6 +42,8 @@ export default function leerPersonalizacion(req, res, next) {
 
   req.personalizacion = {
     colorBanda: resultado.data.colorBanda || '',
+    colorSecundario: resultado.data.colorSecundario || '',
+    colorNombre: resultado.data.colorNombre || '',
     titulo: resultado.data.titulo || '',
     encabezado1: resultado.data.encabezado1 || '',
     encabezado2: resultado.data.encabezado2 || '',

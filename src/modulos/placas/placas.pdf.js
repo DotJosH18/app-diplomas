@@ -34,21 +34,42 @@ const y = config.posiciones;
 export function dibujarPagina(doc, placa, personalizacion) {
   const centro = doc.page.width / 2;
 
-  // El azul de las cintas y del campus se puede cambiar con el "color de la banda"
-  let azul = colores.azul;
-  if (personalizacion.colorBanda) {
-    azul = personalizacion.colorBanda;
-  }
+  const paleta = armarPaleta(personalizacion);
 
   dibujarMarcaDeAgua(doc, centro, personalizacion);
-  dibujarMarco(doc);
-  dibujarAdornosDeEsquina(doc); // en las 2 esquinas sin cintas (equilibran el diseño)
-  dibujarCintas(doc, azul);     // encima del marco, tapando sus esquinas
-  dibujarEncabezado(doc, centro, placa, personalizacion, azul);
-  dibujarNombre(doc, centro, placa);
+  dibujarMarco(doc, paleta);
+  dibujarAdornosDeEsquina(doc, paleta); // en las 2 esquinas sin cintas (equilibran el diseño)
+  dibujarCintas(doc, paleta);           // encima del marco, tapando sus esquinas
+  dibujarEncabezado(doc, centro, placa, personalizacion, paleta);
+  dibujarNombre(doc, centro, placa, paleta);
   dibujarDescripcion(doc, centro, placa);
   dibujarLugarYFecha(doc, centro, placa);
-  dibujarFirmas(doc, centro, placa);
+  dibujarFirmas(doc, centro, placa, paleta);
+}
+
+/**
+ * Los 3 colores que se pueden cambiar en "Personalizar diseño".
+ * Si alguno no se eligió, se usa el de placas.config.js.
+ *   principal:  cinta principal y texto del campus   (azul)
+ *   secundario: cinta secundaria, marco y adornos    (dorado)
+ *   nombre:     nombre de la persona y rúbricas      (dorado oscuro)
+ */
+function armarPaleta(personalizacion) {
+  const paleta = {
+    principal: colores.azul,
+    secundario: colores.dorado,
+    nombre: colores.doradoOscuro,
+  };
+  if (personalizacion.colorBanda) {
+    paleta.principal = personalizacion.colorBanda;
+  }
+  if (personalizacion.colorSecundario) {
+    paleta.secundario = personalizacion.colorSecundario;
+  }
+  if (personalizacion.colorNombre) {
+    paleta.nombre = personalizacion.colorNombre;
+  }
+  return paleta;
 }
 
 // -------------------------------------------------------------
@@ -82,12 +103,12 @@ function dibujarMarcaDeAgua(doc, centro, personalizacion) {
  * Cintas curvas en la esquina de arriba a la izquierda y en la de
  * abajo a la derecha (la misma figura, girada 180 grados).
  */
-function dibujarCintas(doc, azul) {
-  dibujarCintasDeEsquina(doc, azul);
+function dibujarCintas(doc, paleta) {
+  dibujarCintasDeEsquina(doc, paleta);
 
   doc.save();
   doc.rotate(180, { origin: [doc.page.width / 2, doc.page.height / 2] });
-  dibujarCintasDeEsquina(doc, azul);
+  dibujarCintasDeEsquina(doc, paleta);
   doc.restore();
 }
 
@@ -97,18 +118,18 @@ function dibujarCintas(doc, azul) {
  *   2. la azul, encima (se cruzan como una cinta torcida);
  *   3. un filete dorado fino que acompaña a la azul por fuera.
  */
-function dibujarCintasDeEsquina(doc, azul) {
+function dibujarCintasDeEsquina(doc, paleta) {
   const c = config.cintas;
 
-  doc.polygon(...puntosDeFranja(c.dorada.interior, c.dorada.exterior)).fill(colores.dorado);
-  doc.polygon(...puntosDeFranja(c.azul.interior, c.azul.exterior)).fill(azul);
+  doc.polygon(...puntosDeFranja(c.dorada.interior, c.dorada.exterior)).fill(paleta.secundario);
+  doc.polygon(...puntosDeFranja(c.azul.interior, c.azul.exterior)).fill(paleta.principal);
 
   const filete = puntosDeCurva(c.filete.x, c.filete.y, false);
   doc.moveTo(filete[0][0], filete[0][1]);
   for (const punto of filete) {
     doc.lineTo(punto[0], punto[1]);
   }
-  doc.lineWidth(c.filete.grosor).strokeColor(colores.dorado).stroke();
+  doc.lineWidth(c.filete.grosor).strokeColor(paleta.secundario).stroke();
 }
 
 /**
@@ -148,12 +169,12 @@ function puntosDeFranja(interior, exterior) {
 }
 
 /** Marco dorado: línea gruesa por fuera y delgada por dentro. */
-function dibujarMarco(doc) {
+function dibujarMarco(doc, paleta) {
   const m = config.marco;
   const ancho = doc.page.width;
   const alto = doc.page.height;
 
-  doc.strokeColor(colores.dorado);
+  doc.strokeColor(paleta.secundario);
   doc.lineWidth(m.grosor)
     .rect(m.separacion, m.separacion, ancho - 2 * m.separacion, alto - 2 * m.separacion)
     .stroke();
@@ -168,7 +189,7 @@ function dibujarMarco(doc) {
  * Adorno en las esquinas de arriba a la derecha y de abajo a la izquierda:
  * un rombo pequeño con dos líneas cortas, dentro del marco.
  */
-function dibujarAdornosDeEsquina(doc) {
+function dibujarAdornosDeEsquina(doc, paleta) {
   const m = config.marco;
   const adentro = m.separacion + m.separacionInterna + 8; // un poco dentro de la línea delgada
   const largo = m.adorno;
@@ -179,7 +200,7 @@ function dibujarAdornosDeEsquina(doc) {
     [adentro, doc.page.height - adentro, 1, -1],  // abajo a la izquierda
   ];
 
-  doc.lineWidth(0.8).strokeColor(colores.dorado).fillColor(colores.dorado);
+  doc.lineWidth(0.8).strokeColor(paleta.secundario).fillColor(paleta.secundario);
   for (const esquina of esquinas) {
     const x = esquina[0];
     const y = esquina[1];
@@ -216,7 +237,7 @@ function lineaDegradada(doc, centroX, y, ancho, grosor, color) {
 // -------------------------------------------------------------
 
 /** Universidad, sede (se pueden cambiar en "Personalizar") y campus. */
-function dibujarEncabezado(doc, centro, placa, personalizacion, azul) {
+function dibujarEncabezado(doc, centro, placa, personalizacion, paleta) {
   let linea1 = diseno.textosFijos.universidad;
   if (personalizacion.encabezado1) {
     linea1 = personalizacion.encabezado1.toUpperCase();
@@ -243,16 +264,16 @@ function dibujarEncabezado(doc, centro, placa, personalizacion, azul) {
   escribirCentrado(doc, linea2, centro, y.sede + bajar, opciones2);
 
   if (placa.campus !== '') {
-    dibujarCampus(doc, centro, placa.campus.toUpperCase(), azul);
+    dibujarCampus(doc, centro, placa.campus.toUpperCase(), paleta);
   }
 }
 
-/** El campus en azul, entre dos líneas doradas con un rombo:  ◆──  CAMPUS  ──◆ */
-function dibujarCampus(doc, centro, campus, azul) {
+/** El campus (color principal), entre dos líneas con un rombo:  ◆──  CAMPUS  ──◆ */
+function dibujarCampus(doc, centro, campus, paleta) {
   const opciones = { fuente: 'negrita', tamano: 11.5, ancho: 500, espaciado: 2 };
   opciones.tamano = tamanoParaUnaLinea(doc, campus, opciones, 8);
 
-  doc.fillColor(azul);
+  doc.fillColor(paleta.principal);
   escribirCentrado(doc, campus, centro, y.campus, opciones);
 
   // Adornos a los lados, a la altura del centro del texto
@@ -262,7 +283,7 @@ function dibujarCampus(doc, centro, campus, azul) {
   const separacion = 14;
   const largo = 46;
 
-  doc.lineWidth(0.8).strokeColor(colores.dorado).fillColor(colores.dorado);
+  doc.lineWidth(0.8).strokeColor(paleta.secundario).fillColor(paleta.secundario);
   for (const lado of [-1, 1]) {
     const desde = centro + lado * (mitadTexto + separacion);
     const hasta = centro + lado * (mitadTexto + separacion + largo);
@@ -272,7 +293,7 @@ function dibujarCampus(doc, centro, campus, azul) {
 }
 
 /** "RECONOCIMIENTO A" y el nombre en cursiva dorada, con una línea debajo. */
-function dibujarNombre(doc, centro, placa) {
+function dibujarNombre(doc, centro, placa, paleta) {
   doc.fillColor(colores.textoSuave);
   escribirCentrado(doc, config.saludo, centro, y.saludo, { fuente: 'negrita', tamano: 8.5, ancho: 620, espaciado: 3 });
 
@@ -281,10 +302,10 @@ function dibujarNombre(doc, centro, placa) {
 
   // El nombre se "sienta" sobre la línea (aunque la letra se haya achicado)
   const yNombre = yParaLineaBase(doc, 'cursiva', opciones.tamano, y.lineaNombre - y.nombreSobreLinea);
-  doc.fillColor(colores.doradoOscuro);
+  doc.fillColor(paleta.nombre);
   escribirCentrado(doc, placa.nombre, centro, yNombre, opciones);
 
-  lineaDegradada(doc, centro, y.lineaNombre, 540, 1.2, colores.dorado);
+  lineaDegradada(doc, centro, y.lineaNombre, 540, 1.2, paleta.secundario);
 }
 
 /**
@@ -316,7 +337,7 @@ function dibujarLugarYFecha(doc, centro, placa) {
 // -------------------------------------------------------------
 
 /** 2 firmas a los lados, o 3 en la misma fila si hay Firmante 3. */
-function dibujarFirmas(doc, centro, placa) {
+function dibujarFirmas(doc, centro, placa, paleta) {
   const firmas = [
     { nombre: placa.firmante1, cargo: placa.cargo1 },
     { nombre: placa.firmante2, cargo: placa.cargo2 },
@@ -324,18 +345,18 @@ function dibujarFirmas(doc, centro, placa) {
 
   if (placa.firmante3 !== '') {
     const distancia = config.firmas.distanciaCon3;
-    dibujarUnaFirma(doc, firmas[0], centro - distancia);
-    dibujarUnaFirma(doc, { nombre: placa.firmante3, cargo: placa.cargo3 }, centro);
-    dibujarUnaFirma(doc, firmas[1], centro + distancia);
+    dibujarUnaFirma(doc, firmas[0], centro - distancia, paleta);
+    dibujarUnaFirma(doc, { nombre: placa.firmante3, cargo: placa.cargo3 }, centro, paleta);
+    dibujarUnaFirma(doc, firmas[1], centro + distancia, paleta);
   } else {
     const mitad = config.firmas.distanciaCon2 / 2;
-    dibujarUnaFirma(doc, firmas[0], centro - mitad);
-    dibujarUnaFirma(doc, firmas[1], centro + mitad);
+    dibujarUnaFirma(doc, firmas[0], centro - mitad, paleta);
+    dibujarUnaFirma(doc, firmas[1], centro + mitad, paleta);
   }
 }
 
 /** Rúbrica en cursiva, línea, nombre en mayúsculas y cargo. */
-function dibujarUnaFirma(doc, firma, x) {
+function dibujarUnaFirma(doc, firma, x, paleta) {
   const ancho = config.firmas.anchoLinea;
 
   // Rúbrica: "Mte. Darío Martín Henríquez" -> "Darío Henríquez"
@@ -345,7 +366,7 @@ function dibujarUnaFirma(doc, firma, x) {
 
   // La rúbrica se "sienta" sobre la línea de la firma, como una firma de verdad
   const yRubrica = yParaLineaBase(doc, 'cursiva', opcionesRubrica.tamano, y.lineaFirma - y.rubricaSobreLinea);
-  doc.fillColor(colores.doradoOscuro);
+  doc.fillColor(paleta.nombre);
   escribirCentrado(doc, rubrica, x, yRubrica, opcionesRubrica);
 
   lineaDegradada(doc, x, y.lineaFirma, ancho + 20, 0.7, colores.lineaFirma);

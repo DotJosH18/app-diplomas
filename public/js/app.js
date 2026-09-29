@@ -11,10 +11,12 @@
 //    3. Menú y módulos (Reconocimientos / Lugares)
 //    4. Pestañas ("Uno a la vez" primero, luego "Desde Excel")
 //    5. Configuración (valores en gris y contador de caracteres)
-//    6. Personalizar (color, encabezado, título, logo y su vista en miniatura)
+//    6. Personalizar (colores, encabezado, título, logo y su vista en miniatura)
 //    7. Pestaña "Desde Excel" (con la ventana de vista previa de cada fila)
 //    8. Pestaña "Uno a la vez"
 //    9. Inicio
+//
+//  La herramienta "Quitar fondo de logos" está aparte, en quitar-fondo.js.
 // =============================================================
 
 // Módulo elegido: 'reconocimientos' o 'lugares' (igual que data-modulo en el HTML)
@@ -24,8 +26,9 @@ let moduloActual = 'reconocimientos';
 let archivoExcel = null;
 
 // Personalización (opcional). Vacío / null = diseño por defecto.
-const COLOR_POR_DEFECTO = '#141B5B';
-let colorBanda = '';     // por ejemplo '#7A1428'
+// Los colores elegidos, por nombre de campo: { colorBanda: '#7A1428', colorNombre: '' }.
+// '' = el color por defecto (no hace falta enviarlo). Ver "Selectores de color".
+const coloresElegidos = {};
 let archivoLogo = null;  // el archivo de imagen que subió el usuario
 
 /** Dirección de la API del módulo elegido. Ejemplo: '/api/lugares' */
@@ -42,6 +45,7 @@ function urlDelModulo() {
 // Menú y encabezado
 const pantallaMenu = document.getElementById('menu');
 const pantallaGenerador = document.getElementById('generador');
+const pantallaHerramientaFondo = document.getElementById('herramienta-fondo');
 const barraPestanas = document.getElementById('pestanas');
 const cajaTipoElegido = document.getElementById('tipo-elegido');
 const textoTipoElegido = document.getElementById('tipo-elegido-nombre');
@@ -49,13 +53,7 @@ const botonMenu = document.getElementById('boton-menu');
 
 // Personalizar
 const panelPersonalizar = document.getElementById('personalizar');
-const botonesColor = document.querySelectorAll('.color[data-color]');
-const selectorColor = document.getElementById('selector-color');
-const textoCodigoColor = document.getElementById('codigo-color'); // el campo donde se puede escribir el código
-const botonColorLibre = document.querySelector('.color--libre');
-const textoNombreColor = document.getElementById('nombre-color');
-const textoDetalleColor = document.getElementById('detalle-color');
-const avisoColor = document.getElementById('aviso-color');
+const selectoresColor = document.querySelectorAll('.selector-color'); // uno por cada color que se puede cambiar
 const inputLogo = document.getElementById('input-logo');
 const botonLogo = document.getElementById('boton-logo');
 const botonQuitarLogo = document.getElementById('boton-quitar-logo');
@@ -223,6 +221,11 @@ const opcionesMenu = document.querySelectorAll('.opcion');
 
 for (const opcion of opcionesMenu) {
   opcion.addEventListener('click', function () {
+    // La tarjeta de "Quitar fondo" es una herramienta, no un diploma (ver quitar-fondo.js)
+    if (opcion.dataset.herramienta === 'quitar-fondo') {
+      abrirQuitarFondo(opcion.dataset.titulo);
+      return;
+    }
     // data-modulo y data-titulo vienen del HTML
     abrirGenerador(opcion.dataset.modulo, opcion.dataset.titulo);
   });
@@ -245,6 +248,7 @@ function abrirGenerador(idModulo, titulo) {
 function volverAlMenu() {
   mostrar(pantallaMenu);
   ocultar(pantallaGenerador);
+  ocultar(pantallaHerramientaFondo);
   // "invisible" (y no "oculto") para que el encabezado conserve su altura
   cajaTipoElegido.classList.add('invisible');
   barraPestanas.classList.add('invisible');
@@ -402,54 +406,74 @@ function conectarContador(areaTexto, contador) {
 //  diseño por defecto.
 // =============================================================
 
-// ---------- Color ----------
-// Tres formas de elegir: un color rápido, el círculo "Otro…" (el selector
-// del navegador) o escribiendo el código. Las tres terminan en elegirColor().
+// ---------- Selectores de color ----------
+// En el HTML hay un bloque .selector-color por cada color que se puede cambiar
+// (la banda; en Placas también la cinta secundaria y el nombre). Todos funcionan
+// igual, así que se preparan con la misma función.
+//
+// En cada uno hay tres formas de elegir: un color rápido, el círculo "Otro…"
+// (el selector del navegador) o escribiendo el código. Las tres terminan en elegirColor().
 
-// Colores rápidos
-for (const boton of botonesColor) {
-  boton.addEventListener('click', function () {
-    elegirColor(boton.dataset.color); // viene de data-color="..." en el HTML
-  });
+for (const selector of selectoresColor) {
+  prepararSelectorColor(selector);
 }
 
-// "Otro…": cualquier color ('input' se dispara mientras se mueve el selector)
-selectorColor.addEventListener('input', function () {
-  elegirColor(selectorColor.value);
-});
+function prepararSelectorColor(selector) {
+  const campo = selector.dataset.campo;          // ej. 'colorBanda'
+  coloresElegidos[campo] = '';                   // empieza con el color por defecto
 
-// Escribiendo el código: se aplica en cuanto es un color válido (#RRGGBB)
-textoCodigoColor.addEventListener('input', function () {
-  let codigo = textoCodigoColor.value.trim();
-  if (!codigo.startsWith('#')) {
-    codigo = '#' + codigo; // se acepta escribirlo sin el #
+  // Colores rápidos: cada círculo se pinta con su data-color (variable CSS)
+  for (const boton of selector.querySelectorAll('.color[data-color]')) {
+    boton.style.setProperty('--fondo-color', boton.dataset.color);
+    boton.addEventListener('click', function () {
+      elegirColor(selector, boton.dataset.color);
+    });
   }
 
-  if (esCodigoDeColor(codigo)) {
-    textoCodigoColor.classList.remove('invalido');
-    elegirColor(codigo);
-  } else if (codigo.length >= 7) {
-    textoCodigoColor.classList.add('invalido'); // ya está completo pero no es un color
-  }
-});
+  // "Otro…": cualquier color ('input' se dispara mientras se mueve el selector)
+  const selectorLibre = selector.querySelector('.selector-color__libre');
+  selectorLibre.addEventListener('input', function () {
+    elegirColor(selector, selectorLibre.value);
+  });
 
-// Al salir del campo, si quedó a medias, vuelve a mostrar el color actual
-textoCodigoColor.addEventListener('blur', function () {
-  textoCodigoColor.classList.remove('invalido');
-  textoCodigoColor.value = colorActual();
-});
+  // Escribiendo el código: se aplica en cuanto es un color válido (#RRGGBB)
+  const campoCodigo = selector.querySelector('.color-elegido__input');
+  campoCodigo.addEventListener('input', function () {
+    let codigo = campoCodigo.value.trim();
+    if (!codigo.startsWith('#')) {
+      codigo = '#' + codigo; // se acepta escribirlo sin el #
+    }
+
+    if (esCodigoDeColor(codigo)) {
+      campoCodigo.classList.remove('invalido');
+      elegirColor(selector, codigo);
+    } else if (codigo.length >= 7) {
+      campoCodigo.classList.add('invalido'); // ya está completo pero no es un color
+    }
+  });
+
+  // Al salir del campo, si quedó a medias, vuelve a mostrar el color actual
+  campoCodigo.addEventListener('blur', function () {
+    campoCodigo.classList.remove('invalido');
+    campoCodigo.value = colorActual(selector);
+  });
+
+  // Muestra el color por defecto (sin pedir miniatura todavía)
+  elegirColor(selector, selector.dataset.porDefecto, false);
+}
 
 /** true si el texto es un color como '#7A1428' (# y 6 letras/números del 0 al F). */
 function esCodigoDeColor(texto) {
   return /^#[0-9a-fA-F]{6}$/.test(texto);
 }
 
-/** El color que se está usando ahora (el de por defecto si no se eligió otro). */
-function colorActual() {
-  if (colorBanda === '') {
-    return COLOR_POR_DEFECTO;
+/** El color que usa ahora un selector (el de por defecto si no se eligió otro). */
+function colorActual(selector) {
+  const elegido = coloresElegidos[selector.dataset.campo];
+  if (elegido === '') {
+    return selector.dataset.porDefecto;
   }
-  return colorBanda;
+  return elegido;
 }
 
 /**
@@ -465,25 +489,39 @@ function esColorClaro(color) {
   return brillo > 0.72;
 }
 
-function elegirColor(color) {
+/**
+ * Elige un color en un selector: lo guarda, marca el círculo, actualiza
+ * la línea del color elegido y pide la miniatura.
+ * "actualizarVista" = false solo al preparar la página.
+ */
+function elegirColor(selector, color, actualizarVista = true) {
   color = color.toUpperCase();
-  colorBanda = color;
-  if (color === COLOR_POR_DEFECTO) {
-    colorBanda = ''; // es el de siempre: no hace falta enviarlo
+  const campo = selector.dataset.campo;
+  const porDefecto = selector.dataset.porDefecto.toUpperCase();
+
+  coloresElegidos[campo] = color;
+  if (color === porDefecto) {
+    coloresElegidos[campo] = ''; // es el de siempre: no hace falta enviarlo
   }
 
-  // El único estilo que cambia JavaScript: la variable --color-banda del CSS.
-  // Con ella se pintan la muestra grande, el círculo "Otro…" y la del título del panel.
-  panelPersonalizar.style.setProperty('--color-banda', color);
-  selectorColor.value = color.toLowerCase();
-  if (document.activeElement !== textoCodigoColor) {
-    textoCodigoColor.value = color; // (si lo está escribiendo, no se le cambia)
+  // Lo único que cambia JavaScript en el estilo: variables CSS.
+  // --color-elegido pinta la muestra grande y el círculo "Otro…" de este selector.
+  selector.style.setProperty('--color-elegido', color);
+  if (campo === 'colorBanda') {
+    panelPersonalizar.style.setProperty('--color-banda', color); // la muestra del título del panel
+  }
+
+  const campoCodigo = selector.querySelector('.color-elegido__input');
+  selector.querySelector('.selector-color__libre').value = color.toLowerCase();
+  if (document.activeElement !== campoCodigo) {
+    campoCodigo.value = color; // (si lo está escribiendo, no se le cambia)
   }
 
   // 1. Marca el color rápido elegido; si no es ninguno, se marca "Otro…"
+  const botonLibre = selector.querySelector('.color--libre');
   let botonElegido = null;
-  for (const boton of botonesColor) {
-    if (boton.dataset.color === color) {
+  for (const boton of selector.querySelectorAll('.color[data-color]')) {
+    if (boton.dataset.color.toUpperCase() === color) {
       boton.classList.add('activo');
       botonElegido = boton;
     } else {
@@ -491,33 +529,51 @@ function elegirColor(color) {
     }
   }
   if (botonElegido === null) {
-    botonColorLibre.classList.add('activo');
+    botonLibre.classList.add('activo');
   } else {
-    botonColorLibre.classList.remove('activo');
+    botonLibre.classList.remove('activo');
   }
 
   // 2. Nombre y detalle del color elegido
+  const textoNombre = selector.querySelector('.color-elegido__nombre');
+  const textoDetalle = selector.querySelector('.color-elegido__detalle');
   if (botonElegido !== null) {
-    textoNombreColor.textContent = botonElegido.dataset.nombre;
+    textoNombre.textContent = botonElegido.dataset.nombre;
   } else {
-    textoNombreColor.textContent = 'Color personalizado';
+    textoNombre.textContent = 'Color personalizado';
   }
-  if (color === COLOR_POR_DEFECTO) {
-    textoDetalleColor.textContent = 'Color por defecto';
+  if (color === porDefecto) {
+    textoDetalle.textContent = 'Color por defecto';
   } else {
-    textoDetalleColor.textContent = 'Así saldrá en el documento';
+    textoDetalle.textContent = 'Así saldrá en el documento';
   }
 
-  // 3. Aviso si es muy claro (y la ✓ del círculo se pone oscura para que se vea)
+  // 3. Aviso si es muy claro (y la ✓ del círculo elegido se pone oscura para que se vea)
+  const aviso = selector.querySelector('.color-elegido__aviso');
+  const circuloElegido = botonElegido || botonLibre;
+  for (const boton of selector.querySelectorAll('.color')) {
+    boton.classList.remove('color--claro');
+  }
   if (esColorClaro(color)) {
-    mostrar(avisoColor);
-    botonColorLibre.classList.add('color--claro');
+    circuloElegido.classList.add('color--claro');
+  }
+  // El aviso solo en los selectores que pintan texto (data-aviso-claro="si")
+  if (esColorClaro(color) && selector.dataset.avisoClaro === 'si') {
+    mostrar(aviso);
   } else {
-    ocultar(avisoColor);
-    botonColorLibre.classList.remove('color--claro');
+    ocultar(aviso);
   }
 
-  programarMiniVista(120); // un clic en un color: la miniatura responde rápido
+  if (actualizarVista) {
+    programarMiniVista(120); // un clic en un color: la miniatura responde rápido
+  }
+}
+
+/** Vuelve todos los selectores a su color por defecto. */
+function restablecerColores() {
+  for (const selector of selectoresColor) {
+    elegirColor(selector, selector.dataset.porDefecto);
+  }
 }
 
 // ---------- Encabezado y título ----------
@@ -574,7 +630,7 @@ botonRestablecer.addEventListener('click', function () {
   inputTitulo.value = '';
   inputEncabezado1.value = '';
   inputEncabezado2.value = '';
-  elegirColor(COLOR_POR_DEFECTO);
+  restablecerColores();
   quitarLogo();
   mostrarMensaje(mensajePersonalizar, '', 'normal');
 });
@@ -592,8 +648,13 @@ function agregarTexto(envio, nombre, campo) {
  * Si no se eligió nada, no agrega nada (el servidor usa el diseño por defecto).
  */
 function agregarPersonalizacion(envio) {
-  if (colorBanda !== '') {
-    envio.append('colorBanda', colorBanda);
+  // Colores: solo los que se cambiaron y cuyo selector se ve en este módulo
+  for (const selector of selectoresColor) {
+    const campo = selector.dataset.campo;
+    const seVe = !selector.querySelector('.color-elegido__input').disabled;
+    if (seVe && coloresElegidos[campo] !== '') {
+      envio.append(campo, coloresElegidos[campo]);
+    }
   }
   // Los textos solo se envían si su campo está activo (según el módulo) y tiene algo
   agregarTexto(envio, 'titulo', inputTitulo);           // comunicado de duelo
