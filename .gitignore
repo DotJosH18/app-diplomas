@@ -1,0 +1,10 @@
+# Librerías: se instalan con "npm install", no se suben a GitHub
+node_modules/
+
+# Configuración local (puede tener datos privados)
+.env
+
+# Archivos del sistema y registros
+.DS_Store
+Thumbs.db
+*.log

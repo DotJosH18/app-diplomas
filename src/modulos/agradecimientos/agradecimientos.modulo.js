@@ -1,0 +1,29 @@
+// =============================================================
+//  MÓDULO AGRADECIMIENTOS
+//  Une las 3 piezas del módulo: configuración, esquema y PDF.
+//  Como el comunicado de duelo, tiene "dibujarPagina": dibuja
+//  la página completa con su propio diseño.
+// =============================================================
+import config from './agradecimientos.config.js';
+import { agradecimientosSchema } from './agradecimientos.schema.js';
+import { dibujarPagina } from './agradecimientos.pdf.js';
+
+const moduloAgradecimientos = {
+  id: 'agradecimientos',          // se usa en la URL: /api/agradecimientos/...
+  titulo: 'Agradecimientos',
+  config: config,
+  esquema: agradecimientosSchema,
+  dibujarPagina: dibujarPagina,
+
+  // Nombre del archivo PDF y columna "Para" de la tabla del Excel
+  textoPrincipal: function (diploma) {
+    return diploma.nombre;
+  },
+
+  // Texto corto que se muestra en la tabla de revisión del Excel
+  resumen: function (diploma) {
+    return diploma.descripcion.replaceAll('**', '');
+  },
+};
+
+export default moduloAgradecimientos;

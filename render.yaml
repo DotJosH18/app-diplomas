@@ -1,0 +1,18 @@
+# =============================================================
+#  CONFIGURACIÓN PARA RENDER (render.com)
+#  Render lee este archivo y crea el servicio solo ("Blueprint").
+#  Plan "free": gratis y sin tarjeta.
+# =============================================================
+services:
+  - type: web
+    name: diplomas-unicah
+    runtime: node
+    plan: free
+    buildCommand: npm ci --omit=dev      # instala las librerías (sin las de pruebas)
+    startCommand: npm start              # node src/server.js
+    healthCheckPath: /api/modulos        # Render revisa aquí que la app esté viva
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: ZONA_HORARIA
+        value: America/Tegucigalpa

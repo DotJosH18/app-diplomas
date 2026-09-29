@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Generador de Diplomas · UNICAH</title>
+  <link rel="icon" type="image/png" href="img/logo-unicah.png" />
+  <link rel="stylesheet" href="css/estilos.css" />
+</head>
+<body>
+
+  <!-- ==================== ENCABEZADO ==================== -->
+  <header class="encabezado">
+    <div class="encabezado__contenido">
+      <!-- Logo + título -->
+      <div class="marca">
+        <img class="marca__logo" src="img/logo-unicah.png" alt="Logo de UNICAH" />
+        <div>
+          <p class="encabezado__sub">Generador de</p>
+          <h1 class="encabezado__titulo">Diplomas</h1>
+        </div>
+      </div>
+
+      <!-- Tipo de diploma elegido (se ve dentro del generador) -->
+      <div id="tipo-elegido" class="tipo-elegido invisible">
+        <span class="tipo-elegido__etiqueta">Tipo de diploma</span>
+        <strong id="tipo-elegido-nombre"></strong>
+        <button id="boton-menu" class="boton-menu">Cambiar tipo</button>
+      </div>
+    </div>
+
+    <!-- Las pestañas solo se ven dentro del generador ("invisible" guarda su espacio
+         para que el encabezado tenga siempre la misma altura) -->
+    <nav id="pestanas" class="pestanas invisible">
+      <button class="pestana activa" data-panel="panel-excel">Desde Excel</button>
+      <button class="pestana" data-panel="panel-individual">Uno a la vez</button>
+    </nav>
+  </header>
+
+  <!--
+    Campos que solo usan algunos módulos:
+      data-modulos="lugares"                  → solo se ve en Lugares
+      data-modulos="reconocimientos duelo"    → se ve en Reconocimientos y en el Comunicado de duelo
+    Los elementos SIN data-modulos se ven siempre.
+  -->
+
+  <main class="contenedor">
+
+    <!-- ==================== MENÚ: ELEGIR EL TIPO DE DIPLOMA ==================== -->
+    <!-- data-modulo es el id del módulo en el servidor; data-titulo es lo que se muestra arriba -->
+    <section id="menu" class="menu">
+      <h2 class="menu__titulo">¿Qué tipo de diploma quieres generar?</h2>
+
+      <div class="menu__opciones">
+        <button class="opcion" data-modulo="reconocimientos" data-titulo="Reconocimientos">
+          <img class="opcion__imagen" src="img/muestra-reconocimientos.png" alt="Ejemplo de reconocimiento" />
+          <span class="opcion__titulo">Reconocimientos</span>
+          <span class="opcion__texto">Reconocimiento académico a una persona, con su nombre y una descripción.</span>
+          <span class="opcion__campos">Pide: nombre y descripción</span>
+        </button>
+
+        <button class="opcion" data-modulo="lugares" data-titulo="Lugares (1º al 7º)">
+          <img class="opcion__imagen" src="img/muestra-lugares.png" alt="Ejemplo de diploma de lugar" />
+          <span class="opcion__titulo">Lugares (1º al 7º)</span>
+          <span class="opcion__texto">Diplomas del primer al séptimo lugar (o mención honorífica) de un concurso o evento. No llevan nombre.</span>
+          <span class="opcion__campos">Pide: lugar obtenido, evento y descripción</span>
+        </button>
+
+        <button class="opcion" data-modulo="duelo" data-titulo="Comunicado de duelo">
+          <img class="opcion__imagen" src="img/muestra-duelo.png" alt="Ejemplo de comunicado de duelo" />
+          <span class="opcion__titulo">Comunicado de duelo</span>
+          <span class="opcion__texto">Comunicado vertical en blanco y negro para informar el fallecimiento de una persona.</span>
+          <span class="opcion__campos">Pide: nombre (los tres puntos y el cierre ya vienen escritos)</span>
+        </button>
+
+        <button class="opcion" data-modulo="agradecimientos" data-titulo="Agradecimientos">
+          <img class="opcion__imagen" src="img/muestra-agradecimientos.png" alt="Ejemplo de diploma de agradecimiento" />
+          <span class="opcion__titulo">Agradecimientos</span>
+          <span class="opcion__texto">Diploma vertical tamaño oficio, con fondo de pergamino y marco café.</span>
+          <span class="opcion__campos">Pide: nombre y descripción</span>
+        </button>
+
+        <button class="opcion" data-modulo="placas" data-titulo="Placas">
+          <img class="opcion__imagen" src="img/muestra-placas.png" alt="Ejemplo de placa" />
+          <span class="opcion__titulo">Placas</span>
+          <span class="opcion__texto">Reconocimiento con cintas azul y dorada, marco dorado y el logo de fondo.</span>
+          <span class="opcion__campos">Pide: nombre y descripción</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- ==================== GENERADOR (se ve después de elegir el tipo) ==================== -->
+    <div id="generador" class="oculto">
+
+    <!-- ==================== PERSONALIZAR (opcional) ====================
+         Sirve para las dos pestañas. Si no se toca, se usa el diseño por defecto. -->
+    <details id="personalizar" class="personalizar">
+      <summary class="personalizar__resumen">
+        <span class="muestra-mini" aria-hidden="true" data-modulos="reconocimientos lugares placas"></span>
+        <span>
+          <strong>Personalizar diseño</strong>
+          <small data-modulos="reconocimientos lugares">Opcional · color de la banda, encabezado y logo</small>
+          <small data-modulos="placas">Opcional · color de la cinta, encabezado y logo de fondo</small>
+          <small data-modulos="duelo">Opcional · título y logo</small>
+          <small data-modulos="agradecimientos">Opcional · logo</small>
+        </span>
+      </summary>
+
+      <div class="personalizar__contenido">
+        <!-- Vista en miniatura del diploma: banda + logo -->
+        <div class="mini-diploma" aria-hidden="true" data-modulos="reconocimientos lugares">
+          <div class="mini-diploma__banda">
+            <img id="vista-logo" class="mini-diploma__logo" src="img/logo-unicah.png" alt="" />
+          </div>
+          <div class="mini-diploma__hoja">
+            <span id="vista-encabezado1" class="mini-diploma__encabezado mini-diploma__encabezado--1">UNIVERSIDAD CATÓLICA DE HONDURAS</span>
+            <span id="vista-encabezado2" class="mini-diploma__encabezado">NUESTRA SEÑORA REINA DE LA PAZ</span>
+            <span class="mini-diploma__nombre">Nombre</span>
+            <span class="mini-diploma__linea mini-diploma__linea--corta"></span>
+            <span class="mini-diploma__firmas"><span></span><span></span></span>
+          </div>
+        </div>
+
+        <!-- Vista en miniatura del comunicado de duelo: título + logo -->
+        <div class="mini-comunicado" aria-hidden="true" data-modulos="duelo">
+          <div class="mini-comunicado__hoja">
+            <div class="mini-comunicado__encabezado">
+              <div>
+                <span id="vista-titulo" class="mini-comunicado__titulo">COMUNICADO</span>
+                <span class="mini-comunicado__barra"></span>
+              </div>
+              <img id="vista-logo-duelo" class="mini-comunicado__logo" src="img/logo-duelo.png" alt="" />
+            </div>
+            <span class="mini-comunicado__linea"></span>
+            <span class="mini-comunicado__linea mini-comunicado__linea--corta"></span>
+            <span class="mini-comunicado__espacio"></span>
+            <span class="mini-comunicado__linea"></span>
+            <span class="mini-comunicado__linea"></span>
+            <span class="mini-comunicado__linea mini-comunicado__linea--corta"></span>
+            <span class="mini-comunicado__espacio"></span>
+            <span class="mini-comunicado__linea"></span>
+            <span class="mini-comunicado__linea mini-comunicado__linea--corta"></span>
+            <span class="mini-comunicado__pie">
+              <span class="mini-comunicado__linea"></span>
+              <span class="mini-comunicado__linea"></span>
+            </span>
+          </div>
+        </div>
+
+        <div class="personalizar__controles">
+          <!-- Color: data-color es el color que se usa en el PDF -->
+          <p class="personalizar__etiqueta" data-modulos="reconocimientos lugares">Color de la banda</p>
+          <p class="personalizar__etiqueta" data-modulos="placas">Color de la cinta (la dorada no cambia)</p>
+          <div class="colores" data-modulos="reconocimientos lugares placas">
+            <button type="button" class="color activo" data-color="#141B5B" title="Azul UNICAH (por defecto)"></button>
+            <button type="button" class="color" data-color="#7A1428" title="Vino"></button>
+            <button type="button" class="color" data-color="#0F4C81" title="Azul rey"></button>
+            <button type="button" class="color" data-color="#1F5E3B" title="Verde"></button>
+            <button type="button" class="color" data-color="#5B2A86" title="Morado"></button>
+            <button type="button" class="color" data-color="#8C7418" title="Dorado"></button>
+            <button type="button" class="color" data-color="#222222" title="Negro"></button>
+            <label class="color color--libre" title="Elegir otro color">
+              <input id="selector-color" type="color" value="#141B5B" />
+            </label>
+            <span id="codigo-color" class="codigo-color">#141B5B</span>
+          </div>
+
+          <!-- Encabezado: las 2 líneas de arriba del diploma -->
+          <div data-modulos="reconocimientos lugares placas">
+            <p class="personalizar__etiqueta">Encabezado</p>
+            <div class="campos-encabezado">
+              <input id="input-encabezado1" class="campo-personalizar" maxlength="45"
+                placeholder="UNIVERSIDAD CATÓLICA DE HONDURAS" aria-label="Línea 1 del encabezado" />
+              <input id="input-encabezado2" class="campo-personalizar" maxlength="45"
+                placeholder="NUESTRA SEÑORA REINA DE LA PAZ" aria-label="Línea 2 del encabezado" />
+            </div>
+            <p class="nota">Si dejas una línea vacía, se usa el texto de siempre. Se escribe en mayúsculas.</p>
+          </div>
+
+          <!-- Título (solo el comunicado de duelo) -->
+          <div data-modulos="duelo">
+            <p class="personalizar__etiqueta">Título</p>
+            <input id="input-titulo" class="campo-personalizar" maxlength="24" placeholder="COMUNICADO" />
+            <p class="nota">Ej. NOTA DE DUELO. Se escribe en mayúsculas; si es largo, se achica para caber.</p>
+          </div>
+
+          <!-- Logo -->
+          <p class="personalizar__etiqueta">Logo</p>
+          <div class="carga-logo">
+            <input id="input-logo" type="file" accept=".png,.jpg,.jpeg" hidden />
+            <button type="button" id="boton-logo" class="boton">Subir logo</button>
+            <span id="nombre-logo" class="carga-logo__nombre">Logo de UNICAH (por defecto)</span>
+            <button type="button" id="boton-quitar-logo" class="boton boton--texto oculto">Quitar</button>
+          </div>
+          <p class="nota">PNG o JPG, máximo 2 MB. Un PNG con fondo transparente se ve mejor.</p>
+
+          <button type="button" id="boton-restablecer" class="boton boton--texto">Restablecer diseño por defecto</button>
+          <p id="mensaje-personalizar" class="mensaje"></p>
+        </div>
+      </div>
+    </details>
+
+    <!-- ==================== PESTAÑA: DESDE EXCEL ==================== -->
+    <section id="panel-excel" class="panel activo">
+
+      <!-- Paso 1: soltar el archivo -->
+      <div id="zona-excel" class="zona" tabindex="0">
+        <input id="input-excel" type="file" accept=".xlsx" hidden />
+        <p class="zona__titulo">Arrastra aquí tu libro de Excel</p>
+        <p class="zona__texto">o <u>haz clic para buscarlo</u> · solo .xlsx</p>
+        <a id="enlace-modelo" class="enlace" href="/api/reconocimientos/excel/modelo">Descargar Excel modelo</a>
+      </div>
+
+      <!-- Archivo cargado -->
+      <div id="archivo-cargado" class="archivo oculto">
+        <div>
+          <strong id="archivo-nombre"></strong>
+          <small id="archivo-tamano"></small>
+        </div>
+        <button id="boton-cambiar" class="boton boton--texto">Cambiar archivo</button>
+      </div>
+
+      <!-- Paso 2: revisión -->
+      <div id="revision" class="oculto">
+        <div class="resumen">
+          <div class="dato"><span id="total-filas">0</span><small>filas</small></div>
+          <div class="dato dato--ok"><span id="total-validas">0</span><small>listas</small></div>
+          <div class="dato dato--error"><span id="total-errores">0</span><small>con errores</small></div>
+        </div>
+
+        <details class="comunes">
+          <summary>Datos comunes <small>se usan en las filas que tengan esa celda vacía</small></summary>
+          <form id="form-comunes" class="rejilla">
+            <!-- Solo Reconocimientos -->
+            <label class="ancho-completo" data-modulos="reconocimientos placas">Descripción
+              <textarea id="descripcion-rec-comun" name="descripcion" rows="3" maxlength="400"></textarea>
+              <small class="contador"></small>
+            </label>
+
+            <!-- Solo Lugares -->
+            <label data-modulos="lugares">Lugar obtenido
+              <select name="puesto">
+                <option value="">— Usar el del Excel —</option>
+                <option>Primer Lugar</option>
+                <option>Segundo Lugar</option>
+                <option>Tercer Lugar</option>
+                <option>Cuarto Lugar</option>
+                <option>Quinto Lugar</option>
+                <option>Sexto Lugar</option>
+                <option>Séptimo Lugar</option>
+                <option>Mención Honorífica</option>
+              </select>
+            </label>
+            <label data-modulos="lugares">Evento
+              <input name="evento" maxlength="70" placeholder="Ej. Concurso de Oratoria 2026" />
+            </label>
+            <label class="ancho-completo" data-modulos="lugares">Descripción
+              <textarea id="descripcion-lug-comun" name="descripcion" rows="2" maxlength="200"></textarea>
+              <small class="contador"></small>
+            </label>
+            <p class="nota ancho-completo" data-modulos="reconocimientos lugares placas">Para otro párrafo, pulsa Enter (en el Excel, Alt + Enter dentro de la celda).</p>
+
+            <!-- Solo Nota de duelo -->
+            <p class="nota ancho-completo" data-modulos="duelo">En los textos, {nombre} se cambia por el nombre de cada persona.</p>
+            <label class="ancho-completo" data-modulos="duelo">Punto 1 · Anuncio
+              <textarea name="anuncio" rows="3" maxlength="600"></textarea>
+              <small class="contador"></small>
+            </label>
+            <label class="ancho-completo" data-modulos="duelo">Punto 2 · Exhortación
+              <textarea name="exhortacion" rows="2" maxlength="300"></textarea>
+              <small class="contador"></small>
+            </label>
+            <label class="ancho-completo" data-modulos="duelo">Punto 3 · Condolencias
+              <textarea name="condolencias" rows="2" maxlength="300"></textarea>
+              <small class="contador"></small>
+            </label>
+            <label class="ancho-completo" data-modulos="duelo">Despedida
+              <textarea name="despedida" rows="2" maxlength="250"></textarea>
+              <small class="contador"></small>
+            </label>
+
+            <!-- Solo Agradecimientos -->
+            <label data-modulos="agradecimientos">Título <input name="tituloDiploma" maxlength="24" /></label>
+            <label class="ancho-completo" data-modulos="agradecimientos">Descripción
+              <textarea name="descripcion" rows="4" maxlength="700"></textarea>
+              <small class="contador"></small>
+            </label>
+            <p class="nota ancho-completo" data-modulos="agradecimientos">Para otro párrafo, pulsa Enter (en el Excel, Alt + Enter dentro de la celda).</p>
+
+            <!-- Comunes -->
+            <label data-modulos="reconocimientos lugares agradecimientos placas">Campus (opcional) <input name="campus" maxlength="40" placeholder="Ej. Campus Santa Clara" /></label>
+            <label data-modulos="reconocimientos lugares duelo placas">Lugar <input name="lugar" maxlength="50" /></label>
+            <label>Fecha <input name="fecha" maxlength="30" /></label>
+            <label data-modulos="reconocimientos lugares placas">Firmante 1 <input name="firmante1" maxlength="45" /></label>
+            <label data-modulos="reconocimientos lugares placas">Cargo 1 <input name="cargo1" maxlength="45" /></label>
+            <label data-modulos="reconocimientos lugares placas">Firmante 2 <input name="firmante2" maxlength="45" /></label>
+            <label data-modulos="reconocimientos lugares placas">Cargo 2 <input name="cargo2" maxlength="45" /></label>
+            <label data-modulos="reconocimientos lugares placas">Firmante 3 (opcional) <input name="firmante3" maxlength="45" /></label>
+            <label data-modulos="reconocimientos lugares placas">Cargo 3 <input name="cargo3" maxlength="45" /></label>
+          </form>
+        </details>
+
+        <div class="tabla-contenedor">
+          <table class="tabla">
+            <thead>
+              <tr>
+                <th>Fila</th><th>Diploma para</th><th>Detalle</th>
+                <th>Lugar</th><th>Fecha</th><th>Estado</th>
+              </tr>
+            </thead>
+            <tbody id="tabla-filas"></tbody>
+          </table>
+        </div>
+
+        <div class="acciones">
+          <button id="boton-generar-excel" class="boton boton--principal">Generar PDF</button>
+        </div>
+      </div>
+
+      <p id="mensaje-excel" class="mensaje"></p>
+    </section>
+
+    <!-- ==================== PESTAÑA: UNO A LA VEZ ==================== -->
+    <section id="panel-individual" class="panel">
+      <div class="individual">
+        <form id="form-individual" class="tarjeta">
+          <p class="nota">Los campos vacíos usan el valor que se ve en gris. En los textos largos, escribe <b>**así**</b> para poner texto en negrita.</p>
+
+          <div class="rejilla rejilla--una-columna">
+            <!-- Solo Reconocimientos -->
+            <label data-modulos="agradecimientos">Título <input name="tituloDiploma" maxlength="24" /></label>
+            <label data-modulos="reconocimientos duelo agradecimientos placas">Nombre * <input name="nombre" required maxlength="60" /></label>
+            <label data-modulos="agradecimientos">Descripción *
+              <textarea name="descripcion" rows="9" required maxlength="700"
+                placeholder="Expresamos nuestro más sincero agradecimiento a…"></textarea>
+              <small class="contador"></small>
+            </label>
+            <label data-modulos="reconocimientos placas">Descripción *
+              <textarea id="descripcion-rec-individual" name="descripcion" rows="5" required maxlength="400"
+                placeholder="Por haber obtenido el **Primer Lugar** en la Facultad de Derecho…"></textarea>
+              <small class="contador"></small>
+            </label>
+
+            <!-- Solo Lugares -->
+            <!-- Solo se puede elegir de la lista (el servidor también lo valida) -->
+            <label data-modulos="lugares">Lugar obtenido *
+              <select name="puesto" required>
+                <option value="">Elige un lugar…</option>
+                <option>Primer Lugar</option>
+                <option>Segundo Lugar</option>
+                <option>Tercer Lugar</option>
+                <option>Cuarto Lugar</option>
+                <option>Quinto Lugar</option>
+                <option>Sexto Lugar</option>
+                <option>Séptimo Lugar</option>
+                <option>Mención Honorífica</option>
+              </select>
+            </label>
+            <label data-modulos="lugares">Evento *
+              <input name="evento" required maxlength="70" placeholder="Ej. Concurso de Oratoria 2026" />
+            </label>
+            <label data-modulos="lugares">Descripción *
+              <textarea id="descripcion-lug-individual" name="descripcion" rows="3" required maxlength="200"
+                placeholder="Por su destacada participación y excelente desempeño."></textarea>
+              <small class="contador"></small>
+            </label>
+            <p class="nota" data-modulos="reconocimientos lugares agradecimientos placas">
+              Para escribir otro párrafo, pulsa Enter. Si el texto no cabe en el diploma, te avisará al generarlo.
+            </p>
+
+            <!-- Solo Nota de duelo -->
+            <p class="nota" data-modulos="duelo">Los textos ya vienen escritos (en gris). {nombre} se cambia por el nombre de la persona.</p>
+            <label data-modulos="duelo">Punto 1 · Anuncio
+              <textarea name="anuncio" rows="5" maxlength="600"></textarea>
+              <small class="contador"></small>
+            </label>
+            <label data-modulos="duelo">Punto 2 · Exhortación
+              <textarea name="exhortacion" rows="3" maxlength="300"></textarea>
+              <small class="contador"></small>
+            </label>
+            <label data-modulos="duelo">Punto 3 · Condolencias
+              <textarea name="condolencias" rows="3" maxlength="300"></textarea>
+              <small class="contador"></small>
+            </label>
+            <label data-modulos="duelo">Despedida
+              <textarea name="despedida" rows="2" maxlength="250"></textarea>
+              <small class="contador"></small>
+            </label>
+
+            <!-- Comunes -->
+            <label data-modulos="reconocimientos lugares agradecimientos placas">Campus (opcional) <input name="campus" maxlength="40" placeholder="Ej. Campus Santa Clara" /></label>
+            <label data-modulos="reconocimientos lugares duelo placas">Lugar <input name="lugar" maxlength="50" /></label>
+            <label>Fecha <input name="fecha" maxlength="30" /></label>
+            <label data-modulos="reconocimientos lugares placas">Firmante 1 <input name="firmante1" maxlength="45" /></label>
+            <label data-modulos="reconocimientos lugares placas">Cargo 1 <input name="cargo1" maxlength="45" /></label>
+            <label data-modulos="reconocimientos lugares placas">Firmante 2 <input name="firmante2" maxlength="45" /></label>
+            <label data-modulos="reconocimientos lugares placas">Cargo 2 <input name="cargo2" maxlength="45" /></label>
+            <details class="opcional" data-modulos="reconocimientos lugares placas">
+              <summary>Agregar tercera firma (opcional)</summary>
+              <p class="nota" data-modulos="reconocimientos lugares">Aparece al centro, un poco más arriba que las otras dos.</p>
+              <p class="nota" data-modulos="placas">Aparece al centro, en la misma fila que las otras dos.</p>
+              <label>Firmante 3 <input name="firmante3" maxlength="45" /></label>
+              <label>Cargo 3 <input name="cargo3" maxlength="45" /></label>
+            </details>
+          </div>
+
+          <div class="acciones">
+            <button type="button" id="boton-vista" class="boton">Vista previa</button>
+            <button type="button" id="boton-imagen" class="boton" data-modulos="duelo agradecimientos placas">Descargar imagen (PNG)</button>
+            <button type="submit" class="boton boton--principal">Descargar PDF</button>
+          </div>
+          <p id="mensaje-individual" class="mensaje"></p>
+        </form>
+
+        <div class="vista">
+          <!-- El texto va DETRÁS del iframe: cuando carga el PDF, lo tapa -->
+          <p id="vista-vacia" class="vista__vacia">La vista previa aparecerá aquí</p>
+          <iframe id="vista-pdf" title="Vista previa del diploma"></iframe>
+        </div>
+      </div>
+    </section>
+
+    </div> <!-- fin del generador -->
+
+  </main>
+
+  <!-- ==================== PIE DE PÁGINA ====================
+       Cambia aquí los textos y enlaces del pie. Puedes agregar o quitar
+       líneas <p> y enlaces <a> libremente; los estilos están en
+       estilos.css, en "Pie de página".
+       El año se pone solo (ver "anio-actual" en app.js). -->
+  <footer class="pie">
+    <div class="pie__contenido">
+      <div class="pie__marca">
+        <img class="pie__logo" src="img/logo-unicah.png" alt="" />
+        <div>
+          <p class="pie__titulo">Universidad Católica de Honduras</p>
+          <p>"Nuestra Señora Reina de la Paz"</p>
+          <p>Campus Santa Clara · Juticalpa, Olancho</p>
+        </div>
+      </div>
+
+      <div class="pie__enlaces">
+        <a href="https://www.unicah.edu" target="_blank" rel="noopener">Sitio web de UNICAH</a>
+      </div>
+
+      <div class="pie__derechos">
+        <p>© <span id="anio-actual">2026</span> UNICAH · Generador de Diplomas</p>
+        <p>Desarrollado por: <strong>Tu nombre o departamento</strong></p>
+      </div>
+    </div>
+  </footer>
+
+  <script src="js/app.js"></script>
+</body>
+</html>
