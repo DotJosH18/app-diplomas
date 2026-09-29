@@ -13,12 +13,13 @@ import appConfig from '../config/app.config.js';
  * Devuelve la PRIMERA página del PDF como imagen PNG (Buffer).
  *
  * @param {Buffer} archivoPDF
+ * @param {number} escala  cuántas veces más grande que el PDF (opcional).
+ *   Ej. hoja de 612 x 720 puntos con escala 3 -> imagen de 1836 x 2160 píxeles.
+ *   Si no se pasa, se usa la del .env (IMAGEN_ESCALA). Las miniaturas usan 1.
  * @returns {Promise<Buffer>}
  */
-export async function pdfAImagen(archivoPDF) {
-  // "escala" = cuántas veces más grande que el PDF.
-  // Ej. hoja de 612 x 720 puntos con escala 3 -> imagen de 1836 x 2160 píxeles
-  const documento = await pdf(archivoPDF, { scale: appConfig.imagen.escala });
+export async function pdfAImagen(archivoPDF, escala = appConfig.imagen.escala) {
+  const documento = await pdf(archivoPDF, { scale: escala });
 
   // documento.getPage(1) = la página 1 ya convertida en PNG
   const imagen = await documento.getPage(1);

@@ -90,7 +90,7 @@ const dueloConfig = {
 
   // Fila de ejemplo del Excel modelo
   ejemploExcel: {
-    nombre: 'Nombre Apellido',
+    nombre: 'Olvin Alexander Mejía Solís',
     anuncio: 'Con el corazón entristecido, confirmamos el fallecimiento de **{nombre}**.',
   },
 };

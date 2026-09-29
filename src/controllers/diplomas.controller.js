@@ -95,6 +95,42 @@ export async function generarImagen(req, res) {
 }
 
 /**
+ * POST /api/:modulo/miniatura
+ * Imagen PEQUEÑA del documento, para la vista previa de "Personalizar diseño".
+ *
+ * Usa los datos de ejemplo del módulo (los del Excel modelo) y, encima, lo que
+ * el usuario ya escribió en el formulario. Si con eso algo no es válido
+ * (por ejemplo, falta un campo), usa solo el ejemplo: la miniatura siempre sale.
+ */
+export async function generarMiniatura(req, res) {
+  const modulo = req.modulo;
+  const ejemplo = modulo.config.ejemploExcel;
+
+  // 1. Ejemplo + lo que escribió el usuario (solo los campos con texto)
+  const datos = { ...ejemplo };
+  const escritos = req.body || {};
+  for (const campo in escritos) {
+    const valor = escritos[campo];
+    if (typeof valor === 'string' && valor.trim() !== '') {
+      datos[campo] = valor;
+    }
+  }
+
+  // 2. Se valida; si no pasa, se usa solo el ejemplo
+  let resultado = validarConEsquema(modulo.esquema, datos);
+  if (!resultado.valido) {
+    resultado = validarConEsquema(modulo.esquema, ejemplo);
+  }
+
+  // 3. PDF -> imagen pequeña (escala 1 = un píxel por punto)
+  const pdf = await generarPDF(modulo, resultado.diploma, req.personalizacion);
+  const imagen = await pdfAImagen(pdf, 1);
+
+  res.type('png');
+  res.send(imagen);
+}
+
+/**
  * POST /api/:modulo/excel/revisar
  * Responde cómo quedará cada fila del Excel, SIN generar PDFs.
  * La página lo usa para mostrar la tabla antes de generar.

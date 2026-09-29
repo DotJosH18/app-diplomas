@@ -5,6 +5,7 @@
 //    POST /api/reconocimientos         → un diploma
 //    POST /api/lugares/excel           → varios desde Excel
 //    POST /api/duelo/imagen            → uno, como imagen PNG
+//    POST /api/placas/miniatura        → imagen pequeña para "Personalizar"
 //
 //  Cuando una ruta tiene varias funciones, se ejecutan EN ORDEN.
 //  Ejemplo:  router.post('/', validarDiploma, generarUno)
@@ -15,6 +16,7 @@ import { Router } from 'express';
 import {
   generarUno,
   generarImagen,
+  generarMiniatura,
   revisarExcel,
   generarDesdeExcel,
   descargarModelo,
@@ -34,6 +36,9 @@ router.use(buscarModulo);
 // Un diploma: recibe los datos (y un logo opcional), revisa la
 // personalización, valida los datos y genera el PDF
 router.post('/', subirArchivos, leerPersonalizacion, validarDiploma, generarUno);
+
+// Miniatura para la vista previa de "Personalizar diseño" (todos los módulos)
+router.post('/miniatura', subirArchivos, leerPersonalizacion, generarMiniatura);
 
 // Lo mismo, pero como imagen PNG (solo módulos con "descargaImagen: true")
 router.post('/imagen', permiteImagen, subirArchivos, leerPersonalizacion, validarDiploma, generarImagen);

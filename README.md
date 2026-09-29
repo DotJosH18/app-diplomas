@@ -236,9 +236,12 @@ No hace falta tocar `app.js`: la página muestra u oculta cada campo según su `
 
 En el generador, **"Personalizar diseño"** permite elegir:
 
+- **Vista en miniatura:** a la izquierda del panel se ve el documento real del módulo elegido.
+  - La dibuja el servidor (`POST /api/:modulo/miniatura`) con los datos de ejemplo del módulo, o con lo que ya escribiste en "Uno a la vez".
+  - Se actualiza sola, un momento después de cambiar el color, el encabezado, el título, el logo o los datos del formulario.
+  - Solo se pide mientras el panel está abierto.
 - **Color de la banda:**
   - Hay 7 colores rápidos, o puedes elegir cualquier otro con el círculo arcoíris.
-  - La vista en miniatura cambia al momento.
 - **Encabezado** (Reconocimientos y Lugares): las 2 líneas de arriba del diploma, "UNIVERSIDAD CATÓLICA DE HONDURAS" y "NUESTRA SEÑORA REINA DE LA PAZ".
   - Cada línea acepta máximo 45 caracteres y siempre sale en mayúsculas.
   - Si una línea es larga, su letra se achica para que quepa en una sola línea.
@@ -308,6 +311,15 @@ pdf.service            dibujarBarraLateral usa el color y el logo, y dibujarEnca
 - **Descargar como imagen:** también tiene el botón "Descargar imagen (PNG)".
 - **Dónde cambiar textos fijos, colores, posiciones, tamaños y el marco:** en `src/modulos/agradecimientos/agradecimientos.config.js`.
 - **Letras:** Cormorant Garamond (título, nombre y pie), Fondamento (descripción) y Montserrat (CONCEDIDO A y fecha). Fondamento no tiene negrita, por eso la negrita se dibuja repasando el borde de las letras (`grosorNegrita` en `escribirJustificado`).
+
+## Pestañas y vista previa del Excel
+
+- **Orden de las pestañas:** primero **"Uno a la vez"** (se abre por defecto) y después **"Desde Excel"**.
+- **Vista previa de cada fila del Excel:** en la tabla de revisión, cada fila sin errores tiene un botón **Ver**.
+  - **Qué muestra:** abre una ventana grande con el PDF de esa fila, tal como quedará: con los datos comunes y la personalización.
+  - **Moverse entre filas:** con **← Anterior** y **Siguiente →**, o con las flechas del teclado.
+  - **Cerrar:** con **Cerrar** o con Esc.
+  - **Dónde está:** la ventana es un `<dialog>` en `index.html` (`ventana-vista`). Su código está en `app.js`, en "Ventana de vista previa de las filas".
 
 ## Encabezado y pie de la página
 
@@ -420,6 +432,7 @@ esquema (descripcionQueCabe)                    PDF (dibujarCuerpo / dibujarPagi
 | GET    | `/api/configuracion`                 | Valores por defecto de los campos comunes             |
 | POST   | `/api/:modulo`                       | Datos (JSON o formulario) → PDF (`?vista=1` para verlo en el navegador) |
 | POST   | `/api/:modulo/imagen`                | Datos → imagen PNG (solo módulos con `descargaImagen: true`, como `duelo`) |
+| POST   | `/api/:modulo/miniatura`             | Personalización (y datos, opcionales) → imagen pequeña para "Personalizar diseño" |
 | GET    | `/api/:modulo/excel/modelo`          | Descarga el Excel modelo del módulo                   |
 | POST   | `/api/:modulo/excel/revisar`         | Excel → cómo quedará cada fila (sin generar PDF)      |
 | POST   | `/api/:modulo/excel`                 | Excel → un solo PDF con todos los diplomas            |

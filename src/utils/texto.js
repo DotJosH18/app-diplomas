@@ -46,3 +46,16 @@ export function nombreArchivoPDF(prefijo, nombre, extension = 'pdf') {
   const limpio = conGuiones.replace(/^_+|_+$/g, '');           // quita '_' del inicio y del final
   return `${prefijo}_${limpio || 'diploma'}.${extension}`;
 }
+
+/**
+ * Quita los ** (marcas de negrita) de un texto, para mostrarlo en la tabla.
+ * Si el dato no existe (una fila del Excel con esa celda vacía), devuelve ''.
+ * Así la tabla de revisión nunca falla por un dato que falta.
+ * Ejemplo: sinNegritas('Por el **Primer Lugar**') -> 'Por el Primer Lugar'
+ */
+export function sinNegritas(texto) {
+  if (typeof texto !== 'string') {
+    return '';
+  }
+  return texto.replaceAll('**', '');
+}

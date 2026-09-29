@@ -96,7 +96,7 @@ const placasConfig = {
   },
 
   ejemploExcel: {
-    nombre: 'Nombre Apellido',
+    nombre: 'Diana Gabriela García',
     descripcion: 'Por haber obtenido el **Primer Lugar** en la Facultad de Derecho, alcanzando un índice académico del **99.12%**.',
   },
 };

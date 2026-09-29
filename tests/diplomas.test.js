@@ -543,3 +543,29 @@ test('placas también se descarga como imagen PNG', async () => {
     .expect(200)
     .expect('Content-Type', /png/);
 });
+
+// ---------- Filas incompletas del Excel ----------
+
+test('una fila incompleta del Excel se marca con error y no rompe la revisión (todos los módulos)', async () => {
+  const { modulos } = await import('../src/modulos/index.js');
+  for (const modulo of modulos) {
+    // Solo la columna obligatoria, con un valor que deja la fila incompleta o inválida
+    const encabezado = modulo.config.columnasExcel[modulo.config.columnaObligatoria][0];
+    const excel = await crearExcel([[encabezado, 'Otra columna'], ['x', 'y'], ['', 'solo esto']]);
+    const res = await request(app)
+      .post(`/api/${modulo.id}/excel/revisar`)
+      .attach('archivo', excel, 'prueba.xlsx');
+    assert.equal(res.status, 200, `${modulo.id}: ${JSON.stringify(res.body)}`);
+  }
+});
+
+test('POST /api/:modulo/miniatura devuelve una imagen, aunque falten datos', async () => {
+  const res = await request(app)
+    .post('/api/placas/miniatura')
+    .send({ colorBanda: '#7A1428' })
+    .buffer(true)
+    .parse(recibirArchivo)
+    .expect(200)
+    .expect('Content-Type', /png/);
+  assert.equal(res.body.readUInt32BE(16), 841); // escala 1: ancho de la hoja A4 horizontal (841.89 puntos)
+});

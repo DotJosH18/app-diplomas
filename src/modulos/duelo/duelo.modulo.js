@@ -4,6 +4,7 @@
 //  A diferencia de los diplomas, tiene "dibujarPagina": dibuja
 //  la página completa con su propio diseño.
 // =============================================================
+import { sinNegritas, limpiar } from '../../utils/texto.js';
 import config from './duelo.config.js';
 import { dueloSchema } from './duelo.schema.js';
 import { dibujarPagina } from './duelo.pdf.js';
@@ -22,7 +23,8 @@ const moduloDuelo = {
 
   // Texto corto que se muestra en la tabla de revisión del Excel
   resumen: function (nota) {
-    return nota.anuncio.replaceAll('{nombre}', nota.nombre).replaceAll('**', '');
+    // '' si la fila no trae anuncio o nombre (fila con errores)
+    return sinNegritas(nota.anuncio).replaceAll('{nombre}', limpiar(nota.nombre));
   },
 };
 

@@ -163,6 +163,28 @@ body > main { flex: 1; width: 100%; }
 .tabla .fila-error td { background: #fdf0ef; }
 .estado-ok { color: var(--verde); font-weight: 600; }
 .estado-error { color: var(--rojo); font-weight: 600; }
+.boton--chico { padding: 4px 12px; font-size: .78rem; }
+
+/* ---------- Ventana de vista previa (filas del Excel) ---------- */
+.ventana {
+  width: min(1100px, 94vw); height: 92vh; padding: 0; border: 0; border-radius: var(--radio);
+  box-shadow: 0 20px 60px #0000004d; overflow: hidden;
+}
+.ventana[open] { display: flex; flex-direction: column; }   /* solo cuando está abierta */
+.ventana::backdrop { background: #0b0f2f99; }               /* el fondo oscuro detrás */
+.ventana__barra {
+  display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap;
+  padding: 12px 16px; background: var(--azul); color: var(--blanco);
+}
+.ventana__titulo { font-size: .95rem; }
+.ventana__botones { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.ventana__botones .boton:not(.boton--principal) { background: var(--blanco); }
+.ventana__botones .boton:disabled { opacity: .45; cursor: default; }
+.ventana__botones .boton--principal { background: var(--dorado); border-color: var(--dorado); }
+.ventana__contador { font-size: .8rem; color: #c9cbe6; min-width: 56px; text-align: center; }
+.ventana__documento { position: relative; flex: 1; background: #e8e7ee; }
+.ventana__documento iframe { position: relative; z-index: 1; width: 100%; height: 100%; border: 0; }
+.ventana__cargando { position: absolute; inset: 0; z-index: 0; display: grid; place-items: center; margin: 0; color: var(--gris); }
 
 /* ---------- Formularios ---------- */
 .rejilla { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
@@ -233,74 +255,34 @@ body > main { flex: 1; width: 100%; }
 }
 
 .personalizar__contenido {
-  display: grid; grid-template-columns: 260px 1fr; gap: 28px; align-items: center;
+  display: grid; grid-template-columns: 380px 1fr; gap: 28px; align-items: start;
   padding: 8px 20px 20px; border-top: 1px solid var(--borde);
 }
 
-/* Vista en miniatura del diploma */
-.mini-diploma {
-  display: flex; aspect-ratio: 1.414; border-radius: 8px; overflow: hidden; margin-top: 12px;
-  box-shadow: 0 6px 20px #14185022, 0 0 0 1px var(--borde);
+/* Vista previa en miniatura (imagen que dibuja el servidor).
+   Mide lo mismo para hojas horizontales y verticales: la imagen se ajusta
+   dentro del cuadro sin deformarse (object-fit: contain). */
+.mini-vista {
+  position: relative; margin: 12px 0 0; height: 300px;
+  display: flex; align-items: center; justify-content: center;
+  background: #eceaf2; border-radius: 10px; padding: 12px;
 }
-.mini-diploma__banda {
-  width: 17%; background: var(--color-banda); display: grid; place-items: center; transition: background .25s;
+.mini-vista__imagen {
+  max-width: 100%; max-height: 100%; object-fit: contain;
+  box-shadow: 0 6px 20px #14185026, 0 0 0 1px var(--borde); background: var(--blanco);
+  transition: opacity .2s;
 }
-.mini-diploma__logo { width: 72%; max-height: 40%; object-fit: contain; }
-.mini-diploma__hoja {
-  flex: 1; background: var(--blanco); display: flex; flex-direction: column; align-items: center;
-  justify-content: center; gap: 7px; padding: 10px;
+/* Mientras se genera la nueva, la anterior se ve más clara */
+.mini-vista.cargando .mini-vista__imagen { opacity: .45; }
+.mini-vista__estado {
+  position: absolute; bottom: 8px; left: 0; right: 0; text-align: center;
+  font-size: .75rem; color: var(--gris);
 }
-.mini-diploma__linea { height: 4px; width: 55%; border-radius: 2px; background: #d9d8e2; }
-.mini-diploma__linea--larga { width: 75%; }
-.mini-diploma__linea--corta { width: 40%; }
-/* Encabezado de la miniatura: se ve en una línea; si es largo, termina en "…" */
-.mini-diploma__encabezado {
-  max-width: 100%; font-size: .5rem; letter-spacing: .03em; color: #2c2c38; text-transform: uppercase;
-  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-}
-.mini-diploma__encabezado--1 { font-size: .56rem; }
-.mini-diploma__nombre { font: 1.35rem 'Great Vibes', cursive; color: var(--dorado); line-height: 1; }
-.mini-diploma__firmas { display: flex; gap: 22%; width: 80%; justify-content: center; margin-top: 10px; }
-.mini-diploma__firmas span { height: 2px; flex: 1; background: #d9d8e2; }
-
-/* Vista en miniatura del comunicado de duelo (hoja vertical, como el PDF) */
-/* container-type: lo de adentro puede medirse en "cqw" (1cqw = 1% del ancho de la miniatura),
-   así todo crece o se achica junto con ella */
-.mini-comunicado {
-  container-type: inline-size; aspect-ratio: 612 / 720; width: 72%; justify-self: center; margin-top: 12px;
-  background: var(--blanco); border-radius: 8px; box-shadow: 0 6px 20px #14185022, 0 0 0 1px var(--borde);
-}
-.mini-comunicado__hoja {
-  display: flex; flex-direction: column; gap: 3.2cqw; height: 100%; padding: 6cqw 10.5cqw 8cqw;
-}
-/* Las medidas imitan las del PDF (hoja de 612 puntos de ancho, márgenes de 64 = 10.5%) */
-.mini-comunicado__encabezado {
-  display: flex; justify-content: space-between; align-items: center; gap: 3cqw; margin-bottom: 7cqw;
-}
-.mini-comunicado__encabezado > div { flex: 1; min-width: 0; }
-.mini-comunicado__titulo {
-  display: block; font: 800 5.6cqw/1.1 Montserrat, sans-serif; color: #1a1a1a;
-  text-transform: uppercase; white-space: nowrap; overflow: hidden;
-}
-/* Títulos largos: letra más pequeña (el PDF también la achica) */
-.mini-comunicado__titulo.mediano { font-size: 4.3cqw; }
-.mini-comunicado__titulo.largo { font-size: 3cqw; }
-.mini-comunicado__barra {
-  display: block; width: 20cqw; height: 1cqw; margin-top: 2cqw;
-  background: linear-gradient(to right, #3a3a3a 63%, #bdbdbd 63%);
-}
-.mini-comunicado__logo { width: 21cqw; height: 18cqw; object-fit: contain; }
-.mini-comunicado__linea { height: 1.1cqw; border-radius: 1cqw; background: #dcdbe3; }
-.mini-comunicado__linea--corta { width: 55%; }
-.mini-comunicado__espacio { height: 1.5cqw; }
-/* Lugar y fecha, abajo a la derecha */
-.mini-comunicado__pie { margin-top: auto; align-self: flex-end; width: 26%; display: flex; flex-direction: column; gap: 2cqw; }
-.mini-comunicado__pie .mini-comunicado__linea:first-child { background: #9d9ca6; }
 
 /* Campos de texto del panel (encabezado y título): en mayúsculas, como en el PDF */
 .campos-encabezado { display: flex; flex-direction: column; gap: 8px; }
 .campo-personalizar {
-  width: 100%; max-width: 340px; font: inherit; font-size: .95rem; text-transform: uppercase;
+  width: 100%; max-width: 400px; font: inherit; font-size: .95rem; text-transform: uppercase;
   padding: 9px 10px; border: 1px solid var(--borde); border-radius: 8px; background: var(--blanco);
 }
 .campo-personalizar:focus { outline: 2px solid var(--azul); outline-offset: -1px; }
@@ -351,15 +333,12 @@ body > main { flex: 1; width: 100%; }
 /* El comunicado tiene 3 botones (vista previa, imagen y PDF): uno debajo del otro, a todo lo ancho */
 [data-modulo="duelo"] .acciones { display: grid; grid-template-columns: 1fr; }
 
-/* Agradecimientos: hoja oficio vertical (612 x 1008) y 3 botones como el comunicado.
-   No tiene miniatura en "Personalizar" (solo el logo): una sola columna */
+/* Agradecimientos: hoja oficio vertical (612 x 1008) y 3 botones como el comunicado */
 [data-modulo="agradecimientos"] .vista { aspect-ratio: 612 / 1008; max-width: 500px; }
 [data-modulo="agradecimientos"] .acciones { display: grid; grid-template-columns: 1fr; }
-[data-modulo="agradecimientos"] .personalizar__contenido { grid-template-columns: 1fr; }
 
-/* Placas: 3 botones como el comunicado y sin miniatura en "Personalizar" */
+/* Placas: 3 botones como el comunicado */
 [data-modulo="placas"] .acciones { display: grid; grid-template-columns: 1fr; }
-[data-modulo="placas"] .personalizar__contenido { grid-template-columns: 1fr; }
 
 /* ---------- Pantallas pequeñas ---------- */
 @media (max-width: 1000px) {
@@ -367,7 +346,6 @@ body > main { flex: 1; width: 100%; }
 }
 @media (max-width: 800px) {
   .personalizar__contenido { grid-template-columns: 1fr; }
-  .mini-diploma { max-width: 320px; }
   .individual { grid-template-columns: 1fr; }
   .vista { position: relative; top: 0; }
 }

@@ -4,6 +4,7 @@
 //  Como el comunicado de duelo, tiene "dibujarPagina": dibuja
 //  la página completa con su propio diseño.
 // =============================================================
+import { sinNegritas } from '../../utils/texto.js';
 import config from './agradecimientos.config.js';
 import { agradecimientosSchema } from './agradecimientos.schema.js';
 import { dibujarPagina } from './agradecimientos.pdf.js';
@@ -22,7 +23,7 @@ const moduloAgradecimientos = {
 
   // Texto corto que se muestra en la tabla de revisión del Excel
   resumen: function (diploma) {
-    return diploma.descripcion.replaceAll('**', '');
+    return sinNegritas(diploma.descripcion); // '' si la fila no trae descripción
   },
 };
 

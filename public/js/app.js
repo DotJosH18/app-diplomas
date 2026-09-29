@@ -9,10 +9,10 @@
 //    1. Elementos de la página
 //    2. Funciones de ayuda
 //    3. Menú y módulos (Reconocimientos / Lugares)
-//    4. Pestañas
+//    4. Pestañas ("Uno a la vez" primero, luego "Desde Excel")
 //    5. Configuración (valores en gris y contador de caracteres)
-//    6. Personalizar (color de la banda y logo)
-//    7. Pestaña "Desde Excel"
+//    6. Personalizar (color, encabezado, título, logo y su vista en miniatura)
+//    7. Pestaña "Desde Excel" (con la ventana de vista previa de cada fila)
 //    8. Pestaña "Uno a la vez"
 //    9. Inicio
 // =============================================================
@@ -25,9 +25,6 @@ let archivoExcel = null;
 
 // Personalización (opcional). Vacío / null = diseño por defecto.
 const COLOR_POR_DEFECTO = '#141B5B';
-const LOGO_POR_DEFECTO = 'img/logo-unicah.png';
-const LOGO_DUELO_POR_DEFECTO = 'img/logo-duelo.png'; // el de blanco y negro
-const TITULO_POR_DEFECTO = 'COMUNICADO';
 let colorBanda = '';     // por ejemplo '#7A1428'
 let archivoLogo = null;  // el archivo de imagen que subió el usuario
 
@@ -59,14 +56,12 @@ const inputLogo = document.getElementById('input-logo');
 const botonLogo = document.getElementById('boton-logo');
 const botonQuitarLogo = document.getElementById('boton-quitar-logo');
 const textoNombreLogo = document.getElementById('nombre-logo');
-const imagenVistaLogo = document.getElementById('vista-logo');
 const inputTitulo = document.getElementById('input-titulo');
 const inputEncabezado1 = document.getElementById('input-encabezado1');
 const inputEncabezado2 = document.getElementById('input-encabezado2');
-const textoVistaEncabezado1 = document.getElementById('vista-encabezado1');
-const textoVistaEncabezado2 = document.getElementById('vista-encabezado2');
-const textoVistaTitulo = document.getElementById('vista-titulo');
-const imagenVistaLogoDuelo = document.getElementById('vista-logo-duelo');
+const cajaMiniVista = document.querySelector('.mini-vista');
+const imagenMiniVista = document.getElementById('mini-vista-imagen');
+const textoMiniVista = document.getElementById('mini-vista-estado');
 const botonRestablecer = document.getElementById('boton-restablecer');
 const mensajePersonalizar = document.getElementById('mensaje-personalizar');
 
@@ -82,6 +77,16 @@ const seccionRevision = document.getElementById('revision');
 const formComunes = document.getElementById('form-comunes');
 const cuerpoTabla = document.getElementById('tabla-filas');
 const botonGenerarExcel = document.getElementById('boton-generar-excel');
+
+// Ventana de vista previa de las filas del Excel
+const ventanaVista = document.getElementById('ventana-vista');
+const tituloVentana = document.getElementById('ventana-titulo');
+const contadorVentana = document.getElementById('ventana-contador');
+const botonAnterior = document.getElementById('ventana-anterior');
+const botonSiguiente = document.getElementById('ventana-siguiente');
+const botonCerrarVentana = document.getElementById('ventana-cerrar');
+const marcoVentana = document.getElementById('ventana-pdf');
+const textoCargandoVentana = document.getElementById('ventana-cargando');
 const mensajeExcel = document.getElementById('mensaje-excel');
 
 // Pestaña "Uno a la vez"
@@ -263,6 +268,10 @@ function cambiarModulo(idModulo) {
   if (archivoExcel !== null) {
     revisarExcel();
   }
+
+  // La miniatura de "Personalizar" ahora debe mostrar este módulo
+  imagenMiniVista.removeAttribute('src');
+  programarMiniVista();
 }
 
 /**
@@ -424,47 +433,16 @@ function elegirColor(color) {
       boton.classList.remove('activo');
     }
   }
+
+  programarMiniVista();
 }
 
-// ---------- Encabezado (las 2 líneas de arriba del diploma) ----------
+// ---------- Encabezado y título ----------
+// Al escribir, se actualiza la miniatura (ver "Vista en miniatura" más abajo)
 
-inputEncabezado1.addEventListener('input', actualizarVistaEncabezado);
-inputEncabezado2.addEventListener('input', actualizarVistaEncabezado);
-
-/** Copia las 2 líneas a la miniatura. Si una está vacía, muestra la de por defecto (el placeholder). */
-function actualizarVistaEncabezado() {
-  textoVistaEncabezado1.textContent = textoOPorDefecto(inputEncabezado1);
-  textoVistaEncabezado2.textContent = textoOPorDefecto(inputEncabezado2);
-}
-
-/** Lo que escribió el usuario, o el placeholder del campo si lo dejó vacío. */
-function textoOPorDefecto(campo) {
-  const texto = campo.value.trim();
-  if (texto === '') {
-    return campo.placeholder;
-  }
-  return texto;
-}
-
-// ---------- Título (solo el comunicado de duelo) ----------
-
-inputTitulo.addEventListener('input', actualizarVistaTitulo);
-
-/** Copia el título a la miniatura. Si es largo, le pone una clase para achicarlo. */
-function actualizarVistaTitulo() {
-  let titulo = inputTitulo.value.trim();
-  if (titulo === '') {
-    titulo = TITULO_POR_DEFECTO;
-  }
-  textoVistaTitulo.textContent = titulo;
-
-  textoVistaTitulo.classList.remove('mediano', 'largo');
-  if (titulo.length > 15) {
-    textoVistaTitulo.classList.add('largo');
-  } else if (titulo.length > 10) {
-    textoVistaTitulo.classList.add('mediano');
-  }
-}
+inputEncabezado1.addEventListener('input', programarMiniVista);
+inputEncabezado2.addEventListener('input', programarMiniVista);
+inputTitulo.addEventListener('input', programarMiniVista);
 
 // ---------- Logo ----------
 
@@ -491,33 +469,28 @@ inputLogo.addEventListener('change', function () {
   }
 
   archivoLogo = archivo;
-  const direccion = URL.createObjectURL(archivo);
-  imagenVistaLogo.src = direccion;      // miniatura del diploma
-  imagenVistaLogoDuelo.src = direccion; // miniatura del comunicado
   textoNombreLogo.textContent = archivo.name;
   mostrar(botonQuitarLogo);
   mostrarMensaje(mensajePersonalizar, '', 'normal');
+  programarMiniVista();
 });
 
 botonQuitarLogo.addEventListener('click', quitarLogo);
 
 function quitarLogo() {
   archivoLogo = null;
-  imagenVistaLogo.src = LOGO_POR_DEFECTO;
-  imagenVistaLogoDuelo.src = LOGO_DUELO_POR_DEFECTO;
   textoNombreLogo.textContent = 'Logo de UNICAH (por defecto)';
   ocultar(botonQuitarLogo);
+  programarMiniVista();
 }
 
 // ---------- Restablecer ----------
 
 botonRestablecer.addEventListener('click', function () {
-  elegirColor(COLOR_POR_DEFECTO);
   inputTitulo.value = '';
-  actualizarVistaTitulo();
   inputEncabezado1.value = '';
   inputEncabezado2.value = '';
-  actualizarVistaEncabezado();
+  elegirColor(COLOR_POR_DEFECTO);
   quitarLogo();
   mostrarMensaje(mensajePersonalizar, '', 'normal');
 });
@@ -546,6 +519,74 @@ function agregarPersonalizacion(envio) {
     envio.append('logo', archivoLogo);
   }
 }
+
+// ---------- Vista en miniatura ----------
+// El servidor dibuja el documento real (con datos de ejemplo, o con lo que ya
+// escribiste en "Uno a la vez") y devuelve una imagen pequeña.
+// Solo se pide cuando el panel "Personalizar" está abierto.
+
+let temporizadorMiniVista = null;
+let numeroDePeticion = 0; // para ignorar respuestas viejas si llegan tarde
+
+/**
+ * Pide la miniatura dentro de un momento. Si hay otro cambio antes
+ * (por ejemplo, mientras se escribe), se espera de nuevo: así no se
+ * hace una petición por cada tecla.
+ */
+function programarMiniVista() {
+  if (!panelPersonalizar.open) {
+    return; // el panel está cerrado: no hace falta
+  }
+  clearTimeout(temporizadorMiniVista);
+  temporizadorMiniVista = setTimeout(actualizarMiniVista, 350);
+}
+
+async function actualizarMiniVista() {
+  numeroDePeticion = numeroDePeticion + 1;
+  const estaPeticion = numeroDePeticion;
+
+  cajaMiniVista.classList.add('cargando');
+  textoMiniVista.textContent = 'Generando vista previa…';
+
+  // Lo que ya se escribió en "Uno a la vez" + la personalización
+  const envio = new FormData();
+  const datos = leerFormulario(formIndividual);
+  for (const nombreCampo in datos) {
+    envio.append(nombreCampo, datos[nombreCampo]);
+  }
+  agregarPersonalizacion(envio);
+
+  try {
+    const respuesta = await pedirAlServidor(`${urlDelModulo()}/miniatura`, { method: 'POST', body: envio });
+    const imagen = await respuesta.blob();
+
+    if (estaPeticion !== numeroDePeticion) {
+      return; // mientras tanto se pidió otra más nueva: esta ya no sirve
+    }
+    if (imagenMiniVista.src.startsWith('blob:')) {
+      URL.revokeObjectURL(imagenMiniVista.src); // libera la imagen anterior
+    }
+    imagenMiniVista.src = URL.createObjectURL(imagen);
+    textoMiniVista.textContent = '';
+  } catch (error) {
+    if (estaPeticion === numeroDePeticion) {
+      textoMiniVista.textContent = error.message;
+    }
+  }
+  if (estaPeticion === numeroDePeticion) {
+    cajaMiniVista.classList.remove('cargando');
+  }
+}
+
+// Al abrir el panel, se dibuja la miniatura
+panelPersonalizar.addEventListener('toggle', function () {
+  if (panelPersonalizar.open) {
+    actualizarMiniVista();
+  }
+});
+
+// Si escribes en "Uno a la vez" con el panel abierto, la miniatura también cambia
+formIndividual.addEventListener('input', programarMiniVista);
 
 
 // =============================================================
@@ -671,6 +712,14 @@ function mostrarRevision(resultado) {
 
   cuerpoTabla.innerHTML = ''; // borra la tabla anterior
 
+  // Las filas sin errores: son las que se pueden ver en la ventana de vista previa
+  filasParaVer = [];
+  for (const fila of resultado.filas) {
+    if (fila.errores.length === 0) {
+      filasParaVer.push(fila);
+    }
+  }
+
   for (const fila of resultado.filas) {
     const tr = document.createElement('tr');
     const tieneErrores = fila.errores.length > 0;
@@ -686,8 +735,10 @@ function mostrarRevision(resultado) {
 
     if (tieneErrores) {
       agregarCelda(tr, fila.errores.join('; '), 'estado-error');
+      agregarCelda(tr, '');
     } else {
       agregarCelda(tr, 'Lista', 'estado-ok');
+      agregarBotonVer(tr, filasParaVer.indexOf(fila));
     }
 
     cuerpoTabla.appendChild(tr);
@@ -695,6 +746,20 @@ function mostrarRevision(resultado) {
 
   botonGenerarExcel.disabled = resultado.validas === 0;
   botonGenerarExcel.textContent = `Generar PDF con ${resultado.validas} diploma(s)`;
+}
+
+/** Agrega la celda con el botón "Ver", que abre la vista previa de esa fila. */
+function agregarBotonVer(tr, posicion) {
+  const celda = document.createElement('td');
+  const boton = document.createElement('button');
+  boton.type = 'button';
+  boton.textContent = 'Ver';
+  boton.classList.add('boton', 'boton--chico');
+  boton.addEventListener('click', function () {
+    abrirVentanaVista(posicion);
+  });
+  celda.appendChild(boton);
+  tr.appendChild(celda);
 }
 
 /** Agrega una celda <td> con texto a una fila de la tabla. */
@@ -709,6 +774,77 @@ function agregarCelda(fila, texto, clase) {
   }
   fila.appendChild(celda);
 }
+
+// ---------- Ventana de vista previa de las filas ----------
+// Muestra el PDF de una fila del Excel, tal como quedará (con los datos
+// comunes y la personalización). Con Anterior / Siguiente se recorren
+// las filas sin errores.
+
+let filasParaVer = [];  // las filas sin errores de la última revisión
+let posicionEnVentana = 0;
+
+function abrirVentanaVista(posicion) {
+  posicionEnVentana = posicion;
+  ventanaVista.showModal(); // abre la ventana encima de la página
+  mostrarFilaEnVentana();
+}
+
+async function mostrarFilaEnVentana() {
+  const fila = filasParaVer[posicionEnVentana];
+  tituloVentana.textContent = `Fila ${fila.fila} · ${fila.principal}`;
+  contadorVentana.textContent = `${posicionEnVentana + 1} de ${filasParaVer.length}`;
+  botonAnterior.disabled = posicionEnVentana === 0;
+  botonSiguiente.disabled = posicionEnVentana === filasParaVer.length - 1;
+
+  marcoVentana.src = 'about:blank';
+  textoCargandoVentana.textContent = 'Generando vista previa…';
+
+  // Se envían los datos de la fila (ya revisados) y la personalización
+  const envio = new FormData();
+  for (const nombreCampo in fila.datos) {
+    envio.append(nombreCampo, fila.datos[nombreCampo]);
+  }
+  agregarPersonalizacion(envio);
+
+  try {
+    const respuesta = await pedirAlServidor(`${urlDelModulo()}?vista=1`, { method: 'POST', body: envio });
+    const pdf = await respuesta.blob();
+    marcoVentana.src = URL.createObjectURL(pdf) + '#toolbar=0&navpanes=0&view=Fit';
+  } catch (error) {
+    textoCargandoVentana.textContent = error.message;
+  }
+}
+
+botonAnterior.addEventListener('click', function () {
+  if (posicionEnVentana > 0) {
+    posicionEnVentana = posicionEnVentana - 1;
+    mostrarFilaEnVentana();
+  }
+});
+
+botonSiguiente.addEventListener('click', function () {
+  if (posicionEnVentana < filasParaVer.length - 1) {
+    posicionEnVentana = posicionEnVentana + 1;
+    mostrarFilaEnVentana();
+  }
+});
+
+botonCerrarVentana.addEventListener('click', function () {
+  ventanaVista.close();
+});
+
+// Con el teclado: flechas para moverse (Esc ya cierra la ventana solo).
+// Se escucha en toda la página porque el foco puede estar en cualquier parte.
+document.addEventListener('keydown', function (evento) {
+  if (!ventanaVista.open) {
+    return;
+  }
+  if (evento.key === 'ArrowLeft') {
+    botonAnterior.click();
+  } else if (evento.key === 'ArrowRight') {
+    botonSiguiente.click();
+  }
+});
 
 // Si cambian los datos comunes, se revisa de nuevo.
 // Se espera medio segundo sin escribir para no enviar una petición por cada tecla.

@@ -2,6 +2,7 @@
 //  MÓDULO RECONOCIMIENTOS
 //  Une las 3 piezas del módulo: configuración, esquema y PDF.
 // =============================================================
+import { sinNegritas } from '../../utils/texto.js';
 import config from './reconocimientos.config.js';
 import { reconocimientosSchema } from './reconocimientos.schema.js';
 import { dibujarCuerpo } from './reconocimientos.pdf.js';
@@ -20,7 +21,7 @@ const moduloReconocimientos = {
 
   // Texto corto que se muestra en la tabla de revisión del Excel
   resumen: function (diploma) {
-    return diploma.descripcion;
+    return sinNegritas(diploma.descripcion); // '' si la fila no trae descripción
   },
 };
 
