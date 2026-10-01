@@ -303,8 +303,12 @@ function empezarRecorrido(nombre) {
   }
 
   numeroDePaso = 0;
+  const yaEstabaAbierto = !capaRecorrido.classList.contains('oculto');
   mostrar(capaRecorrido);
   mostrarPaso();
+  if (!yaEstabaAbierto) {
+    requestAnimationFrame(seguirAlElemento); // empieza a seguir al elemento
+  }
   botonSiguiente.focus();
 }
 
@@ -369,11 +373,16 @@ function mostrarPaso() {
     iconoSiguiente.textContent = 'arrow_forward';
   }
 
-  // Lleva el elemento al centro de la pantalla y, ya quieto, lo resalta
+  // Lleva el elemento al centro de la pantalla. De resaltarlo se encarga
+  // seguirAlElemento(), que revisa su posición todo el tiempo.
   elemento.scrollIntoView({ block: 'center', behavior: 'instant' });
-  requestAnimationFrame(function () {
-    ubicarFocoYGlobo(elemento);
-  });
+
+  // Al cambiar de paso, el hueco y el globo se deslizan (ver estilos.css)
+  capaRecorrido.classList.add('cambiando-paso');
+  clearTimeout(temporizadorAnimacion);
+  temporizadorAnimacion = setTimeout(function () {
+    capaRecorrido.classList.remove('cambiando-paso');
+  }, 300);
 }
 
 /**
@@ -455,7 +464,7 @@ function terminarRecorrido() {
   pasosActuales = [];
 }
 
-/** Botones, teclado (flechas y Esc) y reacomodo si cambia el tamaño de la ventana. */
+/** Botones y teclado (flechas y Esc). */
 function prepararControlesDelRecorrido() {
   botonSiguiente.addEventListener('click', pasoSiguiente);
   botonAnterior.addEventListener('click', pasoAnterior);
@@ -474,30 +483,26 @@ function prepararControlesDelRecorrido() {
     }
   });
 
-  window.addEventListener('resize', reubicarAlMoverLaPagina);
-  // Si el usuario baja o sube la página durante el recorrido, el hueco y el
-  // globo siguen al elemento (antes se quedaban fijos en la pantalla).
-  window.addEventListener('scroll', reubicarAlMoverLaPagina, { passive: true });
 }
 
 let temporizadorAnimacion = null;
 
 /**
- * Vuelve a poner el hueco y el globo sobre el elemento del paso actual.
- * Mientras la página se mueve, se quita la animación (clase "sin-animacion")
- * para que el hueco siga al elemento sin quedarse atrás.
+ * Mantiene el hueco y el globo sobre el elemento del paso actual mientras
+ * el recorrido esté abierto. Se repite en cada cuadro de la pantalla
+ * (unas 60 veces por segundo) con requestAnimationFrame.
+ *
+ * Así siguen al elemento pase lo que pase: si se baja la página, si se
+ * mueve una tabla o una lista por dentro, si cambia el tamaño de la
+ * ventana o si algo carga y empuja el contenido.
  */
-function reubicarAlMoverLaPagina() {
+function seguirAlElemento() {
   if (capaRecorrido.classList.contains('oculto')) {
-    return; // no hay recorrido abierto
+    return; // el recorrido terminó: se deja de revisar
   }
-  capaRecorrido.classList.add('sin-animacion');
-  ubicarFocoYGlobo(document.querySelector(pasosActuales[numeroDePaso].elemento));
-
-  clearTimeout(temporizadorAnimacion);
-  temporizadorAnimacion = setTimeout(function () {
-    capaRecorrido.classList.remove('sin-animacion');
-  }, 200);
+  const elemento = document.querySelector(pasosActuales[numeroDePaso].elemento);
+  ubicarFocoYGlobo(elemento);
+  requestAnimationFrame(seguirAlElemento); // y otra vez en el próximo cuadro
 }
 
 

@@ -764,22 +764,22 @@ details[open] > summary .flecha-desplegable { transform: rotate(180deg); }
   width: var(--foco-ancho); height: var(--foco-alto);
   border-radius: 14px; outline: 3px solid var(--dorado-claro);
   box-shadow: 0 0 0 9999px #0b0f2fb3;   /* oscurece todo lo demás */
-  transition: left .25s, top .25s, width .25s, height .25s;
   pointer-events: none;
 }
 .recorrido__globo {
   position: absolute; left: var(--globo-x); top: var(--globo-y); width: min(380px, calc(100vw - 32px));
   padding: 18px 18px 14px; background: var(--superficie); border-radius: 20px; box-shadow: var(--sombra-alta);
-  transition: left .25s, top .25s;
 }
 .recorrido__paso { margin: 0; font-size: .7rem; font-weight: 700; color: var(--dorado); text-transform: uppercase; letter-spacing: .08em; }
 .recorrido__titulo { margin: 4px 0 6px; font-size: 1.05rem; color: var(--azul); }
 .recorrido__texto { margin: 0; font-size: .88rem; line-height: 1.55; color: var(--texto-suave); }
 .recorrido__botones { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 16px; }
 .recorrido__espacio { flex: 1; }
-#recorrido-anterior { width: 32px; padding: 0; }
-/* Mientras se baja la página, el hueco y el globo siguen al elemento sin animación */
-.recorrido.sin-animacion .recorrido__foco, .recorrido.sin-animacion .recorrido__globo { transition: none; }   /* solo la flecha */
+#recorrido-anterior { width: 32px; padding: 0; }   /* solo la flecha */
+/* Solo al cambiar de paso el hueco y el globo se deslizan (clase "cambiando-paso").
+   El resto del tiempo siguen al elemento sin animación, aunque se baje la página. */
+.recorrido.cambiando-paso .recorrido__foco { transition: left .25s, top .25s, width .25s, height .25s; }
+.recorrido.cambiando-paso .recorrido__globo { transition: left .25s, top .25s; }
 
 .bienvenida {
   position: fixed; right: 20px; bottom: 20px; z-index: 90; width: min(360px, calc(100vw - 32px));
