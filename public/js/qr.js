@@ -51,7 +51,6 @@ const botonDescargar = document.getElementById('qr-descargar');
 const botonCopiar = document.getElementById('qr-copiar');
 const botonRestablecer = document.getElementById('qr-restablecer');
 const mensajeQR = document.getElementById('mensaje-qr');
-const vistaEsquina = document.getElementById('qr-vista-esquina');
 const dibujosDeFormas = seccion.querySelectorAll('.forma-qr__dibujo');
 
 const LOGO_UNICAH = 'img/logo-qr.png'; // el logo de UNICAH que va al centro del QR (sin fondo)
@@ -270,6 +269,17 @@ function leerControl(control) {
  * plantilla o al restablecer), y muestra u oculta las opciones que dependen de otras.
  */
 function sincronizarControles() {
+  // Un centro cuadrado dentro de un marco redondo casi toca el marco y algunos
+  // celulares no lo leen: con el marco "Círculo", el centro cuadrado no se ofrece.
+  const centroCuadrado = seccion.querySelector('input[name="qr-esquina-centro"][value="cuadrado"]');
+  const marcoRedondo = diseno.esquinaMarco === 'circulo';
+  if (marcoRedondo && diseno.esquinaCentro === 'cuadrado') {
+    diseno.esquinaCentro = 'redondeado';
+  }
+  centroCuadrado.disabled = marcoRedondo;
+  centroCuadrado.closest('label').classList.toggle('apagado', marcoRedondo);
+  centroCuadrado.closest('label').title = marcoRedondo ? 'Con el marco círculo, el centro cuadrado no se leería bien' : '';
+
   for (const control of controles) {
     const valorActual = diseno[control.dataset.ajuste];
     if (control.type === 'radio') {
@@ -299,7 +309,6 @@ function sincronizarControles() {
  * Los dibujitos de cada opción de forma, con el color y el diseño actuales:
  *   puntos  -> un pedacito de QR con ese estilo de puntos
  *   esquina -> una esquina con ese marco (o ese centro) y lo demás como está
- * Y la esquina en grande ("Así quedan los 3 cuadros grandes").
  */
 function dibujarFormas() {
   for (const lugar of dibujosDeFormas) {
@@ -311,12 +320,11 @@ function dibujarFormas() {
       lugar.innerHTML = svgDeEsquina(conEstaOpcion);
     }
   }
-  vistaEsquina.innerHTML = svgDeEsquina(diseno);
 }
 
 /**
  * "Probar antes de elegir": al pasar el mouse por una forma o una plantilla,
- * el QR grande (y la esquina en grande) la muestran. Al salir, vuelve a lo elegido.
+ * el QR grande la muestra. Al salir, vuelve a lo elegido.
  */
 function prepararPruebaAlPasarElMouse() {
   for (const opcion of seccion.querySelectorAll('.forma-qr')) {
@@ -330,15 +338,10 @@ function prepararPruebaAlPasarElMouse() {
 
 /** Muestra el QR con unos cambios, sin guardarlos en "diseno". */
 function probarDiseno(cambios) {
-  const disenoDePrueba = { ...diseno, ...cambios };
-  vistaEsquina.innerHTML = svgDeEsquina(disenoDePrueba);
-  vistaEsquina.classList.add('probando');
-  dibujarQR(disenoDePrueba);
+  dibujarQR({ ...diseno, ...cambios });
 }
 
 function dejarDeProbar() {
-  vistaEsquina.innerHTML = svgDeEsquina(diseno);
-  vistaEsquina.classList.remove('probando');
   dibujarQR();
 }
 

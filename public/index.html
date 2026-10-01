@@ -353,32 +353,26 @@
             </div>
             <p class="nota nota-qr">Todos se leen con la cámara del celular. Los <b>cuadrados</b> son los más seguros con lectores antiguos.</p>
 
-            <p class="personalizar__etiqueta">Esquinas</p>
+            <p class="personalizar__etiqueta">Esquinas <small class="etiqueta-ayuda">· los 3 cuadros grandes</small></p>
+            <!-- Una fila por parte de la esquina: el nombre a la izquierda y sus 3 opciones -->
             <div class="esquinas-qr">
-              <!-- Una esquina en grande, tal como quedará -->
-              <div class="esquinas-qr__vista">
-                <span id="qr-vista-esquina" class="esquinas-qr__dibujo"></span>
-                <small>Así quedan los 3 cuadros grandes</small>
+              <span class="esquinas-qr__nombre" id="qr-nombre-marco">Marco</span>
+              <div class="formas-qr formas-qr--fila" role="radiogroup" aria-labelledby="qr-nombre-marco">
+                <label class="forma-qr"><input type="radio" name="qr-esquina-marco" value="cuadrada" data-ajuste="esquinaMarco" />
+                  <span><span class="forma-qr__dibujo" data-dibujo="esquina"></span>Cuadrado</span></label>
+                <label class="forma-qr"><input type="radio" name="qr-esquina-marco" value="redondeada" data-ajuste="esquinaMarco" />
+                  <span><span class="forma-qr__dibujo" data-dibujo="esquina"></span>Redondeado</span></label>
+                <label class="forma-qr"><input type="radio" name="qr-esquina-marco" value="circulo" data-ajuste="esquinaMarco" />
+                  <span><span class="forma-qr__dibujo" data-dibujo="esquina"></span>Círculo</span></label>
               </div>
-              <div class="esquinas-qr__opciones">
-                <p class="esquinas-qr__titulo">Marco</p>
-                <div class="formas-qr formas-qr--chicas" role="radiogroup" aria-label="Marco de las esquinas">
-                  <label class="forma-qr"><input type="radio" name="qr-esquina-marco" value="cuadrada" data-ajuste="esquinaMarco" />
-                    <span><span class="forma-qr__dibujo" data-dibujo="esquina"></span>Cuadrado</span></label>
-                  <label class="forma-qr"><input type="radio" name="qr-esquina-marco" value="redondeada" data-ajuste="esquinaMarco" />
-                    <span><span class="forma-qr__dibujo" data-dibujo="esquina"></span>Redondeado</span></label>
-                  <label class="forma-qr"><input type="radio" name="qr-esquina-marco" value="circulo" data-ajuste="esquinaMarco" />
-                    <span><span class="forma-qr__dibujo" data-dibujo="esquina"></span>Círculo</span></label>
-                </div>
-                <p class="esquinas-qr__titulo">Centro</p>
-                <div class="formas-qr formas-qr--chicas" role="radiogroup" aria-label="Centro de las esquinas">
-                  <label class="forma-qr"><input type="radio" name="qr-esquina-centro" value="cuadrado" data-ajuste="esquinaCentro" />
-                    <span><span class="forma-qr__dibujo" data-dibujo="esquina"></span>Cuadrado</span></label>
-                  <label class="forma-qr"><input type="radio" name="qr-esquina-centro" value="redondeado" data-ajuste="esquinaCentro" />
-                    <span><span class="forma-qr__dibujo" data-dibujo="esquina"></span>Redondeado</span></label>
-                  <label class="forma-qr"><input type="radio" name="qr-esquina-centro" value="punto" data-ajuste="esquinaCentro" />
-                    <span><span class="forma-qr__dibujo" data-dibujo="esquina"></span>Punto</span></label>
-                </div>
+              <span class="esquinas-qr__nombre" id="qr-nombre-centro">Centro</span>
+              <div class="formas-qr formas-qr--fila" role="radiogroup" aria-labelledby="qr-nombre-centro">
+                <label class="forma-qr"><input type="radio" name="qr-esquina-centro" value="cuadrado" data-ajuste="esquinaCentro" />
+                  <span><span class="forma-qr__dibujo" data-dibujo="esquina"></span>Cuadrado</span></label>
+                <label class="forma-qr"><input type="radio" name="qr-esquina-centro" value="redondeado" data-ajuste="esquinaCentro" />
+                  <span><span class="forma-qr__dibujo" data-dibujo="esquina"></span>Redondeado</span></label>
+                <label class="forma-qr"><input type="radio" name="qr-esquina-centro" value="punto" data-ajuste="esquinaCentro" />
+                  <span><span class="forma-qr__dibujo" data-dibujo="esquina"></span>Punto</span></label>
               </div>
             </div>
 
