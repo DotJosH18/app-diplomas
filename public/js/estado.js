@@ -6,7 +6,7 @@
 //  el servidor (src/modulos/<id>) y del data-modulo de su tarjeta.
 //
 //  EXPORTA                  LO IMPORTAN                               PARA
-//  obtenerModuloActual()    navegacion.js                             saber cuál está abierto
+//  obtenerModuloActual()    navegacion.js, ayuda.js                   saber cuál está abierto
 //  cambiarModuloActual(id)  navegacion.js                             al elegir otro módulo
 //  urlDelModulo()           personalizar.js, individual.js, excel.js  armar las direcciones de la API ('/api/placas'…)
 //

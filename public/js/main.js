@@ -16,6 +16,7 @@
 //    excel.js          pestaña "Desde Excel" (revisión, vista previa de filas, PDF con todas)
 //    configuracion.js  valores en gris (fecha de hoy…) y contadores de caracteres
 //    quitar-fondo.js   herramienta "Quitar fondo de logos"
+//    ayuda.js          manual de usuario (botón "? Ayuda") y recorrido guiado
 //
 //  Quién importa a quién (las flechas van hacia lo que se usa):
 //
@@ -23,6 +24,7 @@
 //                       ├──► individual  ──► personalizar
 //                       └──► excel       ──► personalizar
 //    main ──► configuracion, quitar-fondo ──► personalizar
+//    main ──► ayuda ──► navegacion, utilidades, estado
 //
 //  La regla de la página: JavaScript solo agrega o quita clases y pone
 //  variables CSS (--color-elegido…). Los estilos están en css/estilos.css.
@@ -33,12 +35,14 @@ import { iniciarIndividual } from './individual.js';
 import { iniciarExcel, mostrarErrorDeExcel } from './excel.js';
 import { iniciarConfiguracion } from './configuracion.js';
 import { iniciarQuitarFondo } from './quitar-fondo.js';
+import { iniciarAyuda } from './ayuda.js';
 
 iniciarPersonalizar();   // primero: los demás le envían lo elegido al generar
 iniciarIndividual();
 iniciarExcel();
 iniciarQuitarFondo();
 iniciarNavegacion();     // la página empieza en el menú
+iniciarAyuda();          // botón "? Ayuda", manual y recorrido guiado
 
 // Año actual en el pie de página: © 2026, © 2027…
 document.getElementById('anio-actual').textContent = new Date().getFullYear();

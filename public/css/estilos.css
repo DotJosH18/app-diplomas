@@ -435,6 +435,100 @@ body > main { flex: 1; width: 100%; }
 /* Placas: 3 botones como el comunicado */
 [data-modulo="placas"] .acciones { display: grid; grid-template-columns: 1fr; }
 
+/* ---------- Botón "? Ayuda" (encabezado) ---------- */
+.encabezado__acciones { display: flex; align-items: center; gap: 10px; }
+.boton-ayuda {
+  display: flex; align-items: center; gap: 8px; padding: 8px 14px 8px 8px; cursor: pointer;
+  font: 600 .88rem Montserrat, sans-serif; color: var(--blanco);
+  background: #ffffff14; border: 1px solid #ffffff26; border-radius: 12px; transition: background .15s;
+}
+.boton-ayuda:hover { background: #ffffff26; }
+.boton-ayuda:focus-visible { outline: 2px solid var(--dorado-claro); outline-offset: 2px; }
+.boton-ayuda__icono {
+  display: grid; place-items: center; width: 26px; height: 26px; border-radius: 50%;
+  background: var(--dorado-claro); color: var(--azul); font-weight: 800;
+}
+
+/* ---------- Manual de usuario (ventana) ---------- */
+.manual {
+  width: min(760px, 94vw); max-height: 88vh; padding: 0; border: 0; border-radius: var(--radio);
+  box-shadow: 0 20px 60px #0000004d; color: var(--texto);
+}
+.manual[open] { display: flex; flex-direction: column; }
+.manual::backdrop { background: #0b0f2f99; }
+.manual__barra {
+  display: flex; justify-content: space-between; align-items: center; gap: 12px;
+  padding: 14px 20px; background: var(--azul); color: var(--blanco);
+}
+.manual__titulo { margin: 0; font-size: 1.1rem; }
+.manual__cerrar {
+  width: 34px; height: 34px; border-radius: 50%; border: 0; cursor: pointer;
+  background: #ffffff1f; color: var(--blanco); font-size: 1rem;
+}
+.manual__cerrar:hover { background: #ffffff38; }
+.manual__contenido { overflow-y: auto; padding: 18px 20px 22px; }
+.manual__inicio {
+  display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap;
+  padding: 14px 16px; background: #fbf8ec; border: 1px solid #ecdfae; border-radius: 10px;
+}
+.manual__inicio p { margin: 2px 0 0; font-size: .85rem; color: var(--gris); }
+.manual__resumen { margin: 16px 0 12px; font-size: .9rem; }
+.manual__seccion { border: 1px solid var(--borde); border-radius: 10px; background: var(--blanco); }
+.manual__seccion + .manual__seccion { margin-top: 8px; }
+.manual__seccion summary {
+  display: flex; align-items: center; gap: 12px; padding: 12px 14px; cursor: pointer;
+  font-weight: 700; color: var(--azul); list-style: none; border-radius: 10px;
+}
+.manual__seccion summary::-webkit-details-marker { display: none; }
+.manual__seccion summary:hover { background: var(--fondo); }
+.manual__seccion summary::after { content: '▾'; display: inline-block; margin-left: auto; color: var(--gris); transition: transform .2s; }
+.manual__seccion[open] summary::after { transform: rotate(180deg); }
+.manual__numero {
+  display: grid; place-items: center; width: 26px; height: 26px; flex-shrink: 0; border-radius: 50%;
+  background: var(--azul); color: var(--blanco); font-size: .8rem;
+}
+.manual__seccion ol, .manual__seccion ul { margin: 0; padding: 0 16px 6px 54px; font-size: .88rem; line-height: 1.6; }
+.manual__seccion li + li { margin-top: 4px; }
+.manual__seccion > .boton { margin: 6px 0 14px 54px; }
+.manual__seccion code { background: var(--fondo); padding: 1px 5px; border-radius: 4px; }
+.manual__preguntas { margin: 0; padding: 0 16px 14px 54px; font-size: .88rem; }
+.manual__preguntas dt { font-weight: 700; margin-top: 10px; }
+.manual__preguntas dd { margin: 2px 0 0; color: var(--gris); }
+
+/* ---------- Recorrido guiado ----------
+   JavaScript pone la posición del elemento que se explica en variables CSS:
+   --foco-x, --foco-y, --foco-ancho, --foco-alto (el "hueco") y
+   --globo-x, --globo-y (dónde va el globo con el texto). */
+.recorrido { position: fixed; inset: 0; z-index: 100; }
+.recorrido__foco {
+  position: absolute; left: var(--foco-x); top: var(--foco-y);
+  width: var(--foco-ancho); height: var(--foco-alto);
+  border-radius: 12px; outline: 3px solid var(--dorado-claro);
+  box-shadow: 0 0 0 9999px #0b0f2fb3;   /* oscurece todo lo demás */
+  transition: left .25s, top .25s, width .25s, height .25s;
+  pointer-events: none;
+}
+.recorrido__globo {
+  position: absolute; left: var(--globo-x); top: var(--globo-y); width: min(380px, calc(100vw - 32px));
+  padding: 16px 18px; background: var(--blanco); border-radius: 12px; box-shadow: 0 16px 40px #0000004d;
+  transition: left .25s, top .25s;
+}
+.recorrido__paso { margin: 0; font-size: .72rem; font-weight: 700; color: var(--dorado); text-transform: uppercase; letter-spacing: .08em; }
+.recorrido__titulo { margin: 4px 0 6px; font-size: 1rem; color: var(--azul); }
+.recorrido__texto { margin: 0; font-size: .88rem; line-height: 1.5; color: var(--texto); }
+.recorrido__botones { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 14px; }
+.recorrido__botones .boton { white-space: nowrap; padding: 6px 12px; }
+.recorrido__espacio { flex: 1; }
+
+/* ---------- Aviso de bienvenida ---------- */
+.bienvenida {
+  position: fixed; right: 20px; bottom: 20px; z-index: 90; width: min(340px, calc(100vw - 32px));
+  padding: 14px 16px; background: var(--blanco); border-radius: 12px;
+  box-shadow: 0 12px 34px #0b0f2f40, 0 0 0 1px var(--borde); border-left: 4px solid var(--dorado);
+}
+.bienvenida p { margin: 0; font-size: .88rem; }
+.bienvenida__botones { display: flex; justify-content: flex-end; gap: 8px; margin-top: 10px; }
+
 /* ---------- Herramienta: quitar fondo de logos ---------- */
 .herramienta__intro { margin-bottom: 16px; }
 .herramienta__titulo { margin: 0 0 4px; color: var(--azul); font-size: 1.3rem; }
@@ -493,7 +587,12 @@ body > main { flex: 1; width: 100%; }
   .paletas { grid-template-columns: repeat(2, 1fr); }
   .menu__opciones { grid-template-columns: 1fr; }
   /* En celular el tipo elegido va en una sola línea (así el encabezado no cambia de alto) */
-  .navegacion { width: 100%; }
+  .encabezado__acciones { width: 100%; }
+  .navegacion { flex: 1; min-width: 0; }
+  .boton-ayuda { padding: 8px; }
+  .boton-ayuda__texto { display: none; }   /* en celular, solo el "?" */
+  .manual__seccion ol, .manual__seccion ul, .manual__preguntas { padding-left: 20px; }
+  .manual__seccion > .boton { margin-left: 20px; }
   .selector-modulo { flex: 1; min-width: 0; }
   .selector-modulo__actual { justify-content: space-between; }
   .selector-modulo__lista { width: calc(100vw - 32px); }

@@ -103,7 +103,8 @@ diplomas-app/
 │   │   ├── individual.js                 Pestaña "Uno a la vez"
 │   │   ├── excel.js                      Pestaña "Desde Excel"
 │   │   ├── configuracion.js              Valores en gris y contadores de caracteres
-│   │   └── quitar-fondo.js               Herramienta "Quitar fondo de logos"
+│   │   ├── quitar-fondo.js               Herramienta "Quitar fondo de logos"
+│   │   └── ayuda.js                      Manual de usuario ("? Ayuda") y recorrido guiado
 │   └── img/                              Muestras del menú y logo por defecto (vista previa)
 │
 ├── assets/                               Fuentes y logo por defecto del diploma (PNG con fondo transparente)
@@ -375,6 +376,29 @@ Es la última tarjeta del menú. No genera diplomas: deja un logo con **fondo tr
   4. **Recortar el espacio vacío:** quita el espacio transparente de alrededor.
 - **Descargar PNG:** baja el resultado.
 - **Usar como logo en los diplomas:** lo deja como el logo de "Personalizar diseño", igual que "Subir logo". Luego eliges un diploma y ya sale con ese logo.
+
+## Manual de usuario y recorrido guiado
+
+El botón **"? Ayuda"** (arriba a la derecha) abre el manual. Está pensado para quien usa la app, no para programadores.
+
+- **Manual:** 5 secciones cortas (elegir el tipo, uno a la vez, desde Excel, personalizar, quitar fondo), consejos y preguntas frecuentes. Al abrir una sección se cierran las demás. Su texto está en `public/index.html`, dentro de `<dialog id="manual">`: se cambia como cualquier HTML.
+- **Recorrido guiado:** cada sección tiene el botón **"Muéstrame dónde"**. La página se oscurece, se resalta la parte real que se explica y un globo dice qué hacer, paso a paso (Siguiente / Anterior, flechas del teclado, Esc para salir). Si hace falta, lleva al usuario a la pantalla o pestaña correcta.
+- **"Recorrido de esta pantalla":** elige solo el recorrido de lo que se está viendo (menú, uno a la vez, Excel o la herramienta).
+- **Bienvenida:** la primera vez, abajo a la derecha aparece "¿Primera vez aquí?". Se recuerda en el navegador (`localStorage`) para no repetirla.
+- **Pasos inteligentes:** los pasos de algo que no se ve se saltan solos. Ejemplos: "Combinaciones listas" solo sale en Placas; "Sube tu Excel" ya no sale si ya subiste uno.
+
+**Cambiar o agregar pasos:** edita la lista `RECORRIDOS` al principio de `public/js/ayuda.js`. Cada paso es:
+
+```js
+{
+  elemento: '#boton-vista',          // qué se resalta (selector CSS)
+  titulo: 'Mira cómo queda',
+  texto: 'La vista previa aparece al lado, antes de descargar.',
+  soloSi: noHayExcelRevisado,        // (opcional) el paso sale solo si esto devuelve true
+}
+```
+
+Un módulo nuevo no necesita nada: usa los mismos formularios, así que los recorridos ya le sirven.
 
 ## Elegir colores
 

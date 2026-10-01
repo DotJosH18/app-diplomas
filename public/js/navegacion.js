@@ -19,8 +19,12 @@
 //  individualAlCambiarDeModulo               individual.js    borrar la vista previa del módulo anterior
 //  excelAlCambiarDeModulo                    excel.js         su Excel modelo y volver a revisar
 //
-//  EXPORTA              LO IMPORTA  PARA
-//  iniciarNavegacion()  main.js     arrancar esta parte
+//  EXPORTA                 LO IMPORTA  PARA
+//  iniciarNavegacion()     main.js     arrancar esta parte
+//  pantallaActual()        ayuda.js    saber qué se está viendo ('menu', 'generador', 'herramienta')
+//  abrirPorId(id)          ayuda.js    llevar al usuario a un módulo o herramienta para el recorrido
+//  volverAlInicio()        ayuda.js    llevarlo al menú
+//  mostrarPestana(idPanel) ayuda.js    abrir "Uno a la vez" o "Desde Excel"
 // =============================================================
 import { mostrar, ocultar } from './utilidades.js';
 import { obtenerModuloActual, cambiarModuloActual } from './estado.js';
@@ -111,7 +115,7 @@ function abrirHerramienta(idHerramienta, titulo) {
 }
 
 /** Vuelve al menú de tarjetas. */
-function volverAlInicio() {
+export function volverAlInicio() {
   mostrar(pantallaMenu);
   ocultar(pantallaGenerador);
   ocultar(pantallaHerramientaFondo);
@@ -145,6 +149,31 @@ function mostrarNavegacion(idAbierto, titulo, conPestanas) {
       opcion.removeAttribute('aria-current');
     }
   }
+}
+
+
+/**
+ * Abre un módulo o herramienta por su id, como si se hiciera clic en su tarjeta.
+ * Ej. abrirPorId('placas'), abrirPorId('quitar-fondo').
+ */
+export function abrirPorId(id) {
+  for (const tarjeta of tarjetasDelMenu) {
+    if (tarjeta.dataset.modulo === id || tarjeta.dataset.herramienta === id) {
+      abrirTarjeta(tarjeta);
+      return;
+    }
+  }
+}
+
+/** Qué pantalla se ve ahora: 'menu', 'generador' o 'herramienta'. */
+export function pantallaActual() {
+  if (!pantallaGenerador.classList.contains('oculto')) {
+    return 'generador';
+  }
+  if (!pantallaHerramientaFondo.classList.contains('oculto')) {
+    return 'herramienta';
+  }
+  return 'menu';
 }
 
 
@@ -254,24 +283,29 @@ function prepararCierreDeLaLista() {
 //  PESTAÑAS ("Uno a la vez" / "Desde Excel")
 // =============================================================
 
-/** Al hacer clic en una pestaña, se marca y se muestra solo su panel. */
+/** Al hacer clic en una pestaña, se muestra su panel. */
 function prepararPestanas() {
   for (const pestana of pestanas) {
     pestana.addEventListener('click', function () {
-      const idPanel = pestana.dataset.panel; // viene de data-panel="..." en el HTML
-
-      for (const otra of pestanas) {
-        otra.classList.remove('activa');
-      }
-      pestana.classList.add('activa');
-
-      for (const panel of paneles) {
-        if (panel.id === idPanel) {
-          panel.classList.add('activo');
-        } else {
-          panel.classList.remove('activo');
-        }
-      }
+      mostrarPestana(pestana.dataset.panel); // viene de data-panel="..." en el HTML
     });
+  }
+}
+
+/** Marca la pestaña de un panel ('panel-individual' o 'panel-excel') y muestra solo ese panel. */
+export function mostrarPestana(idPanel) {
+  for (const pestana of pestanas) {
+    if (pestana.dataset.panel === idPanel) {
+      pestana.classList.add('activa');
+    } else {
+      pestana.classList.remove('activa');
+    }
+  }
+  for (const panel of paneles) {
+    if (panel.id === idPanel) {
+      panel.classList.add('activo');
+    } else {
+      panel.classList.remove('activo');
+    }
   }
 }

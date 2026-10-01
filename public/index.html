@@ -26,6 +26,7 @@
            - El nombre del módulo abre una lista para cambiar a otro directamente.
              Esa lista la arma navegacion.js copiando las tarjetas del menú, así
              un módulo nuevo aparece aquí solo con agregar su tarjeta. -->
+      <div class="encabezado__acciones">
       <nav id="navegacion" class="navegacion invisible" aria-label="Navegación">
         <button type="button" id="boton-inicio" class="navegacion__inicio">
           <span class="navegacion__icono" aria-hidden="true">⌂</span> Inicio
@@ -41,6 +42,12 @@
           </div>
         </details>
       </nav>
+
+      <!-- Ayuda: siempre visible. Abre el manual de usuario (ver ayuda.js) -->
+      <button type="button" id="boton-ayuda" class="boton-ayuda" title="Manual de usuario">
+        <span class="boton-ayuda__icono" aria-hidden="true">?</span><span class="boton-ayuda__texto">Ayuda</span>
+      </button>
+      </div>
     </div>
 
     <!-- Las pestañas solo se ven dentro del generador ("invisible" guarda su espacio
@@ -608,6 +615,136 @@
     </div> <!-- fin del generador -->
 
   </main>
+
+  <!-- ==================== MANUAL DE USUARIO ====================
+       Se abre con el botón "? Ayuda" del encabezado (ayuda.js).
+       Cada sección es un <details> (se abre al hacer clic en su título).
+       Los botones data-recorrido="…" inician el recorrido guiado de esa parte:
+       sus pasos están en ayuda.js, en la lista RECORRIDOS. -->
+  <dialog id="manual" class="manual" aria-labelledby="manual-titulo">
+    <div class="manual__barra">
+      <h2 id="manual-titulo" class="manual__titulo">Manual de usuario</h2>
+      <button type="button" id="manual-cerrar" class="manual__cerrar" aria-label="Cerrar">✕</button>
+    </div>
+
+    <div class="manual__contenido">
+      <!-- Lo más rápido: el recorrido de la pantalla en la que estás -->
+      <div class="manual__inicio">
+        <div>
+          <strong>¿Primera vez?</strong>
+          <p>Te mostramos, paso a paso y sobre la misma página, dónde está cada cosa. Toma 1 minuto.</p>
+        </div>
+        <button type="button" class="boton boton--principal" data-recorrido="automatico">▶ Recorrido de esta pantalla</button>
+      </div>
+
+      <p class="manual__resumen">Con esta aplicación generas <b>diplomas, placas, agradecimientos y comunicados en PDF</b>: uno a la vez, o muchos de una sola vez desde un Excel.</p>
+
+      <details class="manual__seccion" name="manual" open>
+        <summary><span class="manual__numero">1</span> Elegir qué vas a generar</summary>
+        <ol>
+          <li>En el inicio verás una <b>tarjeta por cada tipo</b> de documento. Cada una dice qué datos pide.</li>
+          <li>Haz clic en la que necesites.</li>
+          <li>Para cambiar de tipo después, usa el nombre que aparece arriba a la derecha (<b>Placas ▾</b>), o <b>⌂ Inicio</b> para volver a las tarjetas.</li>
+        </ol>
+        <button type="button" class="boton boton--chico" data-recorrido="menu">Muéstrame dónde</button>
+      </details>
+
+      <details class="manual__seccion" name="manual">
+        <summary><span class="manual__numero">2</span> Hacer uno a la vez</summary>
+        <ol>
+          <li>Abre la pestaña <b>Uno a la vez</b> (es la que aparece primero).</li>
+          <li>Llena los datos. Los que tienen <b>*</b> son obligatorios. Si dejas un campo vacío, se usa lo que se ve en gris (por ejemplo, la <b>fecha de hoy</b>).</li>
+          <li>Pulsa <b>Vista previa</b> para ver cómo queda.</li>
+          <li>Pulsa <b>Descargar PDF</b>. En algunos tipos también puedes <b>Descargar imagen (PNG)</b>, útil para redes sociales o WhatsApp.</li>
+        </ol>
+        <button type="button" class="boton boton--chico" data-recorrido="individual">Muéstrame dónde</button>
+      </details>
+
+      <details class="manual__seccion" name="manual">
+        <summary><span class="manual__numero">3</span> Hacer muchos desde Excel</summary>
+        <ol>
+          <li>Abre la pestaña <b>Desde Excel</b>.</li>
+          <li>Si no tienes un Excel listo, pulsa <b>Descargar Excel modelo</b>: ya trae las columnas correctas.</li>
+          <li>Llena una fila por persona y <b>arrastra el archivo</b> a la página (o haz clic para buscarlo).</li>
+          <li>Revisa la tabla: las filas <b>Listas</b> se van a generar; las que tienen errores dicen qué falta. Con <b>Ver</b> miras cada una antes.</li>
+          <li>En <b>Datos comunes</b> puedes poner lo que se repite (lugar, fecha, firmas) para no escribirlo en cada fila.</li>
+          <li>Pulsa <b>Generar PDF</b>: se descarga un solo archivo con una página por fila.</li>
+        </ol>
+        <button type="button" class="boton boton--chico" data-recorrido="excel">Muéstrame dónde</button>
+      </details>
+
+      <details class="manual__seccion" name="manual">
+        <summary><span class="manual__numero">4</span> Cambiar colores, textos y logo</summary>
+        <ol>
+          <li>Abre <b>Personalizar diseño</b> (arriba del formulario). Todo es opcional.</li>
+          <li>A la izquierda ves una <b>miniatura</b> que cambia mientras eliges.</li>
+          <li>Elige una <b>combinación lista</b> de colores, o ajusta cada color por separado.</li>
+          <li>Puedes cambiar el <b>encabezado</b> (las líneas de arriba), el <b>título</b> y subir otro <b>logo</b>.</li>
+          <li>Lo que elijas sirve para "Uno a la vez" y para el Excel. <b>Restablecer</b> vuelve a lo original.</li>
+        </ol>
+        <button type="button" class="boton boton--chico" data-recorrido="personalizar">Muéstrame dónde</button>
+      </details>
+
+      <details class="manual__seccion" name="manual">
+        <summary><span class="manual__numero">5</span> Quitar el fondo de un logo</summary>
+        <ol>
+          <li>En el inicio, elige la tarjeta <b>Quitar fondo de logos</b>.</li>
+          <li>Sube la imagen: el fondo se quita solo. Si algo no queda bien, mueve la <b>tolerancia</b> o haz clic sobre el fondo de la imagen original.</li>
+          <li>Pulsa <b>Usar como logo en los diplomas</b>, o <b>Descargar PNG</b> para guardarlo.</li>
+        </ol>
+        <button type="button" class="boton boton--chico" data-recorrido="herramienta">Muéstrame dónde</button>
+      </details>
+
+      <details class="manual__seccion" name="manual">
+        <summary><span class="manual__numero">★</span> Consejos</summary>
+        <ul>
+          <li>Escribe <code>**así**</code> para poner un texto en <b>negrita</b>.</li>
+          <li>Pulsa <b>Enter</b> para empezar otro párrafo (en el Excel: <b>Alt + Enter</b> dentro de la celda).</li>
+          <li>Si un texto no cabe en el documento, la página te avisa: acórtalo o usa menos párrafos.</li>
+          <li>El contador debajo de cada texto largo te dice cuántas letras te quedan.</li>
+        </ul>
+      </details>
+
+      <details class="manual__seccion" name="manual">
+        <summary><span class="manual__numero">?</span> Preguntas frecuentes</summary>
+        <dl class="manual__preguntas">
+          <dt>La página tarda en abrir la primera vez.</dt>
+          <dd>Es normal: si nadie la usa por un rato, el servidor gratuito se "duerme" y tarda cerca de un minuto en despertar.</dd>
+          <dt>Una fila del Excel sale con error.</dt>
+          <dd>La tabla dice qué falta en esa fila. Corrige el Excel y vuelve a subirlo, o completa el dato en "Datos comunes". Las demás filas se generan igual.</dd>
+          <dt>¿Se guardan mis datos o mi logo?</dt>
+          <dd>No. Los documentos se generan y se descargan al momento; no quedan guardados en el servidor.</dd>
+        </dl>
+      </details>
+    </div>
+  </dialog>
+
+  <!-- ==================== RECORRIDO GUIADO ====================
+       Una capa oscura con un "hueco" sobre el elemento que se explica
+       y un globo con el texto. Lo maneja ayuda.js. -->
+  <div id="recorrido" class="recorrido oculto" role="dialog" aria-modal="true" aria-labelledby="recorrido-titulo">
+    <div class="recorrido__foco" aria-hidden="true"></div>
+    <div class="recorrido__globo">
+      <p class="recorrido__paso"><span id="recorrido-numero"></span></p>
+      <h3 id="recorrido-titulo" class="recorrido__titulo"></h3>
+      <p id="recorrido-texto" class="recorrido__texto"></p>
+      <div class="recorrido__botones">
+        <button type="button" id="recorrido-salir" class="boton boton--texto">Salir</button>
+        <span class="recorrido__espacio"></span>
+        <button type="button" id="recorrido-anterior" class="boton boton--chico">← Anterior</button>
+        <button type="button" id="recorrido-siguiente" class="boton boton--chico boton--principal">Siguiente →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Aviso de bienvenida (solo la primera vez en este navegador) -->
+  <div id="bienvenida" class="bienvenida oculto" role="status">
+    <p><strong>¿Primera vez aquí?</strong> Te mostramos cómo funciona en 1 minuto.</p>
+    <div class="bienvenida__botones">
+      <button type="button" id="bienvenida-no" class="boton boton--texto">No, gracias</button>
+      <button type="button" id="bienvenida-si" class="boton boton--chico boton--principal">Ver recorrido</button>
+    </div>
+  </div>
 
   <!-- ==================== PIE DE PÁGINA ====================
        Cambia aquí los textos y enlaces del pie. Puedes agregar o quitar
