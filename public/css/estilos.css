@@ -208,6 +208,10 @@ details[open] > summary .flecha-desplegable { transform: rotate(180deg); }
     radial-gradient(900px 260px at 85% -40%, #E3C76633, transparent 70%),
     linear-gradient(120deg, #10164A 0%, #141B5B 45%, #222C86 100%);
   box-shadow: 0 1px 0 #E3C76655;
+  /* El encabezado va por ENCIMA del resto de la página: así la lista
+     "Cambiar a…" que se abre hacia abajo no queda tapada por la vista
+     previa ni por otras partes que también tienen posición propia. */
+  position: relative; z-index: 30;
 }
 .encabezado__contenido {
   max-width: var(--ancho-pagina); margin: auto; padding: 18px 16px 6px;
