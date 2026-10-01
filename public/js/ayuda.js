@@ -29,6 +29,7 @@
 //  abrirPorId                                navegacion.js  abrir el módulo o la herramienta del recorrido
 //  volverAlInicio                            navegacion.js  ir al menú para su recorrido
 //  mostrarPestana                            navegacion.js  abrir "Uno a la vez" o "Desde Excel"
+//  mostrarGrupoDelMenu                       navegacion.js  abrir la lengüeta "Documentos" del menú
 //  obtenerModuloActual                       estado.js      abrir el último módulo usado
 //  dibujarMagnus                             magnus.js      poner la cara de Magnus
 //  pasarEncima, presionar, escribirEjemplo,  magnus.js      lo que Magnus hace en cada paso (demostracion)
@@ -40,7 +41,7 @@
 //  iniciarAyuda()  main.js     arrancar esta parte
 // =============================================================
 import { mostrar, ocultar, cambiarTextoDelBoton } from './utilidades.js';
-import { pantallaActual, herramientaAbierta, abrirPorId, volverAlInicio, mostrarPestana } from './navegacion.js';
+import { pantallaActual, herramientaAbierta, abrirPorId, volverAlInicio, mostrarPestana, mostrarGrupoDelMenu } from './navegacion.js';
 import { obtenerModuloActual } from './estado.js';
 import {
   pasarEncima, presionar, escribirEjemplo, arrastrarArchivo, recorrerOpciones,
@@ -76,18 +77,19 @@ const CLAVE_BIENVENIDA = 'diplomas-ayuda-vista'; // se guarda en el navegador pa
 const RECORRIDOS = {
   menu: {
     pantalla: 'menu',
+    antes: function () { mostrarGrupoDelMenu('documentos'); }, // empieza en la lengüeta "Documentos"
     pasos: [
       {
         elemento: '.opcion',
         demostracion: pasarEncima,
         titulo: 'Elige qué vas a generar',
-        texto: '¡Hola, soy Magnus! Cada tarjeta es un tipo de documento y dice qué datos pide. Haz clic en la que necesites.',
+        texto: '¡Hola, soy Magnus! En "Documentos", cada tarjeta es un tipo de documento y dice qué datos pide. Haz clic en la que necesites.',
       },
       {
-        elemento: '[data-herramienta="quitar-fondo"]',
-        demostracion: pasarEncima,
-        titulo: '¿Tu logo tiene fondo blanco?',
-        texto: 'Aquí le quito el fondo a tu logo en segundos, ¡y queda listo para tus documentos!',
+        elemento: '#lengueta-herramientas',
+        demostracion: presionar,
+        titulo: 'Herramientas',
+        texto: 'Aquí están mis herramientas: quitarle el fondo a un logo y crear códigos QR con tu logo en el centro.',
       },
       {
         elemento: '#boton-ayuda',

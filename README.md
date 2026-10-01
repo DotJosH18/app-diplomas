@@ -365,6 +365,14 @@ pdf.service            dibujarBarraLateral usa el color y el logo, y dibujarEnca
 - **Dónde cambiar textos fijos, colores, posiciones, tamaños y el marco:** en `src/modulos/agradecimientos/agradecimientos.config.js`.
 - **Letras:** Cormorant Garamond (título, nombre y pie), Fondamento (descripción) y Montserrat (CONCEDIDO A y fecha). Fondamento no tiene negrita, por eso la negrita se dibuja repasando el borde de las letras (`grosorNegrita` en `escribirJustificado`).
 
+## Menú: lengüetas "Documentos" y "Herramientas"
+
+El inicio tiene dos lengüetas (cada una dice cuántas tarjetas tiene):
+- **Documentos:** los módulos de diplomas, placas, agradecimientos y comunicados (`<div class="menu__opciones" data-grupo="documentos">` en `index.html`). `npm run crear-modulo` agrega aquí las tarjetas nuevas.
+- **Herramientas:** quitar fondo de logos y generar QR (`data-grupo="herramientas"`).
+
+`navegacion.js` las conecta (`mostrarGrupoDelMenu`). Al volver de una herramienta, el inicio se abre en "Herramientas"; al volver de un documento, en "Documentos". La lista "Cambiar a…" del encabezado también separa los dos grupos.
+
 ## Herramienta: quitar el fondo de un logo
 
 Es la última tarjeta del menú. No genera diplomas: deja un logo con **fondo transparente** (PNG) para usarlo en ellos.

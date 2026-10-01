@@ -84,7 +84,19 @@
         <p class="menu__subtitulo">Elige un tipo de documento para empezar. Puedes cambiarlo cuando quieras desde la barra de arriba.</p>
       </div>
 
-      <div class="menu__opciones">
+      <!-- Lengüetas: "Documentos" (diplomas, placas, comunicados…) y "Herramientas".
+           Cada una muestra su grupo de tarjetas (data-grupo). El número lo pone navegacion.js. -->
+      <div class="lenguetas-menu" role="tablist" aria-label="Qué quieres ver">
+        <button type="button" id="lengueta-documentos" class="lengueta-menu activa" role="tab" aria-selected="true" data-grupo="documentos" data-nombre="Documentos">
+          <span class="icono" aria-hidden="true">workspace_premium</span>Documentos<span class="lengueta-menu__cantidad" data-cantidad="documentos"></span>
+        </button>
+        <button type="button" id="lengueta-herramientas" class="lengueta-menu" role="tab" aria-selected="false" data-grupo="herramientas" data-nombre="Herramientas">
+          <span class="icono" aria-hidden="true">handyman</span>Herramientas<span class="lengueta-menu__cantidad" data-cantidad="herramientas"></span>
+        </button>
+      </div>
+
+      <!-- Grupo 1: los documentos (cada tarjeta es un módulo del servidor) -->
+      <div class="menu__opciones" data-grupo="documentos" role="tabpanel" aria-labelledby="lengueta-documentos">
         <button class="opcion" data-modulo="reconocimientos" data-titulo="Reconocimientos">
           <span class="opcion__marco">
             <img class="opcion__imagen" src="img/muestra-reconocimientos.png" alt="Ejemplo de reconocimiento" />
@@ -142,8 +154,10 @@
 
         <!-- ← NUEVOS MÓDULOS: las tarjetas nuevas van arriba de esta línea
              (npm run crear-modulo las agrega aquí; no borres esta marca) -->
+      </div>
 
-        <!-- Herramienta (no es un diploma): data-herramienta en lugar de data-modulo -->
+      <!-- Grupo 2: las herramientas (no son diplomas): data-herramienta en lugar de data-modulo -->
+      <div class="menu__opciones oculto" data-grupo="herramientas" role="tabpanel" aria-labelledby="lengueta-herramientas">
         <button class="opcion opcion--herramienta" data-herramienta="quitar-fondo" data-titulo="Quitar fondo de logos">
           <span class="opcion__marco">
             <img class="opcion__imagen" src="img/muestra-quitar-fondo.png" alt="Ejemplo de logo sin fondo" />
@@ -934,7 +948,7 @@
       <details class="manual__seccion" name="manual" open>
         <summary><span class="manual__numero">1</span> Elegir qué vas a generar<span class="icono flecha-desplegable" aria-hidden="true">keyboard_arrow_down</span></summary>
         <ol>
-          <li>En el inicio verás una <b>tarjeta por cada tipo</b> de documento. Cada una dice qué datos pide.</li>
+          <li>En el inicio hay dos lengüetas: <b>Documentos</b> (una tarjeta por cada tipo, con los datos que pide) y <b>Herramientas</b> (quitar fondo de logos y generar QR).</li>
           <li>Haz clic en la que necesites.</li>
           <li>Para cambiar de tipo después, usa el nombre que aparece arriba a la derecha (por ejemplo <b>Placas</b> <span class="icono icono--en-texto" aria-hidden="true">keyboard_arrow_down</span>), o <b>Inicio</b> <span class="icono icono--en-texto" aria-hidden="true">home</span> para volver a las tarjetas.</li>
         </ol>
@@ -980,7 +994,7 @@
       <details class="manual__seccion" name="manual">
         <summary><span class="manual__numero">5</span> Quitar el fondo de un logo<span class="icono flecha-desplegable" aria-hidden="true">keyboard_arrow_down</span></summary>
         <ol>
-          <li>En el inicio, elige la tarjeta <b>Quitar fondo de logos</b>.</li>
+          <li>En el inicio, abre la lengüeta <b>Herramientas</b> y elige <b>Quitar fondo de logos</b>.</li>
           <li>Sube la imagen: el fondo se quita solo. Si algo no queda bien, mueve la <b>tolerancia</b> o haz clic sobre el fondo de la imagen original.</li>
           <li>Pulsa <b>Usar como logo en los diplomas</b>, o <b>Descargar PNG</b> para guardarlo.</li>
         </ol>
@@ -990,7 +1004,7 @@
       <details class="manual__seccion" name="manual">
         <summary><span class="manual__numero">6</span> Crear un código QR<span class="icono flecha-desplegable" aria-hidden="true">keyboard_arrow_down</span></summary>
         <ol>
-          <li>En el inicio, elige la tarjeta <b>Generar código QR</b>.</li>
+          <li>En el inicio, abre la lengüeta <b>Herramientas</b> y elige <b>Generar código QR</b>.</li>
           <li>En <b>Contenido</b> elige qué abrirá: un link, WhatsApp, un correo, la clave del Wi-Fi o un texto. El QR aparece al momento.</li>
           <li>En <b>Diseño</b> elige una plantilla o cambia la forma de los puntos, las esquinas y los colores. En <b>Logo</b>, el del centro; en <b>Marco</b>, un texto como "ESCANÉAME".</li>
           <li>Fíjate en el aviso debajo del QR: <b>verde</b> = se leerá fácil; <b>amarillo</b> = te dice qué mejorar.</li>

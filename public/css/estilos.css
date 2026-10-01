@@ -260,6 +260,8 @@ details[open] > summary .flecha-desplegable { transform: rotate(180deg); }
 }
 @keyframes aparecer { from { opacity: 0; transform: translateY(-4px); } }
 .selector-modulo__titulo { margin: 6px 10px 6px; font-size: .7rem; font-weight: 700; color: var(--gris); text-transform: uppercase; letter-spacing: .08em; }
+.selector-modulo__grupo { margin: 8px 10px 2px; font-size: .72rem; font-weight: 700; color: var(--dorado); }
+.selector-modulo__grupo:not(:first-child) { margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--borde); }
 .opcion-rapida {
   display: flex; align-items: center; gap: 12px; width: 100%; padding: 8px 10px; text-align: left;
   background: none; border: 0; border-radius: 12px; cursor: pointer; font: inherit; color: inherit;
@@ -316,6 +318,27 @@ details[open] > summary .flecha-desplegable { transform: rotate(180deg); }
 
 /* Tarjetas del menú: 4 por fila (en pantallas más angostas, 2 y luego 1).
    Para cambiar cuántas van por fila, cambia el 4. */
+/* Lengüetas "Documentos" / "Herramientas" (botones segmentados, con cuántas tarjetas hay) */
+.lenguetas-menu {
+  display: flex; width: fit-content; margin: 0 auto 24px; padding: 4px; gap: 4px;
+  border-radius: 999px; background: var(--superficie); border: 1px solid var(--borde); box-shadow: var(--sombra);
+}
+.lengueta-menu {
+  display: inline-flex; align-items: center; gap: 8px; height: 44px; padding: 0 18px 0 14px; border: 0; border-radius: 999px;
+  background: none; cursor: pointer; font: 600 .9rem Montserrat, sans-serif; color: var(--texto-suave);
+  transition: background .15s, color .15s;
+}
+.lengueta-menu .icono { font-size: 20px; }
+.lengueta-menu:hover { background: #F2F3FA; }
+.lengueta-menu.activa { background: var(--azul); color: var(--blanco); box-shadow: 0 2px 8px #14185033; }
+.lengueta-menu:focus-visible { outline: none; box-shadow: var(--foco); }
+.lengueta-menu__cantidad {
+  display: grid; place-items: center; min-width: 22px; height: 22px; padding: 0 6px; border-radius: 999px;
+  background: var(--superficie-2); color: var(--texto-suave); font-size: .72rem; font-weight: 700;
+}
+.lengueta-menu.activa .lengueta-menu__cantidad { background: #ffffff2e; color: var(--blanco); }
+.menu__opciones:not(.oculto) { animation: aparecer .2s ease-out; }
+
 .menu__opciones { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
 .opcion {
   display: flex; flex-direction: column; gap: 6px; text-align: left; cursor: pointer;
@@ -1239,6 +1262,9 @@ details[open] > summary .flecha-desplegable { transform: rotate(180deg); }
   .vista { position: relative; top: 0; }
 }
 @media (max-width: 560px) {
+  .lenguetas-menu { width: 100%; margin-bottom: 18px; }
+  .lengueta-menu { flex: 1; justify-content: center; gap: 6px; padding: 0 8px; font-size: .82rem; }
+  .lengueta-menu .icono { font-size: 18px; }
   .plantillas-qr { grid-template-columns: repeat(3, 1fr); }
   .formas-qr { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .formas-qr--fila { grid-template-columns: repeat(3, minmax(0, 1fr)); }

@@ -2,7 +2,8 @@
 //  navegacion.js — MENÚ, ENCABEZADO, PESTAÑAS Y CAMBIO DE MÓDULO
 //
 //  Pantallas de la página (solo una se ve a la vez):
-//    - Menú (#menu): las tarjetas para elegir qué generar.
+//    - Menú (#menu): las tarjetas para elegir qué generar, en 2 lengüetas:
+//      "Documentos" (los módulos de diplomas) y "Herramientas".
 //    - Generador (#generador): el formulario del módulo elegido.
 //    - Herramientas (<section class="herramienta" data-herramienta="…">):
 //      quitar el fondo de un logo (#herramienta-fondo) y generar un QR
@@ -26,6 +27,7 @@
 //  iniciarNavegacion()     main.js     arrancar esta parte
 //  pantallaActual()        ayuda.js    saber qué se está viendo ('menu', 'generador', 'herramienta')
 //  herramientaAbierta()    ayuda.js    cuál herramienta se ve ('quitar-fondo', 'qr' o null)
+//  mostrarGrupoDelMenu(g)  ayuda.js    abrir la lengüeta 'documentos' o 'herramientas' del menú
 //  abrirPorId(id)          ayuda.js    llevar al usuario a un módulo o herramienta para el recorrido
 //  volverAlInicio()        ayuda.js    llevarlo al menú
 //  mostrarPestana(idPanel) ayuda.js    abrir "Uno a la vez" o "Desde Excel"
@@ -40,6 +42,8 @@ import { excelAlCambiarDeModulo } from './excel.js';
 const pantallaMenu = document.getElementById('menu');
 const pantallaGenerador = document.getElementById('generador');
 const pantallasHerramientas = document.querySelectorAll('section.herramienta'); // una por herramienta
+const lenguetasMenu = document.querySelectorAll('.lengueta-menu');       // "Documentos" / "Herramientas"
+const gruposMenu = document.querySelectorAll('.menu__opciones[data-grupo]');
 const tarjetasDelMenu = document.querySelectorAll('.opcion');
 const enlaceMarca = document.getElementById('enlace-marca');
 const barraNavegacion = document.getElementById('navegacion');
@@ -75,6 +79,7 @@ export function iniciarNavegacion() {
     volverAlInicio();
   });
 
+  prepararLenguetasDelMenu();
   armarListaDeModulos();
   prepararCierreDeLaLista();
   prepararPestanas();
@@ -130,6 +135,13 @@ export function volverAlInicio() {
   ocultar(pantallaGenerador);
   ocultarHerramientas();
   selectorModulo.open = false;
+
+  // Si venía de una herramienta, el menú se abre en "Herramientas"
+  if (abiertoAhora !== null && herramientaAbiertaAntes(abiertoAhora)) {
+    mostrarGrupoDelMenu('herramientas');
+  } else if (abiertoAhora !== null) {
+    mostrarGrupoDelMenu('documentos');
+  }
 
   // "invisible" (y no "oculto") para que el encabezado conserve su altura
   barraNavegacion.classList.add('invisible');
@@ -205,6 +217,50 @@ function ocultarHerramientas() {
 
 
 // =============================================================
+//  LENGÜETAS DEL MENÚ ("Documentos" / "Herramientas")
+// =============================================================
+
+/** Conecta las lengüetas y pone cuántas tarjetas tiene cada grupo. */
+function prepararLenguetasDelMenu() {
+  for (const lengueta of lenguetasMenu) {
+    lengueta.addEventListener('click', function () {
+      mostrarGrupoDelMenu(lengueta.dataset.grupo);
+    });
+  }
+  for (const grupo of gruposMenu) {
+    const cantidad = grupo.querySelectorAll('.opcion').length;
+    document.querySelector(`[data-cantidad="${grupo.dataset.grupo}"]`).textContent = cantidad;
+  }
+}
+
+/** Muestra un grupo de tarjetas: 'documentos' o 'herramientas'. */
+export function mostrarGrupoDelMenu(nombreGrupo) {
+  for (const lengueta of lenguetasMenu) {
+    const esEsta = lengueta.dataset.grupo === nombreGrupo;
+    lengueta.classList.toggle('activa', esEsta);
+    lengueta.setAttribute('aria-selected', esEsta ? 'true' : 'false');
+  }
+  for (const grupo of gruposMenu) {
+    if (grupo.dataset.grupo === nombreGrupo) {
+      mostrar(grupo);
+    } else {
+      ocultar(grupo);
+    }
+  }
+}
+
+/** true si el id es de una herramienta ('quitar-fondo', 'qr'), no de un módulo. */
+function herramientaAbiertaAntes(id) {
+  for (const pantalla of pantallasHerramientas) {
+    if (pantalla.dataset.herramienta === id) {
+      return true;
+    }
+  }
+  return false;
+}
+
+
+// =============================================================
 //  CAMBIAR DE MÓDULO
 //  Cada parte de la página se prepara para el nuevo módulo con su
 //  función "…AlCambiarDeModulo". Si agregas una parte nueva que
@@ -263,7 +319,17 @@ function mostrarCamposDelModulo(idModulo) {
  * su título y lo que pide. Al hacer clic, abre lo mismo que la tarjeta.
  */
 function armarListaDeModulos() {
+  let grupoAnterior = '';
   for (const tarjeta of tarjetasDelMenu) {
+    // Un subtítulo cuando empieza otro grupo: "Documentos", "Herramientas"
+    const grupo = tarjeta.closest('[data-grupo]').dataset.grupo;
+    if (grupo !== grupoAnterior) {
+      const subtitulo = document.createElement('p');
+      subtitulo.classList.add('selector-modulo__grupo');
+      subtitulo.textContent = document.querySelector(`.lengueta-menu[data-grupo="${grupo}"]`).dataset.nombre;
+      listaModulos.appendChild(subtitulo);
+      grupoAnterior = grupo;
+    }
     const opcion = document.createElement('button');
     opcion.type = 'button';
     opcion.classList.add('opcion-rapida');
