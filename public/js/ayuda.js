@@ -386,9 +386,17 @@ function ubicarFocoYGlobo(elemento) {
   const borde = 16;      // distancia mínima a los bordes de la pantalla
   const caja = elemento.getBoundingClientRect();
 
-  // El hueco: el elemento + un margen, sin salirse de la pantalla
-  const arriba = Math.max(borde / 2, caja.top - margen);
-  const abajo = Math.min(window.innerHeight - borde / 2, caja.bottom + margen);
+  // El hueco: el elemento + un margen
+  let arriba = caja.top - margen;
+  let abajo = caja.bottom + margen;
+  // Si el elemento se ve (aunque sea una parte), el hueco no se sale de la
+  // pantalla, para que se vea su borde dorado. Si NO se ve (el usuario bajó
+  // la página), el hueco se va con él, fuera de la pantalla.
+  const seVeAlgo = abajo > 0 && arriba < window.innerHeight;
+  if (seVeAlgo) {
+    arriba = Math.max(borde / 2, arriba);
+    abajo = Math.min(window.innerHeight - borde / 2, abajo);
+  }
   capaRecorrido.style.setProperty('--foco-x', `${caja.left - margen}px`);
   capaRecorrido.style.setProperty('--foco-y', `${arriba}px`);
   capaRecorrido.style.setProperty('--foco-ancho', `${caja.width + margen * 2}px`);
@@ -466,11 +474,30 @@ function prepararControlesDelRecorrido() {
     }
   });
 
-  window.addEventListener('resize', function () {
-    if (!capaRecorrido.classList.contains('oculto')) {
-      ubicarFocoYGlobo(document.querySelector(pasosActuales[numeroDePaso].elemento));
-    }
-  });
+  window.addEventListener('resize', reubicarAlMoverLaPagina);
+  // Si el usuario baja o sube la página durante el recorrido, el hueco y el
+  // globo siguen al elemento (antes se quedaban fijos en la pantalla).
+  window.addEventListener('scroll', reubicarAlMoverLaPagina, { passive: true });
+}
+
+let temporizadorAnimacion = null;
+
+/**
+ * Vuelve a poner el hueco y el globo sobre el elemento del paso actual.
+ * Mientras la página se mueve, se quita la animación (clase "sin-animacion")
+ * para que el hueco siga al elemento sin quedarse atrás.
+ */
+function reubicarAlMoverLaPagina() {
+  if (capaRecorrido.classList.contains('oculto')) {
+    return; // no hay recorrido abierto
+  }
+  capaRecorrido.classList.add('sin-animacion');
+  ubicarFocoYGlobo(document.querySelector(pasosActuales[numeroDePaso].elemento));
+
+  clearTimeout(temporizadorAnimacion);
+  temporizadorAnimacion = setTimeout(function () {
+    capaRecorrido.classList.remove('sin-animacion');
+  }, 200);
 }
 
 

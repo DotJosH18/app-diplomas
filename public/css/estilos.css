@@ -777,7 +777,9 @@ details[open] > summary .flecha-desplegable { transform: rotate(180deg); }
 .recorrido__texto { margin: 0; font-size: .88rem; line-height: 1.55; color: var(--texto-suave); }
 .recorrido__botones { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 16px; }
 .recorrido__espacio { flex: 1; }
-#recorrido-anterior { width: 32px; padding: 0; }   /* solo la flecha */
+#recorrido-anterior { width: 32px; padding: 0; }
+/* Mientras se baja la página, el hueco y el globo siguen al elemento sin animación */
+.recorrido.sin-animacion .recorrido__foco, .recorrido.sin-animacion .recorrido__globo { transition: none; }   /* solo la flecha */
 
 .bienvenida {
   position: fixed; right: 20px; bottom: 20px; z-index: 90; width: min(360px, calc(100vw - 32px));
