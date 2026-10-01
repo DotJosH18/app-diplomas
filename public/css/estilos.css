@@ -235,7 +235,7 @@ body > main { flex: 1; width: 100%; }
 
 /* ---------- Personalizar (color de banda y logo) ---------- */
 /* Variables que cambia JavaScript: --color-banda (la muestra del título del panel),
-   --color-elegido (en cada selector de color) y --fondo-color (en cada círculo de color) */
+   --color-elegido (en cada selector de color) y --fondo-color (en cada círculo y franja) */
 .personalizar {
   --color-banda: #141B5B;
   background: var(--blanco); border-radius: var(--radio); box-shadow: var(--sombra); margin-bottom: 20px;
@@ -296,66 +296,85 @@ body > main { flex: 1; width: 100%; }
 .personalizar__etiqueta:first-child { margin-top: 12px; }
 
 /* ---------- Elegir color ---------- */
-/* Cada selector (.selector-color) es un bloque completo; si hay varios, se separan */
-.selector-color + .selector-color { margin-top: 18px; padding-top: 4px; border-top: 1px dashed var(--borde); }
+/* Variables que pone JavaScript: --fondo-color (cada círculo y franja)
+   y --color-elegido (el color de cada selector). */
 
-/* Cada color: un círculo con su nombre debajo.
-   --fondo-color lo pone JavaScript con el data-color de cada botón. */
-.colores { display: flex; flex-wrap: wrap; gap: 6px 4px; }
+/* 1. Combinaciones listas (Placas): tarjetas con 3 franjas de color */
+.paletas { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.paleta {
+  display: flex; flex-direction: column; gap: 6px; padding: 6px; cursor: pointer; text-align: left;
+  background: var(--blanco); border: 1px solid var(--borde); border-radius: 10px; font: inherit;
+  transition: border-color .15s, box-shadow .15s, transform .15s;
+}
+.paleta:hover { border-color: #b9b7c8; transform: translateY(-1px); }
+.paleta:focus-visible { outline: 2px solid var(--azul); outline-offset: 2px; }
+.paleta.activo { border-color: var(--dorado); box-shadow: 0 0 0 2px var(--dorado); }
+.paleta__franjas { display: flex; height: 26px; border-radius: 6px; overflow: hidden; box-shadow: inset 0 0 0 1px #00000014; }
+.paleta__franjas span { background: var(--fondo-color); }
+.paleta__franjas span:nth-child(1) { flex: 3; }   /* cinta principal: la más grande */
+.paleta__franjas span:nth-child(2) { flex: 2; }   /* cinta secundaria y marco */
+.paleta__franjas span:nth-child(3) { flex: 1; }   /* nombre y firmas */
+.paleta__nombre { font-size: .72rem; font-weight: 600; color: var(--texto); padding: 0 2px; }
+.paleta.activo .paleta__nombre::after { content: ' ✓'; color: var(--dorado); }
+
+/* 2. Un selector por color: una fila que se abre (<details>) */
+.selector-color {
+  border: 1px solid var(--borde); border-radius: 10px; background: var(--blanco);
+  transition: border-color .15s, box-shadow .15s;
+}
+.selector-color + .selector-color { margin-top: 8px; }
+.selector-color[open] { border-color: #b9b7c8; box-shadow: 0 4px 14px #1418500f; }
+
+.selector-color__fila {
+  display: flex; align-items: center; gap: 12px; padding: 10px 12px;
+  cursor: pointer; list-style: none; border-radius: 10px;
+}
+.selector-color__fila::-webkit-details-marker { display: none; }
+.selector-color__fila:hover { background: var(--fondo); }
+.selector-color__fila:focus-visible { outline: 2px solid var(--azul); outline-offset: -2px; }
+/* Flecha a la derecha: gira al abrir */
+.selector-color__fila::after { content: '▾'; display: inline-block; color: var(--gris); transition: transform .2s; }
+.selector-color[open] .selector-color__fila::after { transform: rotate(180deg); }
+
+.selector-color__muestra {
+  width: 34px; height: 34px; border-radius: 8px; flex-shrink: 0;
+  background: var(--color-elegido); box-shadow: inset 0 0 0 1px #00000026; transition: background .2s;
+}
+.selector-color__textos { flex: 1; display: flex; flex-direction: column; line-height: 1.3; min-width: 0; }
+.selector-color__para { font-size: .72rem; color: var(--gris); }
+.selector-color__textos strong { font-size: .92rem; }
+.color-elegido__detalle { font-size: .72rem; color: var(--gris); }
+.selector-color__codigo { font: 600 .78rem ui-monospace, monospace; color: var(--gris); }
+
+/* Lo que se ve al abrir: los colores y el código */
+.selector-color__cuerpo { padding: 4px 12px 12px; display: flex; flex-wrap: wrap; align-items: center; gap: 12px 18px; }
+
+/* Círculos de color (sin texto: el nombre sale en la fila y al pasar el mouse) */
+.colores { display: flex; flex-wrap: wrap; gap: 8px; }
 .color {
-  display: flex; flex-direction: column; align-items: center; gap: 4px; width: 62px;
-  padding: 0; border: 0; background: none; cursor: pointer; font: inherit;
+  position: relative; width: 30px; height: 30px; padding: 0; border-radius: 50%; cursor: pointer;
+  background: var(--fondo-color); border: 2px solid var(--blanco); box-shadow: 0 0 0 1px var(--borde);
+  display: grid; place-items: center; transition: transform .15s, box-shadow .15s;
 }
-/* El círculo se dibuja con ::before (el color de fondo va en cada data-color) */
-.color::before {
-  content: ''; width: 34px; height: 34px; border-radius: 50%;
-  background: var(--fondo-color); border: 3px solid var(--blanco); box-shadow: 0 0 0 1px var(--borde);
-  transition: transform .15s, box-shadow .15s;
-}
-.color span { font-size: .68rem; line-height: 1.2; color: var(--gris); text-align: center; }
-.color:hover::before { transform: scale(1.1); }
-.color:focus-visible { outline: none; }
-.color:focus-visible::before { box-shadow: 0 0 0 2px var(--azul); }
+.color:hover { transform: scale(1.12); }
+.color:focus-visible { outline: none; box-shadow: 0 0 0 2px var(--azul); }
+.color.activo { box-shadow: 0 0 0 2px var(--dorado); }
+.color.activo::after { content: '✓'; color: var(--blanco); font-weight: 700; font-size: .85rem; pointer-events: none; }
+.color.activo.color--claro::after { color: var(--texto); } /* en colores claros, la ✓ va oscura */
 
-/* Elegido: aro dorado, nombre en negrita y una ✓ encima del círculo */
-.color.activo::before { box-shadow: 0 0 0 2px var(--dorado); transform: scale(1.1); }
-.color.activo span { color: var(--texto); font-weight: 700; }
-.color.activo::after {
-  content: '✓'; position: absolute; margin-top: 8px;
-  color: var(--blanco); font-weight: 700; font-size: .95rem; pointer-events: none;
-}
-.color { position: relative; }
-/* Si el color es muy claro, la ✓ va oscura para que se vea */
-.color.activo.color--claro::after { color: var(--texto); }
+/* "Otro color": arcoíris; si se elige un color propio, toma ese color */
+.color--libre { background: conic-gradient(#e53935, #fdd835, #43a047, #1e88e5, #8e24aa, #e53935); }
+.color--libre.activo { background: var(--color-elegido); }
+.color--libre input { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; }
 
-/* "Otro…": arcoíris; cuando se elige un color propio, toma ese color */
-.color--libre { --fondo-color: conic-gradient(#e53935, #fdd835, #43a047, #1e88e5, #8e24aa, #e53935); }
-.color--libre::before { background: var(--fondo-color); }
-.color--libre.activo { --fondo-color: var(--color-elegido); } /* --color-elegido: el color de ese selector */
-.color--libre input {
-  position: absolute; top: 0; left: 50%; width: 40px; height: 40px; transform: translateX(-50%);
-  opacity: 0; cursor: pointer;
-}
-
-/* Línea con el color elegido: muestra grande, nombre y código */
-.color-elegido {
-  display: flex; align-items: center; gap: 12px; margin-top: 12px; padding: 10px 12px;
-  background: var(--fondo); border-radius: 10px; max-width: 400px;
-}
-.color-elegido__muestra {
-  width: 38px; height: 38px; border-radius: 8px; flex-shrink: 0;
-  background: var(--color-elegido); box-shadow: inset 0 0 0 1px #00000026;
-  transition: background .2s;
-}
-.color-elegido__texto { flex: 1; display: flex; flex-direction: column; line-height: 1.3; }
-.color-elegido__texto small { color: var(--gris); font-size: .75rem; }
-.color-elegido__codigo { display: flex; flex-direction: column; font-size: .68rem; color: var(--gris); font-weight: 600; }
-.color-elegido__codigo input {
-  width: 92px; margin-top: 2px; padding: 6px 8px; border: 1px solid var(--borde); border-radius: 6px;
+.color-codigo { display: flex; align-items: center; gap: 8px; font-size: .75rem; color: var(--gris); font-weight: 600; }
+.color-codigo input {
+  width: 92px; padding: 6px 8px; border: 1px solid var(--borde); border-radius: 6px;
   font: 600 .85rem ui-monospace, monospace; text-transform: uppercase; background: var(--blanco);
 }
-.color-elegido__codigo input:focus { outline: 2px solid var(--azul); outline-offset: -1px; }
-.color-elegido__codigo input.invalido { border-color: var(--rojo); outline-color: var(--rojo); }
+.color-codigo input:focus { outline: 2px solid var(--azul); outline-offset: -1px; }
+.color-codigo input.invalido { border-color: var(--rojo); outline-color: var(--rojo); }
+.selector-color__cuerpo .nota { flex-basis: 100%; margin: 0; }
 .nota--aviso { color: #9a5b00; }
 
 /* Logo */
@@ -432,6 +451,7 @@ body > main { flex: 1; width: 100%; }
   .vista { position: relative; top: 0; }
 }
 @media (max-width: 560px) {
+  .paletas { grid-template-columns: repeat(2, 1fr); }
   .menu__opciones { grid-template-columns: 1fr; }
   /* En celular el tipo elegido va en una sola línea (así el encabezado no cambia de alto) */
   .tipo-elegido { flex-wrap: nowrap; width: 100%; }

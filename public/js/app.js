@@ -54,6 +54,7 @@ const botonMenu = document.getElementById('boton-menu');
 // Personalizar
 const panelPersonalizar = document.getElementById('personalizar');
 const selectoresColor = document.querySelectorAll('.selector-color'); // uno por cada color que se puede cambiar
+const botonesPaleta = document.querySelectorAll('.paleta');            // combinaciones listas (Placas)
 const inputLogo = document.getElementById('input-logo');
 const botonLogo = document.getElementById('boton-logo');
 const botonQuitarLogo = document.getElementById('boton-quitar-logo');
@@ -277,6 +278,12 @@ function cambiarModulo(idModulo) {
     revisarExcel();
   }
 
+  // Colores: en Placas (3 colores) las filas empiezan cerradas, debajo de las
+  // combinaciones; en los diplomas de un solo color, su fila empieza abierta.
+  for (const selector of selectoresColor) {
+    selector.open = idModulo !== 'placas' && selector.dataset.campo === 'colorBanda';
+  }
+
   // La miniatura de "Personalizar" ahora debe mostrar este módulo
   imagenMiniVista.removeAttribute('src');
   programarMiniVista();
@@ -470,8 +477,8 @@ function esCodigoDeColor(texto) {
 /** El color que usa ahora un selector (el de por defecto si no se eligió otro). */
 function colorActual(selector) {
   const elegido = coloresElegidos[selector.dataset.campo];
-  if (elegido === '') {
-    return selector.dataset.porDefecto;
+  if (!elegido) {
+    return selector.dataset.porDefecto; // '' (por defecto) o todavía sin preparar
   }
   return elegido;
 }
@@ -543,10 +550,11 @@ function elegirColor(selector, color, actualizarVista = true) {
     textoNombre.textContent = 'Color personalizado';
   }
   if (color === porDefecto) {
-    textoDetalle.textContent = 'Color por defecto';
+    textoDetalle.textContent = '· por defecto';
   } else {
-    textoDetalle.textContent = 'Así saldrá en el documento';
+    textoDetalle.textContent = '';
   }
+  selector.querySelector('.selector-color__codigo').textContent = color; // el código, en la fila
 
   // 3. Aviso si es muy claro (y la ✓ del círculo elegido se pone oscura para que se vea)
   const aviso = selector.querySelector('.color-elegido__aviso');
@@ -564,8 +572,60 @@ function elegirColor(selector, color, actualizarVista = true) {
     ocultar(aviso);
   }
 
+  marcarPaletaElegida();
+
   if (actualizarVista) {
     programarMiniVista(120); // un clic en un color: la miniatura responde rápido
+  }
+}
+
+// ---------- Combinaciones listas (Placas) ----------
+// Cada botón .paleta trae sus colores en data-color-banda, data-color-secundario
+// y data-color-nombre. En JavaScript se leen como dataset.colorBanda, etc.:
+// ¡el mismo nombre que el data-campo de cada selector!
+
+for (const paleta of botonesPaleta) {
+  // Pinta sus 3 franjas (variable CSS)
+  const franjas = paleta.querySelectorAll('.paleta__franjas span');
+  franjas[0].style.setProperty('--fondo-color', paleta.dataset.colorBanda);
+  franjas[1].style.setProperty('--fondo-color', paleta.dataset.colorSecundario);
+  franjas[2].style.setProperty('--fondo-color', paleta.dataset.colorNombre);
+
+  paleta.addEventListener('click', function () {
+    aplicarPaleta(paleta);
+  });
+}
+marcarPaletaElegida();
+
+/** Pone los colores de la combinación en cada selector y actualiza la miniatura una sola vez. */
+function aplicarPaleta(paleta) {
+  for (const selector of selectoresColor) {
+    const color = paleta.dataset[selector.dataset.campo]; // ej. paleta.dataset['colorBanda']
+    if (color) {
+      elegirColor(selector, color, false);
+    }
+  }
+  programarMiniVista(120);
+}
+
+/**
+ * Marca la combinación que coincide con los colores actuales.
+ * Si se cambió un color a mano y ya no coincide ninguna, no se marca ninguna.
+ */
+function marcarPaletaElegida() {
+  for (const paleta of botonesPaleta) {
+    let coincide = true;
+    for (const selector of selectoresColor) {
+      const colorDePaleta = paleta.dataset[selector.dataset.campo];
+      if (colorDePaleta && colorDePaleta.toUpperCase() !== colorActual(selector).toUpperCase()) {
+        coincide = false;
+      }
+    }
+    if (coincide) {
+      paleta.classList.add('activo');
+    } else {
+      paleta.classList.remove('activo');
+    }
   }
 }
 

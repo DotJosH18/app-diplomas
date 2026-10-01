@@ -333,15 +333,28 @@ Es la última tarjeta del menú. No genera diplomas: deja un logo con **fondo tr
 - **Descargar PNG:** baja el resultado.
 - **Usar como logo en los diplomas:** lo deja como el logo de "Personalizar diseño", igual que "Subir logo". Luego eliges un diploma y ya sale con ese logo.
 
-## Selectores de color
+## Elegir colores
 
-En el HTML, cada color que se puede cambiar es un bloque `.selector-color`:
+En "Personalizar diseño", los colores se eligen en dos niveles, de lo más rápido a lo más detallado:
 
-- **`data-campo`:** con qué nombre se envía al servidor (`colorBanda`, `colorSecundario`, `colorNombre`).
-- **`data-por-defecto`:** el color de siempre.
-- **`data-aviso-claro="si"`:** muestra un aviso si se elige un color muy claro. Se usa solo donde el color pinta texto.
+1. **Combinaciones listas** (solo Placas). Son 6 tarjetas: Clásico UNICAH, Vino y oro, Verde y plata, Azul y plata, Negro y oro y Morado y oro.
+   - **Cómo se ven:** cada tarjeta muestra sus 3 colores en franjas. La franja más ancha es la cinta principal.
+   - **Un clic las aplica:** cambian los 3 colores juntos, y la tarjeta elegida queda marcada con ✓.
+   - **Si cambias un color a mano,** ya no coincide con ninguna combinación y la marca se quita.
+2. **Ajustar cada color.** Cada color es una fila compacta: muestra, para qué es, nombre y código.
+   - **Abrir una fila:** al hacer clic se abre con sus colores rápidos (el nombre sale al pasar el mouse), el círculo arcoíris "Otro color" y el campo **Código**.
+   - **Una a la vez:** solo hay una fila abierta. Es un `<details name="colores">` del navegador, así que no hace falta JavaScript para abrir y cerrar.
+   - **Reconocimientos y Lugares:** tienen un solo color, así que su fila ya aparece abierta.
 
-Todos funcionan con el mismo código (`prepararSelectorColor` y `elegirColor` en `app.js`). Para agregar un color rápido, copia un botón `.color` con su `data-color` y `data-nombre`: el círculo se pinta solo.
+**En el código:**
+
+- **Selectores de color:** cada uno es un `<details class="selector-color">` con:
+  - **`data-campo`:** con qué nombre se envía al servidor (`colorBanda`, `colorSecundario`, `colorNombre`).
+  - **`data-por-defecto`:** el color de siempre.
+  - **`data-aviso-claro="si"`:** avisa si el color es muy claro. Se usa solo donde el color pinta texto.
+- **Combinaciones:** cada `.paleta` guarda sus colores en `data-color-banda`, `data-color-secundario` y `data-color-nombre`. En JavaScript se leen como `dataset.colorBanda`… (el mismo nombre que el `data-campo` de cada selector), así `aplicarPaleta` no necesita casos especiales.
+- **Agregar una combinación:** copia un botón `.paleta` y cambia sus 3 colores. Conviene que sean colores de las listas de cada fila, para que se vea su nombre.
+- **Agregar un color rápido:** copia un botón `.color` con su `data-color` y `data-nombre`. Su círculo se pinta solo.
 
 ## Pestañas y vista previa del Excel
 

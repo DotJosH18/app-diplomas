@@ -184,95 +184,134 @@
         </figure>
 
         <div class="personalizar__controles">
-          <!-- ===== Selectores de color =====
-               Cada bloque .selector-color es un selector completo (colores rápidos,
-               "Otro…" y código). data-campo es el nombre con que se envía al servidor
-               y data-por-defecto el color de siempre. data-aviso-claro="si" muestra un
-               aviso con colores muy claros (solo donde ese color pinta texto).
-               Para agregar un color rápido, copia un botón: su círculo se pinta solo
-               con su data-color. -->
-          <div class="selector-color" data-modulos="reconocimientos lugares placas" data-campo="colorBanda" data-por-defecto="#141B5B" data-aviso-claro="si">
-            <p class="personalizar__etiqueta" data-modulos="reconocimientos lugares">Color de la banda</p>
-            <p class="personalizar__etiqueta" data-modulos="placas">Cinta principal y campus</p>
-            <div class="colores">
-              <button type="button" class="color" data-color="#141B5B" data-nombre="Azul UNICAH"><span>Azul UNICAH</span></button>
-              <button type="button" class="color" data-color="#7A1428" data-nombre="Vino"><span>Vino</span></button>
-              <button type="button" class="color" data-color="#0F4C81" data-nombre="Azul rey"><span>Azul rey</span></button>
-              <button type="button" class="color" data-color="#1F5E3B" data-nombre="Verde"><span>Verde</span></button>
-              <button type="button" class="color" data-color="#5B2A86" data-nombre="Morado"><span>Morado</span></button>
-              <button type="button" class="color" data-color="#8C7418" data-nombre="Dorado"><span>Dorado</span></button>
-              <button type="button" class="color" data-color="#222222" data-nombre="Negro"><span>Negro</span></button>
-              <label class="color color--libre">
-                <input type="color" class="selector-color__libre" aria-label="Elegir otro color" />
-                <span>Otro…</span>
-              </label>
-            </div>
-            <div class="color-elegido">
-              <span class="color-elegido__muestra" aria-hidden="true"></span>
-              <div class="color-elegido__texto">
-                <strong class="color-elegido__nombre"></strong>
-                <small class="color-elegido__detalle"></small>
+          <!-- ===== Colores =====
+               1. Combinaciones listas (solo Placas): un clic cambia los 3 colores.
+                  data-color-banda / data-color-secundario / data-color-nombre son los colores
+                  de cada combinación (se llaman igual que los selectores de abajo).
+               2. Un selector por cada color (<details>: se abre al hacer clic en su fila;
+                  name="colores" hace que solo haya uno abierto a la vez).
+                  data-campo = nombre con que se envía al servidor, data-por-defecto = el color
+                  de siempre, data-aviso-claro="si" = avisar si es muy claro (donde pinta texto).
+                  Para agregar un color rápido, copia un botón: su círculo se pinta solo. -->
+          <div class="colores-panel" data-modulos="reconocimientos lugares placas">
+            <div data-modulos="placas">
+              <p class="personalizar__etiqueta">Combinaciones listas</p>
+              <div class="paletas">
+              <button type="button" class="paleta" data-nombre="Clásico UNICAH" data-color-banda="#141B5B" data-color-secundario="#E9B82F" data-color-nombre="#9A7A16">
+                <span class="paleta__franjas" aria-hidden="true"><span></span><span></span><span></span></span>
+                <span class="paleta__nombre">Clásico UNICAH</span>
+              </button>
+              <button type="button" class="paleta" data-nombre="Vino y oro" data-color-banda="#7A1428" data-color-secundario="#C9A227" data-color-nombre="#7A1428">
+                <span class="paleta__franjas" aria-hidden="true"><span></span><span></span><span></span></span>
+                <span class="paleta__nombre">Vino y oro</span>
+              </button>
+              <button type="button" class="paleta" data-nombre="Verde y plata" data-color-banda="#1F5E3B" data-color-secundario="#B8BCC6" data-color-nombre="#1F5E3B">
+                <span class="paleta__franjas" aria-hidden="true"><span></span><span></span><span></span></span>
+                <span class="paleta__nombre">Verde y plata</span>
+              </button>
+              <button type="button" class="paleta" data-nombre="Azul y plata" data-color-banda="#0F4C81" data-color-secundario="#B8BCC6" data-color-nombre="#0F4C81">
+                <span class="paleta__franjas" aria-hidden="true"><span></span><span></span><span></span></span>
+                <span class="paleta__nombre">Azul y plata</span>
+              </button>
+              <button type="button" class="paleta" data-nombre="Negro y oro" data-color-banda="#222222" data-color-secundario="#C9A227" data-color-nombre="#9A7A16">
+                <span class="paleta__franjas" aria-hidden="true"><span></span><span></span><span></span></span>
+                <span class="paleta__nombre">Negro y oro</span>
+              </button>
+              <button type="button" class="paleta" data-nombre="Morado y oro" data-color-banda="#5B2A86" data-color-secundario="#E9B82F" data-color-nombre="#5B2A86">
+                <span class="paleta__franjas" aria-hidden="true"><span></span><span></span><span></span></span>
+                <span class="paleta__nombre">Morado y oro</span>
+              </button>
               </div>
-              <label class="color-elegido__codigo">Código
-                <input class="color-elegido__input" maxlength="7" spellcheck="false" />
-              </label>
+              <p class="personalizar__etiqueta">O ajusta cada color</p>
             </div>
-            <p class="nota nota--aviso color-elegido__aviso oculto">Este color es muy claro: el texto encima o junto a él podría no leerse bien.</p>
-          </div>
+            <p class="personalizar__etiqueta" data-modulos="reconocimientos lugares">Color</p>
 
-          <div class="selector-color" data-modulos="placas" data-campo="colorSecundario" data-por-defecto="#E9B82F">
-            <p class="personalizar__etiqueta">Cinta secundaria, marco y adornos</p>
-            <div class="colores">
-              <button type="button" class="color" data-color="#E9B82F" data-nombre="Dorado"><span>Dorado</span></button>
-              <button type="button" class="color" data-color="#C9A227" data-nombre="Oro viejo"><span>Oro viejo</span></button>
-              <button type="button" class="color" data-color="#B8BCC6" data-nombre="Plata"><span>Plata</span></button>
-              <button type="button" class="color" data-color="#B87333" data-nombre="Bronce"><span>Bronce</span></button>
-              <button type="button" class="color" data-color="#C0392B" data-nombre="Rojo"><span>Rojo</span></button>
-              <button type="button" class="color" data-color="#5DADE2" data-nombre="Celeste"><span>Celeste</span></button>
-              <button type="button" class="color" data-color="#141B5B" data-nombre="Azul UNICAH"><span>Azul UNICAH</span></button>
-              <label class="color color--libre">
-                <input type="color" class="selector-color__libre" aria-label="Elegir otro color" />
-                <span>Otro…</span>
-              </label>
-            </div>
-            <div class="color-elegido">
-              <span class="color-elegido__muestra" aria-hidden="true"></span>
-              <div class="color-elegido__texto">
-                <strong class="color-elegido__nombre"></strong>
-                <small class="color-elegido__detalle"></small>
+            <details class="selector-color" name="colores" data-modulos="reconocimientos lugares placas" data-campo="colorBanda" data-por-defecto="#141B5B" data-aviso-claro="si">
+              <summary class="selector-color__fila">
+                <span class="selector-color__muestra" aria-hidden="true"></span>
+                <span class="selector-color__textos">
+                  <small class="selector-color__para" data-modulos="reconocimientos lugares">Color de la banda</small>
+                  <small class="selector-color__para" data-modulos="placas">Cinta principal y campus</small>
+                  <span><strong class="color-elegido__nombre"></strong> <small class="color-elegido__detalle"></small></span>
+                </span>
+                <span class="selector-color__codigo"></span>
+              </summary>
+              <div class="selector-color__cuerpo">
+                <div class="colores">
+                <button type="button" class="color" data-color="#141B5B" data-nombre="Azul UNICAH" title="Azul UNICAH" aria-label="Azul UNICAH"></button>
+                <button type="button" class="color" data-color="#7A1428" data-nombre="Vino" title="Vino" aria-label="Vino"></button>
+                <button type="button" class="color" data-color="#0F4C81" data-nombre="Azul rey" title="Azul rey" aria-label="Azul rey"></button>
+                <button type="button" class="color" data-color="#1F5E3B" data-nombre="Verde" title="Verde" aria-label="Verde"></button>
+                <button type="button" class="color" data-color="#5B2A86" data-nombre="Morado" title="Morado" aria-label="Morado"></button>
+                <button type="button" class="color" data-color="#8C7418" data-nombre="Dorado" title="Dorado" aria-label="Dorado"></button>
+                <button type="button" class="color" data-color="#222222" data-nombre="Negro" title="Negro" aria-label="Negro"></button>
+                  <label class="color color--libre" title="Otro color">
+                    <input type="color" class="selector-color__libre" aria-label="Elegir otro color" />
+                  </label>
+                </div>
+                <label class="color-codigo">Código
+                  <input class="color-elegido__input" maxlength="7" spellcheck="false" />
+                </label>
+                <p class="nota nota--aviso color-elegido__aviso oculto">Este color es muy claro: el texto podría no leerse bien.</p>
               </div>
-              <label class="color-elegido__codigo">Código
-                <input class="color-elegido__input" maxlength="7" spellcheck="false" />
-              </label>
-            </div>
-            <p class="nota nota--aviso color-elegido__aviso oculto">Este color es muy claro: el texto encima o junto a él podría no leerse bien.</p>
-          </div>
-
-          <div class="selector-color" data-modulos="placas" data-campo="colorNombre" data-por-defecto="#9A7A16" data-aviso-claro="si">
-            <p class="personalizar__etiqueta">Nombre y firmas</p>
-            <div class="colores">
-              <button type="button" class="color" data-color="#9A7A16" data-nombre="Dorado oscuro"><span>Dorado oscuro</span></button>
-              <button type="button" class="color" data-color="#141B5B" data-nombre="Azul UNICAH"><span>Azul UNICAH</span></button>
-              <button type="button" class="color" data-color="#1B1D2A" data-nombre="Negro"><span>Negro</span></button>
-              <button type="button" class="color" data-color="#7A1428" data-nombre="Vino"><span>Vino</span></button>
-              <button type="button" class="color" data-color="#1F5E3B" data-nombre="Verde"><span>Verde</span></button>
-              <button type="button" class="color" data-color="#6B4E16" data-nombre="Bronce oscuro"><span>Bronce oscuro</span></button>
-              <label class="color color--libre">
-                <input type="color" class="selector-color__libre" aria-label="Elegir otro color" />
-                <span>Otro…</span>
-              </label>
-            </div>
-            <div class="color-elegido">
-              <span class="color-elegido__muestra" aria-hidden="true"></span>
-              <div class="color-elegido__texto">
-                <strong class="color-elegido__nombre"></strong>
-                <small class="color-elegido__detalle"></small>
+            </details>
+            <details class="selector-color" name="colores" data-modulos="placas" data-campo="colorSecundario" data-por-defecto="#E9B82F">
+              <summary class="selector-color__fila">
+                <span class="selector-color__muestra" aria-hidden="true"></span>
+                <span class="selector-color__textos">
+                  <small class="selector-color__para">Cinta secundaria, marco y adornos</small>
+                  <span><strong class="color-elegido__nombre"></strong> <small class="color-elegido__detalle"></small></span>
+                </span>
+                <span class="selector-color__codigo"></span>
+              </summary>
+              <div class="selector-color__cuerpo">
+                <div class="colores">
+                <button type="button" class="color" data-color="#E9B82F" data-nombre="Dorado" title="Dorado" aria-label="Dorado"></button>
+                <button type="button" class="color" data-color="#C9A227" data-nombre="Oro viejo" title="Oro viejo" aria-label="Oro viejo"></button>
+                <button type="button" class="color" data-color="#B8BCC6" data-nombre="Plata" title="Plata" aria-label="Plata"></button>
+                <button type="button" class="color" data-color="#B87333" data-nombre="Bronce" title="Bronce" aria-label="Bronce"></button>
+                <button type="button" class="color" data-color="#C0392B" data-nombre="Rojo" title="Rojo" aria-label="Rojo"></button>
+                <button type="button" class="color" data-color="#5DADE2" data-nombre="Celeste" title="Celeste" aria-label="Celeste"></button>
+                <button type="button" class="color" data-color="#141B5B" data-nombre="Azul UNICAH" title="Azul UNICAH" aria-label="Azul UNICAH"></button>
+                  <label class="color color--libre" title="Otro color">
+                    <input type="color" class="selector-color__libre" aria-label="Elegir otro color" />
+                  </label>
+                </div>
+                <label class="color-codigo">Código
+                  <input class="color-elegido__input" maxlength="7" spellcheck="false" />
+                </label>
+                <p class="nota nota--aviso color-elegido__aviso oculto">Este color es muy claro: el texto podría no leerse bien.</p>
               </div>
-              <label class="color-elegido__codigo">Código
-                <input class="color-elegido__input" maxlength="7" spellcheck="false" />
-              </label>
-            </div>
-            <p class="nota nota--aviso color-elegido__aviso oculto">Este color es muy claro: el texto encima o junto a él podría no leerse bien.</p>
+            </details>
+            <details class="selector-color" name="colores" data-modulos="placas" data-campo="colorNombre" data-por-defecto="#9A7A16" data-aviso-claro="si">
+              <summary class="selector-color__fila">
+                <span class="selector-color__muestra" aria-hidden="true"></span>
+                <span class="selector-color__textos">
+                  <small class="selector-color__para">Nombre y firmas</small>
+                  <span><strong class="color-elegido__nombre"></strong> <small class="color-elegido__detalle"></small></span>
+                </span>
+                <span class="selector-color__codigo"></span>
+              </summary>
+              <div class="selector-color__cuerpo">
+                <div class="colores">
+                <button type="button" class="color" data-color="#9A7A16" data-nombre="Dorado oscuro" title="Dorado oscuro" aria-label="Dorado oscuro"></button>
+                <button type="button" class="color" data-color="#141B5B" data-nombre="Azul UNICAH" title="Azul UNICAH" aria-label="Azul UNICAH"></button>
+                <button type="button" class="color" data-color="#1B1D2A" data-nombre="Negro" title="Negro" aria-label="Negro"></button>
+                <button type="button" class="color" data-color="#7A1428" data-nombre="Vino" title="Vino" aria-label="Vino"></button>
+                <button type="button" class="color" data-color="#1F5E3B" data-nombre="Verde" title="Verde" aria-label="Verde"></button>
+                <button type="button" class="color" data-color="#0F4C81" data-nombre="Azul rey" title="Azul rey" aria-label="Azul rey"></button>
+                <button type="button" class="color" data-color="#5B2A86" data-nombre="Morado" title="Morado" aria-label="Morado"></button>
+                <button type="button" class="color" data-color="#6B4E16" data-nombre="Bronce oscuro" title="Bronce oscuro" aria-label="Bronce oscuro"></button>
+                  <label class="color color--libre" title="Otro color">
+                    <input type="color" class="selector-color__libre" aria-label="Elegir otro color" />
+                  </label>
+                </div>
+                <label class="color-codigo">Código
+                  <input class="color-elegido__input" maxlength="7" spellcheck="false" />
+                </label>
+                <p class="nota nota--aviso color-elegido__aviso oculto">Este color es muy claro: el texto podría no leerse bien.</p>
+              </div>
+            </details>
           </div>
 
           <!-- Encabezado: las 2 líneas de arriba del diploma -->
