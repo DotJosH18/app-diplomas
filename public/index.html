@@ -682,9 +682,10 @@
     <div class="manual__contenido">
       <!-- Lo más rápido: el recorrido de la pantalla en la que estás -->
       <div class="manual__inicio">
-        <div>
-          <strong>¿Primera vez?</strong>
-          <p>Te mostramos, paso a paso y sobre la misma página, dónde está cada cosa. Toma 1 minuto.</p>
+        <img class="manual__magnus" src="img/magnus-guia.png" alt="Magnus, la mascota de UNICAH" />
+        <div class="manual__inicio-texto">
+          <strong>¿Primera vez? Magnus te guía</strong>
+          <p>Te muestra, paso a paso y sobre la misma página, dónde está cada cosa. Toma 1 minuto.</p>
         </div>
         <button type="button" class="boton boton--principal" data-recorrido="automatico"><span class="icono" aria-hidden="true">play_arrow</span><span class="boton__texto">Recorrido de esta pantalla</span></button>
       </div>
@@ -771,30 +772,37 @@
     </div>
   </dialog>
 
-  <!-- ==================== RECORRIDO GUIADO ====================
-       Una capa oscura con un "hueco" sobre el elemento que se explica
-       y un globo con el texto. Lo maneja ayuda.js. -->
+  <!-- ==================== RECORRIDO GUIADO (con Magnus) ====================
+       Una capa oscura con un "hueco" sobre el elemento que se explica y,
+       al lado, Magnus (la mascota de UNICAH) con un globo de diálogo.
+       Lo maneja ayuda.js. Las imágenes de Magnus están en img/. -->
   <div id="recorrido" class="recorrido oculto" role="dialog" aria-modal="true" aria-labelledby="recorrido-titulo">
     <div class="recorrido__foco" aria-hidden="true"></div>
     <div class="recorrido__globo">
-      <p class="recorrido__paso"><span id="recorrido-numero"></span></p>
-      <h3 id="recorrido-titulo" class="recorrido__titulo"></h3>
-      <p id="recorrido-texto" class="recorrido__texto"></p>
-      <div class="recorrido__botones">
-        <button type="button" id="recorrido-salir" class="boton boton--texto"><span class="boton__texto">Salir</span></button>
-        <span class="recorrido__espacio"></span>
-        <button type="button" id="recorrido-anterior" class="boton boton--chico" aria-label="Paso anterior"><span class="icono" aria-hidden="true">arrow_back</span></button>
-        <button type="button" id="recorrido-siguiente" class="boton boton--chico boton--principal"><span class="boton__texto">Siguiente</span><span class="icono" aria-hidden="true">arrow_forward</span></button>
+      <img class="recorrido__magnus" src="img/magnus-guia.png" alt="" />
+      <div class="recorrido__burbuja">
+        <p class="recorrido__paso"><span class="recorrido__quien">Magnus</span> · <span id="recorrido-numero"></span></p>
+        <h3 id="recorrido-titulo" class="recorrido__titulo"></h3>
+        <p id="recorrido-texto" class="recorrido__texto"></p>
+        <div class="recorrido__botones">
+          <button type="button" id="recorrido-salir" class="boton boton--texto"><span class="boton__texto">Salir</span></button>
+          <span class="recorrido__espacio"></span>
+          <button type="button" id="recorrido-anterior" class="boton boton--chico" aria-label="Paso anterior"><span class="icono" aria-hidden="true">arrow_back</span></button>
+          <button type="button" id="recorrido-siguiente" class="boton boton--chico boton--principal"><span class="boton__texto">Siguiente</span><span class="icono" aria-hidden="true">arrow_forward</span></button>
+        </div>
       </div>
     </div>
   </div>
 
   <!-- Aviso de bienvenida (solo la primera vez en este navegador) -->
   <div id="bienvenida" class="bienvenida oculto" role="status">
-    <p><strong>¿Primera vez aquí?</strong> Te mostramos cómo funciona en 1 minuto.</p>
-    <div class="bienvenida__botones">
-      <button type="button" id="bienvenida-no" class="boton boton--texto">No, gracias</button>
-      <button type="button" id="bienvenida-si" class="boton boton--chico boton--principal"><span class="icono" aria-hidden="true">play_arrow</span><span class="boton__texto">Ver recorrido</span></button>
+    <img class="bienvenida__magnus" src="img/magnus-guia.png" alt="" />
+    <div class="bienvenida__contenido">
+      <p><strong>¡Hola! Soy Magnus.</strong> ¿Es tu primera vez aquí? Te enseño cómo funciona en 1 minuto.</p>
+      <div class="bienvenida__botones">
+        <button type="button" id="bienvenida-no" class="boton boton--texto">Ahora no</button>
+        <button type="button" id="bienvenida-si" class="boton boton--chico boton--principal"><span class="icono" aria-hidden="true">play_arrow</span><span class="boton__texto">¡Vamos!</span></button>
+      </div>
     </div>
   </div>
 

@@ -4,7 +4,10 @@
 //  1. Manual: la ventana que abre el botón "? Ayuda" (su texto está
 //     en index.html, en <dialog id="manual">).
 //  2. Recorrido guiado: oscurece la página, resalta un elemento real
-//     y lo explica en un globo, paso a paso.
+//     y Magnus (la mascota de UNICAH) lo explica en un globo, paso a paso.
+//     Su imagen: img/magnus-guia.png (recorrido, manual y bienvenida).
+//     Magnus flota, da un saltito
+//     al cambiar de paso y "habla": su texto aparece letra por letra.
 //  3. Bienvenida: la primera vez (en este navegador) ofrece el recorrido.
 //
 //  PARA CAMBIAR LOS TEXTOS DEL RECORRIDO, O AGREGAR PASOS, solo edita
@@ -63,17 +66,17 @@ const RECORRIDOS = {
       {
         elemento: '.opcion',
         titulo: 'Elige qué vas a generar',
-        texto: 'Cada tarjeta es un tipo de documento y dice qué datos pide. Haz clic en la que necesites.',
+        texto: '¡Hola, soy Magnus! Cada tarjeta es un tipo de documento y dice qué datos pide. Haz clic en la que necesites.',
       },
       {
         elemento: '[data-herramienta="quitar-fondo"]',
         titulo: '¿Tu logo tiene fondo blanco?',
-        texto: 'Con esta herramienta se lo quitas en segundos y lo usas en los documentos.',
+        texto: 'Aquí le quito el fondo a tu logo en segundos, ¡y queda listo para tus documentos!',
       },
       {
         elemento: '#boton-ayuda',
         titulo: 'La ayuda siempre a mano',
-        texto: 'Aquí está el manual, con un recorrido para cada parte. Vuelve cuando quieras.',
+        texto: 'Aquí está el manual. Cuando me necesites, toca "Ayuda" y vuelvo a acompañarte.',
       },
     ],
   },
@@ -85,32 +88,32 @@ const RECORRIDOS = {
       {
         elemento: '#navegacion',
         titulo: 'Dónde estás',
-        texto: '"Inicio" vuelve a las tarjetas. El nombre del documento abre una lista para cambiar a otro tipo sin salir.',
+        texto: '¡Vamos con este! Desde aquí vuelves al "Inicio", o tocas el nombre del documento para cambiar a otro tipo sin salir.',
       },
       {
         elemento: '#pestanas',
         titulo: 'Dos formas de trabajar',
-        texto: '"Uno a la vez" para un documento, o "Desde Excel" para hacer muchos de una sola vez.',
+        texto: '¿Es solo uno? Quédate en "Uno a la vez". ¿Son muchos? "Desde Excel" los hace todos de un jalón.',
       },
       {
         elemento: '#form-individual .rejilla',
         titulo: 'Llena los datos',
-        texto: 'Los campos con * son obligatorios. Si dejas uno vacío, se usa lo que se ve en gris (como la fecha de hoy). Escribe **así** para negrita y pulsa Enter para otro párrafo.',
+        texto: 'Llena lo que tiene *, eso sí es obligatorio. Si dejas algo vacío, uso lo que ves en gris (como la fecha de hoy). Tip: escribe **así** para negrita.',
       },
       {
         elemento: '#boton-vista',
         titulo: 'Mira cómo queda',
-        texto: 'La vista previa aparece al lado, antes de descargar.',
+        texto: 'Antes de descargar, revisa cómo queda. ¡Así no hay sorpresas!',
       },
       {
         elemento: '#form-individual .acciones',
         titulo: 'Descarga',
-        texto: 'Descarga el PDF. En algunos tipos también puedes descargarlo como imagen (PNG), útil para redes sociales.',
+        texto: '¡Listo! Descarga tu PDF. En algunos tipos también sale como imagen (PNG), perfecta para redes sociales o WhatsApp.',
       },
       {
         elemento: '#personalizar',
         titulo: 'Opcional: personaliza el diseño',
-        texto: 'Colores, encabezado y logo, con una miniatura que cambia al momento. Tiene su propio recorrido en la Ayuda.',
+        texto: '¿Le quieres dar tu toque? Aquí cambias colores, encabezado y logo. Si quieres, te lo enseño en otro recorrido.',
       },
     ],
   },
@@ -122,34 +125,34 @@ const RECORRIDOS = {
       {
         elemento: '#enlace-modelo',
         titulo: 'Empieza con el Excel modelo',
-        texto: 'Descárgalo: ya trae las columnas correctas para este tipo de documento. Llena una fila por persona.',
+        texto: '¡Empecemos con el Excel! Descarga este modelo: ya trae las columnas correctas. Llena una fila por persona.',
         soloSi: noHayExcelRevisado,
       },
       {
         elemento: '#zona-excel',
         titulo: 'Sube tu Excel',
-        texto: 'Arrástralo aquí o haz clic para buscarlo. Enseguida verás una tabla con cómo quedará cada fila.',
+        texto: 'Ahora suéltalo aquí (o haz clic para buscarlo) y yo reviso cada fila por ti.',
         soloSi: noHayExcelRevisado,
       },
       {
         elemento: '#revision .resumen',
         titulo: 'La revisión',
-        texto: 'Cuántas filas hay, cuántas están listas y cuántas tienen errores.',
+        texto: 'Ya revisé tu Excel: aquí ves cuántas filas hay, cuántas están listas y cuántas necesitan arreglo.',
       },
       {
         elemento: '#revision .comunes',
         titulo: 'Datos comunes',
-        texto: 'Lo que se repite en todas las filas (lugar, fecha, firmas): escríbelo una vez aquí. Se usa en las filas que lo tengan vacío.',
+        texto: '¿Algo se repite en todas las filas, como el lugar o las firmas? Escríbelo una sola vez aquí y lo uso donde falte.',
       },
       {
         elemento: '#revision .tabla-contenedor',
         titulo: 'Cada fila',
-        texto: 'Las filas con error dicen qué les falta. Con "Ver" miras cómo quedará cada documento.',
+        texto: 'Si una fila tiene error, te digo qué le falta. Con "Ver" miras cómo quedará cada documento.',
       },
       {
         elemento: '#boton-generar-excel',
         titulo: 'Genera todos',
-        texto: 'Se descarga un solo PDF con una página por cada fila lista. Las filas con errores se omiten.',
+        texto: '¡El momento final! Te doy un solo PDF con una página por cada fila lista. Las que tienen error las salto.',
       },
     ],
   },
@@ -162,37 +165,37 @@ const RECORRIDOS = {
       {
         elemento: '.mini-vista',
         titulo: 'Vista en miniatura',
-        texto: 'Muestra el documento con tus cambios, al momento.',
+        texto: '¡Mira! Esta miniatura cambia al momento con todo lo que elijas.',
       },
       {
         elemento: '.paletas',
         titulo: 'Combinaciones listas',
-        texto: 'Un clic y cambian todos los colores, ya combinados.',
+        texto: 'Sin complicarte: un clic y cambian todos los colores, ya combinados.',
       },
       {
         elemento: '.colores-panel',
         titulo: 'Colores',
-        texto: 'Haz clic en una fila para elegir otro color, o escribe su código (por ejemplo #7A1428).',
+        texto: '¿Prefieres elegir tú? Toca una fila y escoge el color, o escribe su código (por ejemplo #7A1428).',
       },
       {
         elemento: '.campos-encabezado',
         titulo: 'Encabezado',
-        texto: 'Cambia las líneas de arriba del documento. Si las dejas vacías, se usa el texto de siempre.',
+        texto: 'Aquí cambias las líneas de arriba. Si las dejas vacías, pongo el texto de siempre.',
       },
       {
         elemento: '#input-titulo',
         titulo: 'Título',
-        texto: 'Cambia "COMUNICADO" por otro título, como "NOTA DE DUELO".',
+        texto: 'Puedes cambiar "COMUNICADO" por otro título, como "NOTA DE DUELO".',
       },
       {
         elemento: '.carga-logo',
         titulo: 'Logo',
-        texto: 'Sube otro logo (PNG o JPG). Uno sin fondo se ve mejor: usa la herramienta "Quitar fondo de logos".',
+        texto: 'Sube otro logo (PNG o JPG). Consejo de Magnus: sin fondo se ve mucho mejor.',
       },
       {
         elemento: '#boton-restablecer',
         titulo: 'Volver a lo original',
-        texto: 'Deja colores, textos y logo como estaban.',
+        texto: '¿Te arrepentiste? Tranquilo, aquí todo vuelve a como estaba.',
       },
     ],
   },
@@ -203,23 +206,23 @@ const RECORRIDOS = {
       {
         elemento: '#zona-fondo',
         titulo: 'Sube la imagen del logo',
-        texto: 'Arrástrala aquí o haz clic para buscarla. El fondo se quita solo.',
+        texto: 'Suelta aquí la imagen de tu logo (o haz clic para buscarla) y yo le quito el fondo solito.',
         soloSi: noHayLogoCargado,
       },
       {
         elemento: '.editor-fondo__imagenes',
         titulo: 'Antes y después',
-        texto: 'A la izquierda la original (haz clic en su fondo si quieres elegir otro color); a la derecha el resultado: los cuadritos son lo transparente.',
+        texto: 'A la izquierda, la original; a la derecha, cómo quedó. Los cuadritos son la parte transparente.',
       },
       {
         elemento: '.control-deslizable',
         titulo: 'Tolerancia',
-        texto: 'Súbela si quedan restos del fondo; bájala si se borra parte del logo.',
+        texto: '¿Quedaron restos del fondo? Súbela. ¿Se borró parte del logo? Bájala un poco.',
       },
       {
         elemento: '#boton-usar-logo',
         titulo: 'Úsalo en los documentos',
-        texto: 'Queda como logo en "Personalizar diseño". También puedes descargar el PNG.',
+        texto: '¡Quedó genial! Úsalo en tus documentos o descárgalo como PNG.',
       },
     ],
   },
@@ -361,7 +364,7 @@ function mostrarPaso() {
 
   textoNumero.textContent = `Paso ${numeroDePaso + 1} de ${pasosActuales.length}`;
   textoTitulo.textContent = paso.titulo;
-  textoExplicacion.textContent = paso.texto;
+  escribirPocoAPoco(paso.texto); // Magnus lo "dice" letra por letra
   botonAnterior.disabled = numeroDePaso === 0;
   // En el último paso, "Siguiente →" se convierte en "Terminar ✓"
   const iconoSiguiente = botonSiguiente.querySelector('.icono');
@@ -383,6 +386,46 @@ function mostrarPaso() {
   temporizadorAnimacion = setTimeout(function () {
     capaRecorrido.classList.remove('cambiando-paso');
   }, 300);
+}
+
+// ---------- Magnus "habla": el texto aparece poco a poco ----------
+// El texto completo se pone desde el inicio en dos partes:
+//   <span>lo que ya dijo</span><span class="por-decir">lo que falta</span>
+// "por-decir" es invisible pero ocupa su lugar: así el globo ya tiene su
+// tamaño final y no salta mientras aparecen las letras.
+let temporizadorEscritura = null;
+const LETRAS_POR_VEZ = 2;   // cuántas letras aparecen cada vez
+const CADA_MILISEGUNDOS = 18;
+
+function escribirPocoAPoco(texto) {
+  clearInterval(temporizadorEscritura);
+  textoExplicacion.setAttribute('aria-label', texto); // los lectores de pantalla leen todo de una vez
+
+  const yaDicho = document.createElement('span');
+  const porDecir = document.createElement('span');
+  porDecir.classList.add('por-decir');
+  porDecir.setAttribute('aria-hidden', 'true');
+  textoExplicacion.replaceChildren(yaDicho, porDecir);
+
+  // Si la persona pidió menos animaciones en su sistema, todo aparece de una vez
+  const sinAnimaciones = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (sinAnimaciones) {
+    yaDicho.textContent = texto;
+    return;
+  }
+
+  let letras = 0;
+  porDecir.textContent = texto;
+  capaRecorrido.classList.add('hablando'); // Magnus se mueve mientras "habla"
+  temporizadorEscritura = setInterval(function () {
+    letras = letras + LETRAS_POR_VEZ;
+    yaDicho.textContent = texto.slice(0, letras);
+    porDecir.textContent = texto.slice(letras);
+    if (letras >= texto.length) {
+      clearInterval(temporizadorEscritura);
+      capaRecorrido.classList.remove('hablando');
+    }
+  }, CADA_MILISEGUNDOS);
 }
 
 /**
@@ -460,6 +503,7 @@ function pasoAnterior() {
 }
 
 function terminarRecorrido() {
+  clearInterval(temporizadorEscritura);
   ocultar(capaRecorrido);
   pasosActuales = [];
 }

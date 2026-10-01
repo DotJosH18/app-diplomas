@@ -726,6 +726,8 @@ details[open] > summary .flecha-desplegable { transform: rotate(180deg); }
   background: linear-gradient(120deg, var(--azul-suave), var(--dorado-suave));
 }
 .manual__inicio strong { color: var(--azul); }
+.manual__magnus { width: 58px; height: auto; flex-shrink: 0; margin: -6px 0 -14px; filter: drop-shadow(0 4px 8px #14185033); }
+.manual__inicio-texto { flex: 1; min-width: 200px; }
 .manual__inicio p { margin: 2px 0 0; font-size: .85rem; color: var(--texto-suave); }
 .manual__resumen { margin: 18px 0 12px; font-size: .9rem; }
 .manual__seccion { border: 1px solid var(--borde); border-radius: 16px; background: var(--superficie); transition: box-shadow .15s; }
@@ -766,10 +768,35 @@ details[open] > summary .flecha-desplegable { transform: rotate(180deg); }
   box-shadow: 0 0 0 9999px #0b0f2fb3;   /* oscurece todo lo demás */
   pointer-events: none;
 }
+/* El "globo" es Magnus + su burbuja de diálogo, uno al lado del otro */
 .recorrido__globo {
-  position: absolute; left: var(--globo-x); top: var(--globo-y); width: min(380px, calc(100vw - 32px));
-  padding: 18px 18px 14px; background: var(--superficie); border-radius: 20px; box-shadow: var(--sombra-alta);
+  position: absolute; left: var(--globo-x); top: var(--globo-y); width: min(500px, calc(100vw - 32px));
+  display: flex; align-items: flex-end; gap: 6px;
 }
+/* Magnus: flota suavemente y da un saltito al cambiar de paso */
+.recorrido__magnus {
+  width: 112px; height: auto; flex-shrink: 0; margin-bottom: -6px;
+  filter: drop-shadow(0 8px 14px #0000004d);
+  animation: magnus-flota 3s ease-in-out infinite;
+}
+.recorrido.hablando .recorrido__magnus { animation: magnus-habla .5s ease-in-out infinite; }
+.recorrido.cambiando-paso .recorrido__magnus { animation: magnus-salta .45s ease-out; }
+@keyframes magnus-habla { 25% { transform: rotate(-2deg) translateY(-2px); } 75% { transform: rotate(2deg); } }
+.recorrido__magnus { transform-origin: 50% 100%; }   /* se mueve desde los pies */
+.por-decir { visibility: hidden; }                  /* el texto que Magnus aún no "dice" */
+@keyframes magnus-flota { 50% { transform: translateY(-5px); } }
+@keyframes magnus-salta { 40% { transform: translateY(-14px) rotate(-4deg); } }
+
+/* La burbuja, con una "colita" que apunta a Magnus */
+.recorrido__burbuja {
+  position: relative; flex: 1; min-width: 0; margin-bottom: 34px;
+  padding: 16px 18px 14px; background: var(--superficie); border-radius: 20px; box-shadow: var(--sombra-alta);
+}
+.recorrido__burbuja::before {
+  content: ''; position: absolute; left: -9px; bottom: 26px; width: 18px; height: 18px;
+  background: var(--superficie); transform: rotate(45deg); border-radius: 3px;
+}
+.recorrido__quien { color: var(--azul); }
 .recorrido__paso { margin: 0; font-size: .7rem; font-weight: 700; color: var(--dorado); text-transform: uppercase; letter-spacing: .08em; }
 .recorrido__titulo { margin: 4px 0 6px; font-size: 1.05rem; color: var(--azul); }
 .recorrido__texto { margin: 0; font-size: .88rem; line-height: 1.55; color: var(--texto-suave); }
@@ -782,10 +809,20 @@ details[open] > summary .flecha-desplegable { transform: rotate(180deg); }
 .recorrido.cambiando-paso .recorrido__globo { transition: left .25s, top .25s; }
 
 .bienvenida {
-  position: fixed; right: 20px; bottom: 20px; z-index: 90; width: min(360px, calc(100vw - 32px));
-  padding: 16px 16px 12px; background: var(--superficie); border-radius: 20px;
+  position: fixed; right: 20px; bottom: 20px; z-index: 90; width: min(400px, calc(100vw - 32px));
+  display: flex; align-items: flex-end; gap: 4px;
+  animation: aparecer .3s ease-out;
+}
+/* Magnus, al lado del mensaje: saluda al aparecer */
+.bienvenida__magnus { width: 80px; height: auto; flex-shrink: 0; filter: drop-shadow(0 6px 10px #14185033); transform-origin: 50% 100%; animation: magnus-saluda 1.2s ease-in-out .3s 2; }
+@keyframes magnus-saluda { 20%, 60% { transform: rotate(-6deg); } 40%, 80% { transform: rotate(6deg); } }
+.bienvenida__contenido {
+  position: relative; flex: 1; padding: 14px 16px 10px; background: var(--superficie); border-radius: 20px;
   box-shadow: var(--sombra-alta), 0 0 0 1px var(--borde);
-  animation: aparecer .25s ease-out;
+}
+.bienvenida__contenido::before {   /* colita hacia Magnus */
+  content: ''; position: absolute; left: -7px; bottom: 30px; width: 14px; height: 14px;
+  background: var(--superficie); transform: rotate(45deg); box-shadow: -1px 1px 0 var(--borde);
 }
 .bienvenida p { margin: 0; font-size: .88rem; }
 .bienvenida strong { color: var(--azul); }
@@ -900,6 +937,10 @@ details[open] > summary .flecha-desplegable { transform: rotate(180deg); }
   .vista { position: relative; top: 0; }
 }
 @media (max-width: 560px) {
+  .recorrido__magnus { width: 70px; }
+  .recorrido__burbuja { margin-bottom: 20px; padding: 14px 14px 12px; }
+  .recorrido__burbuja::before { bottom: 18px; }
+  .bienvenida__magnus { width: 64px; }
   .contenedor { padding-top: 20px; }
   .menu__titulo { font-size: 1.6rem; }
   .paletas { grid-template-columns: repeat(2, 1fr); }
@@ -928,4 +969,10 @@ details[open] > summary .flecha-desplegable { transform: rotate(180deg); }
   .dato__icono { width: 36px; height: 36px; }
   .dato div span { font-size: 1.35rem; }
   .ventana__barra { padding: 10px 12px; }
+}
+
+/* Si la persona pidió menos animaciones en su sistema, Magnus se queda quieto */
+@media (prefers-reduced-motion: reduce) {
+  .recorrido__magnus, .recorrido.hablando .recorrido__magnus, .recorrido.cambiando-paso .recorrido__magnus { animation: none; }
+  .bienvenida__magnus { animation: none; }
 }

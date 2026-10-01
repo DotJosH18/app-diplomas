@@ -419,6 +419,13 @@ El botón **"? Ayuda"** (arriba a la derecha) abre el manual. Está pensado para
 - **Bienvenida:** la primera vez, abajo a la derecha aparece "¿Primera vez aquí?". Se recuerda en el navegador (`localStorage`) para no repetirla.
 - **Pasos inteligentes:** los pasos de algo que no se ve se saltan solos. Ejemplos: "Combinaciones listas" solo sale en Placas; "Sube tu Excel" ya no sale si ya subiste uno.
 
+**Magnus, el guía.** La mascota de UNICAH acompaña el recorrido, la bienvenida y el manual (`public/img/magnus-guia.png`, con el fondo ya quitado). No usa librerías: solo animaciones CSS en `estilos.css` (busca `magnus-`):
+- flota suavemente (`magnus-flota`), da un saltito al cambiar de paso (`magnus-salta`), se mueve mientras "habla" (`magnus-habla`) y saluda en la bienvenida (`magnus-saluda`);
+- su texto aparece letra por letra (`escribirPocoAPoco` en `ayuda.js`; la velocidad está en `LETRAS_POR_VEZ` y `CADA_MILISEGUNDOS`);
+- si la computadora tiene activado "reducir movimiento", Magnus se queda quieto y el texto sale completo.
+
+Para cambiar su imagen, reemplaza `magnus-guia.png` por otro PNG con fondo transparente (puedes usar la herramienta "Quitar fondo de logos").
+
 **Cambiar o agregar pasos:** edita la lista `RECORRIDOS` al principio de `public/js/ayuda.js`. Cada paso es:
 
 ```js
