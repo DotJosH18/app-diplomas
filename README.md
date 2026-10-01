@@ -661,7 +661,7 @@ import { generarPDF } from './services/pdf.service.js';
 El proyecto ya viene listo:
 
 - **`render.yaml`:** Render lo lee y configura el servicio solo.
-- **`package.json`:** dice que se use Node 22.
+- **`package.json`:** dice que se use Node 22 o más nuevo (`">=22"`); Render usa la versión más reciente disponible.
 - **`.gitignore`:** evita subir `node_modules` y `.env`.
 
 ### 1. Subir el código a GitHub

@@ -954,13 +954,15 @@ details[open] > summary .flecha-desplegable { transform: rotate(180deg); }
      </span>
    Cada movimiento tiene su propio ritmo, así no se ve repetido.
    ========================================================= */
-.magnus {
-  position: relative; display: block; aspect-ratio: 1; border-radius: 50%;
+.magnus { position: relative; display: block; aspect-ratio: 1; }
+/* El círculo completo (fondo, aro dorado y cara) es lo que se mueve:
+   así, al inclinarse, Magnus nunca se ve cortado dentro del círculo. */
+.magnus__cara {
+  position: absolute; inset: 0; display: block; border-radius: 50%; overflow: hidden;
   background: radial-gradient(circle at 50% 35%, #ffffff 0%, var(--azul-suave) 70%);
   box-shadow: 0 0 0 3px var(--dorado-claro), 0 6px 16px #14185040;
-  overflow: hidden;
+  transform-origin: 50% 90%;
 }
-.magnus__cara { position: absolute; inset: 0; display: block; transform-origin: 50% 85%; }
 .magnus__cara img {
   position: absolute; inset: 0; display: block; width: 100%; height: 100%;
   user-select: none; pointer-events: none;
@@ -970,8 +972,8 @@ details[open] > summary .flecha-desplegable { transform: rotate(180deg); }
 .magnus__cara { animation: magnus-mira 5s ease-in-out infinite; }
 @keyframes magnus-mira {
   0%, 100% { transform: rotate(0deg) translateY(0); }
-  25% { transform: rotate(-4deg) translateY(-1%); }
-  60% { transform: rotate(3deg) translateY(1%); }
+  25% { transform: rotate(-5deg); }
+  60% { transform: rotate(4deg); }
 }
 
 /* Parpadea de vez en cuando: los "ojos cerrados" aparecen un instante */
@@ -984,13 +986,13 @@ details[open] > summary .flecha-desplegable { transform: rotate(180deg); }
 
 /* Mientras "habla", asiente con la cabeza */
 .recorrido.hablando .magnus__cara { animation: magnus-habla .4s ease-in-out infinite; }
-@keyframes magnus-habla { 50% { transform: rotate(-3deg) translateY(3%); } }
+@keyframes magnus-habla { 50% { transform: rotate(-4deg) translateY(2px); } }
 
 /* Mira hacia el elemento: se inclina hacia él (la caja está en espejo,
    así que "hacia la izquierda" es siempre "hacia el elemento") */
 .recorrido.senalando .magnus__cara { animation: magnus-senala 1.1s ease-out; }
 @keyframes magnus-senala {
-  30%, 70% { transform: rotate(-10deg) translateX(-6%); }
+  30%, 70% { transform: rotate(-12deg) translateX(-4px); }
 }
 
 /* En la bienvenida, saluda: un saltito y mueve la cabeza */
