@@ -16,7 +16,8 @@
 //    excel.js          pestaña "Desde Excel" (revisión, vista previa de filas, PDF con todas)
 //    configuracion.js  valores en gris (fecha de hoy…) y contadores de caracteres
 //    quitar-fondo.js   herramienta "Quitar fondo de logos"
-//    qr.js             herramienta "Generar código QR" (con logo en el centro)
+//    qr.js             herramienta "Generar código QR" (controles)
+//    qr-dibujo.js      dibuja el QR como SVG según el diseño (lo usa qr.js)
 //    ayuda.js          manual de usuario (botón "? Ayuda") y recorrido guiado
 //    magnus.js         lo que hace Magnus en el recorrido (señalar, presionar, escribir…)
 //
@@ -27,6 +28,7 @@
 //                       └──► excel       ──► personalizar
 //    main ──► configuracion, quitar-fondo ──► personalizar
 //    main ──► ayuda ──► navegacion, utilidades, estado, magnus
+//    main ──► qr ──► qr-dibujo, utilidades
 //
 //  La regla de la página: JavaScript solo agrega o quita clases y pone
 //  variables CSS (--color-elegido…). Los estilos están en css/estilos.css.

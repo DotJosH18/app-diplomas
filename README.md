@@ -104,7 +104,8 @@ diplomas-app/
 │   │   ├── excel.js                      Pestaña "Desde Excel"
 │   │   ├── configuracion.js              Valores en gris y contadores de caracteres
 │   │   ├── quitar-fondo.js               Herramienta "Quitar fondo de logos"
-│   │   ├── qr.js                         Herramienta "Generar código QR" (con logo en el centro)
+│   │   ├── qr.js                         Herramienta "Generar código QR": los controles
+│   │   ├── qr-dibujo.js                  Dibuja el QR (SVG) según el diseño elegido
 │   │   ├── ayuda.js                      Manual de usuario ("? Ayuda") y recorrido guiado
 │   │   └── magnus.js                     Lo que hace Magnus en el recorrido (señalar, presionar, escribir…)
 │   └── img/                              Muestras del menú y logo por defecto (vista previa)
@@ -381,14 +382,25 @@ Es la última tarjeta del menú. No genera diplomas: deja un logo con **fondo tr
 
 ## Herramienta: generar código QR
 
-Otra tarjeta del menú. Crea un QR para cualquier link (página, formulario, video, WhatsApp…) con un logo en el centro.
+Otra tarjeta del menú. Crea códigos QR con tu diseño, todo en el navegador (el contenido y el logo no se envían al servidor).
 
-- **Todo pasa en el navegador** (`public/js/qr.js`): el link y el logo no se envían al servidor.
-- **Librería:** `qrcode-generator` (npm, MIT). Solo calcula qué cuadritos del QR van oscuros; `app.js` la sirve en `/librerias/qrcode`. El resto (esquinas redondeadas, logo, colores) lo dibuja `qr.js`.
-- **Cómo se arma:** con los cuadritos se escribe un dibujo **SVG**. Ese mismo SVG se muestra como vista previa, se descarga como `.svg` (para imprimir en grande sin que se vea borroso) y se pinta en un `<canvas>` para descargarlo como `.png` (512, 1024 o 2048 px).
-- **¿Por qué se lee aunque el logo tape el centro?** El QR usa corrección de errores **alta ('H')**: aguanta que falte cerca del 30 %. Por eso el logo puede ocupar como máximo el 26 % del ancho, y por defecto lleva un fondo blanco detrás.
-- **Opciones:** logo de UNICAH, otro logo subido o sin logo; tamaño del logo; color (avisa si es tan claro que algunos celulares no lo leerían).
-- Lo probamos leyendo los PNG con un lector de QR: links con tildes y ñ, links largos, logo al 26 %, sin fondo, otros colores y otros logos.
+**Pantalla:** a la izquierda la vista previa (se queda a la vista al bajar), con un aviso **"Fácil de leer"** (verde) o lo que conviene mejorar (amarillo), y los botones **Descargar** (PNG 512/1024/2048 px o SVG) y **Copiar** (para pegar directo en WhatsApp, Word, correo…). A la derecha, 4 pestañas:
+
+| Pestaña   | Qué tiene |
+|-----------|-----------|
+| Contenido | Qué abrirá el QR: **link** (agrega `https://` solo), **WhatsApp** (número + mensaje), **correo** (asunto y mensaje), **Wi-Fi** (se conecta sin escribir la clave) o **texto**. |
+| Diseño    | **Plantillas** (Clásico, UNICAH, Moderno, Suave, Con marco), forma de los **puntos** (cuadrados, redondeados, suaves, puntos), forma de las **esquinas** (marco y centro), **colores** (puntos, degradado, esquinas, fondo o transparente). |
+| Logo      | UNICAH, otro logo o ninguno; tamaño (12–26 %), fondo detrás y su forma (cuadrado o círculo). |
+| Marco     | Sin marco o un marco de color con un texto abajo ("ESCANÉAME"). |
+
+**Archivos:**
+- `public/js/qr-dibujo.js`: arma el dibujo **SVG** del QR según el diseño. Ahí están `DISENO_INICIAL` (todo lo que se puede cambiar) y `PLANTILLAS` (para agregar una plantilla, copia una y cambia sus valores).
+- `public/js/qr.js`: los controles. Cada control del HTML con `data-ajuste="nombre"` cambia `diseno.nombre` (ej. `data-ajuste="colorPuntos"`), así que un control nuevo solo necesita ese atributo y su valor en `DISENO_INICIAL`.
+- Librería `qrcode-generator` (npm, MIT): solo calcula qué cuadritos van oscuros; `app.js` la sirve en `/librerias/qrcode`.
+
+**¿Por qué se lee con logo y formas redondeadas?** El QR usa corrección de errores **alta ('H')**: aguanta que falte cerca del 30 %. Además, `qr.js` revisa el contraste entre los puntos y el fondo (y que los puntos sean más oscuros), y lo avisa.
+
+**Cómo lo probamos:** las 36 combinaciones de puntos y esquinas, las 5 plantillas, logo al 26 %, WhatsApp, Wi-Fi y correo se leyeron con ZXing (el lector que usan muchos celulares Android), también achicadas a 230 px. Lectores muy antiguos pueden fallar con formas redondeadas: por eso la página recomienda **cuadrados** si el QR va a lugares con lectores viejos. Igual, siempre conviene probarlo con un celular antes de imprimir.
 
 ## Diseño de la página: botones e iconos
 

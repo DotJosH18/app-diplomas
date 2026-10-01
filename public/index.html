@@ -232,81 +232,222 @@
     </section>
 
     <!-- ==================== HERRAMIENTA: GENERAR CÓDIGO QR ====================
-         Todo se hace en el navegador (js/qr.js): el link y el logo no se envían al servidor.
-         El QR se arma como un dibujo SVG; el PNG se saca de ese mismo dibujo. -->
+         Todo se hace en el navegador: el contenido y el logo no se envían al servidor.
+           js/qr.js         los controles de esta pantalla
+           js/qr-dibujo.js  arma el dibujo del QR (SVG) según el diseño elegido
+         Los controles con data-ajuste="…" cambian esa parte del diseño
+         (el nombre es el mismo que en DISENO_INICIAL de qr-dibujo.js). -->
     <section id="herramienta-qr" class="herramienta oculto" data-herramienta="qr">
       <div class="herramienta__intro">
         <h2 class="herramienta__titulo"><span class="titulo-icono"><span class="icono" aria-hidden="true">qr_code_2</span></span>Generar un código QR</h2>
-        <p class="nota">Escribe el link, elige el logo del centro y el color. El QR se actualiza al momento. Antes de imprimirlo, revísalo con la cámara de tu celular.</p>
+        <p class="nota">Elige qué guardará el QR, dale tu estilo y descárgalo. Todo se ve al momento.</p>
       </div>
 
-      <div class="editor-qr">
-        <!-- Vista previa -->
-        <figure class="editor-qr__vista tarjeta">
-          <div id="qr-dibujo" class="editor-qr__dibujo"></div>
-          <figcaption id="qr-estado" class="editor-qr__estado" aria-live="polite">Escribe un link para ver tu QR</figcaption>
-        </figure>
+      <div class="estudio-qr">
+        <!-- ===== Vista previa (se queda a la vista al bajar) ===== -->
+        <aside class="estudio-qr__vista tarjeta" aria-label="Vista previa del QR">
+          <div id="qr-dibujo" class="estudio-qr__dibujo"></div>
+          <p id="qr-lectura" class="lectura-qr oculto"><span class="icono" aria-hidden="true">check_circle</span><span id="qr-lectura-texto"></span></p>
+          <p id="qr-estado" class="estudio-qr__estado" aria-live="polite">Escribe un link para ver tu QR</p>
 
-        <!-- Opciones -->
-        <form id="form-qr" class="tarjeta editor-qr__controles" novalidate>
-          <label class="campo-qr">
-            <span class="personalizar__etiqueta">Link</span>
-            <span class="campo-qr__caja">
-              <span class="icono" aria-hidden="true">link</span>
-              <input id="qr-link" type="text" inputmode="url" autocomplete="off" maxlength="900"
-                placeholder="https://www.unicah.edu" />
-            </span>
-          </label>
-          <p class="nota">También sirve para un texto, un correo o WhatsApp (ej. https://wa.me/50499999999).</p>
-
-          <p class="personalizar__etiqueta">Logo del centro</p>
-          <div class="opciones-qr" role="radiogroup" aria-label="Logo del centro">
-            <label class="opcion-qr"><input type="radio" name="qr-logo" value="unicah" checked /><span><span class="icono" aria-hidden="true">image</span>UNICAH</span></label>
-            <label class="opcion-qr"><input type="radio" name="qr-logo" value="propio" /><span><span class="icono" aria-hidden="true">upload</span>Otro logo</span></label>
-            <label class="opcion-qr"><input type="radio" name="qr-logo" value="ninguno" /><span><span class="icono" aria-hidden="true">hide_image</span>Sin logo</span></label>
-          </div>
-          <input id="qr-archivo-logo" type="file" accept=".png,.jpg,.jpeg,.webp" hidden />
-          <div id="qr-logo-propio" class="logo-propio-qr oculto">
-            <span class="icono" aria-hidden="true">image</span>
-            <span id="qr-nombre-logo" class="logo-propio-qr__nombre"></span>
-            <button type="button" id="qr-cambiar-logo" class="boton boton--texto boton--chico"><span class="icono" aria-hidden="true">swap_horiz</span><span class="boton__texto">Cambiar</span></button>
-          </div>
-          <p class="nota">Consejo: un logo sin fondo (PNG) se ve mejor. Puedes quitárselo con la herramienta "Quitar fondo de logos".</p>
-
-          <div id="qr-opciones-logo">
-            <label class="control-deslizable">
-              <span>Tamaño del logo <strong id="qr-valor-tamano">22%</strong></span>
-              <input id="qr-tamano-logo" type="range" min="12" max="26" value="22" />
-            </label>
-            <label class="casilla"><input id="qr-fondo-logo" type="checkbox" checked /> Fondo blanco detrás del logo <small>(se lee mejor)</small></label>
-          </div>
-
-          <p class="personalizar__etiqueta">Color del QR</p>
-          <div class="colores" id="qr-colores">
-            <button type="button" class="color activo" data-color="#141B5B" title="Azul UNICAH" aria-label="Azul UNICAH"></button>
-            <button type="button" class="color" data-color="#000000" title="Negro" aria-label="Negro"></button>
-            <button type="button" class="color" data-color="#7A1428" title="Vino" aria-label="Vino"></button>
-            <button type="button" class="color" data-color="#1F5E3B" title="Verde" aria-label="Verde"></button>
-            <button type="button" class="color" data-color="#5B2A86" title="Morado" aria-label="Morado"></button>
-            <label class="color color--libre" title="Otro color"><input id="qr-color-libre" type="color" value="#141B5B" aria-label="Otro color" /></label>
-          </div>
-          <p id="qr-aviso-color" class="nota nota--aviso oculto">Ese color es muy claro: algunos celulares no podrán leer el QR. Usa uno más oscuro.</p>
-
-          <label class="campo-qr">
-            <span class="personalizar__etiqueta">Tamaño de la imagen (PNG)</span>
-            <select id="qr-tamano-png">
-              <option value="512">Pequeño · 512 px (redes, WhatsApp)</option>
-              <option value="1024" selected>Mediano · 1024 px (documentos)</option>
-              <option value="2048">Grande · 2048 px (impresión)</option>
+          <div class="descarga-qr">
+            <div class="segmentado" role="radiogroup" aria-label="Formato">
+              <label><input type="radio" name="qr-formato" value="png" checked /><span>PNG</span></label>
+              <label><input type="radio" name="qr-formato" value="svg" /><span>SVG</span></label>
+            </div>
+            <select id="qr-tamano-png" aria-label="Tamaño del PNG">
+              <option value="512">512 px · redes</option>
+              <option value="1024" selected>1024 px · documentos</option>
+              <option value="2048">2048 px · imprimir</option>
             </select>
-          </label>
-
-          <div class="acciones">
-            <button type="button" id="qr-descargar-svg" class="boton"><span class="icono" aria-hidden="true">download</span><span class="boton__texto">SVG (para imprimir)</span></button>
-            <button type="button" id="qr-descargar-png" class="boton boton--principal"><span class="icono" aria-hidden="true">download</span><span class="boton__texto">Descargar PNG</span></button>
+          </div>
+          <p id="qr-ayuda-formato" class="nota estudio-qr__ayuda">PNG: una imagen para redes, WhatsApp o documentos.</p>
+          <div class="acciones estudio-qr__botones">
+            <button type="button" id="qr-copiar" class="boton"><span class="icono" aria-hidden="true">content_copy</span><span class="boton__texto">Copiar</span></button>
+            <button type="button" id="qr-descargar" class="boton boton--principal"><span class="icono" aria-hidden="true">download</span><span class="boton__texto">Descargar</span></button>
           </div>
           <p id="mensaje-qr" class="mensaje"></p>
-        </form>
+        </aside>
+
+        <!-- ===== Opciones, en 4 pestañas ===== -->
+        <div class="estudio-qr__panel tarjeta">
+          <div id="qr-pestanas" class="pestanas-qr" role="tablist">
+            <button type="button" class="pestana-qr activa" data-panel-qr="contenido" role="tab"><span class="icono" aria-hidden="true">link</span><span>Contenido</span></button>
+            <button type="button" class="pestana-qr" data-panel-qr="diseno" role="tab"><span class="icono" aria-hidden="true">palette</span><span>Diseño</span></button>
+            <button type="button" class="pestana-qr" data-panel-qr="logo" role="tab"><span class="icono" aria-hidden="true">image</span><span>Logo</span></button>
+            <button type="button" class="pestana-qr" data-panel-qr="marco" role="tab"><span class="icono" aria-hidden="true">crop_free</span><span>Marco</span></button>
+          </div>
+
+          <!-- 1. CONTENIDO: qué guarda el QR -->
+          <div class="panel-qr activo" data-panel-qr="contenido" role="tabpanel">
+            <p class="personalizar__etiqueta">¿Qué abrirá el QR?</p>
+            <div class="chips-qr tipos-qr" role="radiogroup" aria-label="Tipo de contenido">
+              <label class="chip-qr"><input type="radio" name="qr-tipo" value="link" checked /><span><span class="icono" aria-hidden="true">link</span>Link</span></label>
+              <label class="chip-qr"><input type="radio" name="qr-tipo" value="whatsapp" /><span><span class="icono" aria-hidden="true">chat</span>WhatsApp</span></label>
+              <label class="chip-qr"><input type="radio" name="qr-tipo" value="correo" /><span><span class="icono" aria-hidden="true">mail</span>Correo</span></label>
+              <label class="chip-qr"><input type="radio" name="qr-tipo" value="wifi" /><span><span class="icono" aria-hidden="true">wifi</span>Wi-Fi</span></label>
+              <label class="chip-qr"><input type="radio" name="qr-tipo" value="texto" /><span><span class="icono" aria-hidden="true">notes</span>Texto</span></label>
+            </div>
+
+            <div class="rejilla rejilla--una-columna campos-qr" data-tipo-qr="link">
+              <label>Link de la página
+                <span class="campo-icono"><span class="icono" aria-hidden="true">link</span>
+                  <input id="qr-link" type="text" inputmode="url" autocomplete="off" maxlength="900" placeholder="https://www.unicah.edu" /></span>
+              </label>
+              <p class="nota">Si no escribes "https://", se agrega solo.</p>
+            </div>
+            <div class="rejilla rejilla--una-columna campos-qr oculto" data-tipo-qr="whatsapp">
+              <label>Número (con código de país)
+                <span class="campo-icono"><span class="icono" aria-hidden="true">call</span>
+                  <input id="qr-wa-numero" type="tel" maxlength="20" placeholder="504 9999 9999" /></span>
+              </label>
+              <label>Mensaje (opcional)
+                <textarea id="qr-wa-mensaje" rows="3" maxlength="300" placeholder="Hola, quiero información sobre…"></textarea>
+              </label>
+            </div>
+            <div class="rejilla rejilla--una-columna campos-qr oculto" data-tipo-qr="correo">
+              <label>Correo
+                <span class="campo-icono"><span class="icono" aria-hidden="true">mail</span>
+                  <input id="qr-correo" type="email" maxlength="120" placeholder="admisiones@unicah.edu" /></span>
+              </label>
+              <label>Asunto (opcional) <input id="qr-correo-asunto" maxlength="120" /></label>
+              <label>Mensaje (opcional) <textarea id="qr-correo-mensaje" rows="3" maxlength="300"></textarea></label>
+            </div>
+            <div class="rejilla rejilla--una-columna campos-qr oculto" data-tipo-qr="wifi">
+              <label>Nombre de la red
+                <span class="campo-icono"><span class="icono" aria-hidden="true">wifi</span>
+                  <input id="qr-wifi-red" maxlength="60" placeholder="UNICAH-Estudiantes" /></span>
+              </label>
+              <label>Contraseña <input id="qr-wifi-clave" maxlength="60" /></label>
+              <label>Seguridad
+                <select id="qr-wifi-seguridad">
+                  <option value="WPA" selected>WPA / WPA2 (la más común)</option>
+                  <option value="WEP">WEP</option>
+                  <option value="nopass">Sin contraseña</option>
+                </select>
+              </label>
+              <p class="nota">Al escanearlo, el celular se conecta a la red sin escribir la contraseña.</p>
+            </div>
+            <div class="rejilla rejilla--una-columna campos-qr oculto" data-tipo-qr="texto">
+              <label>Texto <textarea id="qr-texto" rows="4" maxlength="600" placeholder="Cualquier texto…"></textarea></label>
+            </div>
+          </div>
+
+          <!-- 2. DISEÑO: plantillas, puntos, esquinas y colores -->
+          <div class="panel-qr" data-panel-qr="diseno" role="tabpanel">
+            <p class="personalizar__etiqueta">Plantillas</p>
+            <div id="qr-plantillas" class="plantillas-qr"></div>
+
+            <p class="personalizar__etiqueta">Puntos</p>
+            <div class="formas-qr" role="radiogroup" aria-label="Estilo de los puntos">
+              <label class="forma-qr"><input type="radio" name="qr-puntos" value="cuadrados" data-ajuste="puntos" />
+                <span><svg viewBox="0 0 30 30" aria-hidden="true"><path d="M3 3h8v8H3zM11 11h8v8h-8zM19 3h8v8h-8zM3 19h8v8H3zM19 19h8v8h-8z"/></svg>Cuadrados</span></label>
+              <label class="forma-qr"><input type="radio" name="qr-puntos" value="redondeados" data-ajuste="puntos" />
+                <span><svg viewBox="0 0 30 30" aria-hidden="true"><path d="M3 7a4 4 0 0 1 8 0v4h4a4 4 0 0 1 0 8h-4v4a4 4 0 0 1-8 0z"/><circle cx="23" cy="7" r="4"/><circle cx="23" cy="23" r="4"/></svg>Redondeados</span></label>
+              <label class="forma-qr"><input type="radio" name="qr-puntos" value="suaves" data-ajuste="puntos" />
+                <span><svg viewBox="0 0 30 30" aria-hidden="true"><rect x="3.5" y="3.5" width="7" height="7" rx="2.5"/><rect x="11.5" y="11.5" width="7" height="7" rx="2.5"/><rect x="19.5" y="3.5" width="7" height="7" rx="2.5"/><rect x="3.5" y="19.5" width="7" height="7" rx="2.5"/><rect x="19.5" y="19.5" width="7" height="7" rx="2.5"/></svg>Suaves</span></label>
+              <label class="forma-qr"><input type="radio" name="qr-puntos" value="puntos" data-ajuste="puntos" />
+                <span><svg viewBox="0 0 30 30" aria-hidden="true"><circle cx="7" cy="7" r="3.8"/><circle cx="15" cy="15" r="3.8"/><circle cx="23" cy="7" r="3.8"/><circle cx="7" cy="23" r="3.8"/><circle cx="23" cy="23" r="3.8"/></svg>Puntos</span></label>
+            </div>
+
+            <p class="nota nota-qr">Todos se leen con la cámara del celular. Los <b>cuadrados</b> son los más seguros con lectores antiguos.</p>
+
+            <div class="dos-columnas-qr">
+              <div>
+                <p class="personalizar__etiqueta">Esquinas: marco</p>
+                <div class="formas-qr formas-qr--chicas" role="radiogroup" aria-label="Marco de las esquinas">
+                  <label class="forma-qr" title="Cuadrado"><input type="radio" name="qr-esquina-marco" value="cuadrada" data-ajuste="esquinaMarco" />
+                    <span><svg viewBox="0 0 30 30" aria-hidden="true"><path fill-rule="evenodd" d="M3 3h24v24H3zM7 7v16h16V7z"/></svg></span></label>
+                  <label class="forma-qr" title="Redondeado"><input type="radio" name="qr-esquina-marco" value="redondeada" data-ajuste="esquinaMarco" />
+                    <span><svg viewBox="0 0 30 30" aria-hidden="true"><path fill-rule="evenodd" d="M10 3h10a7 7 0 0 1 7 7v10a7 7 0 0 1-7 7H10a7 7 0 0 1-7-7V10a7 7 0 0 1 7-7zM11 7a4 4 0 0 0-4 4v8a4 4 0 0 0 4 4h8a4 4 0 0 0 4-4v-8a4 4 0 0 0-4-4z"/></svg></span></label>
+                  <label class="forma-qr" title="Círculo"><input type="radio" name="qr-esquina-marco" value="circulo" data-ajuste="esquinaMarco" />
+                    <span><svg viewBox="0 0 30 30" aria-hidden="true"><path fill-rule="evenodd" d="M15 3a12 12 0 1 1 0 24 12 12 0 0 1 0-24zm0 4a8 8 0 1 0 0 16 8 8 0 0 0 0-16z"/></svg></span></label>
+                </div>
+              </div>
+              <div>
+                <p class="personalizar__etiqueta">Esquinas: centro</p>
+                <div class="formas-qr formas-qr--chicas" role="radiogroup" aria-label="Centro de las esquinas">
+                  <label class="forma-qr" title="Cuadrado"><input type="radio" name="qr-esquina-centro" value="cuadrado" data-ajuste="esquinaCentro" />
+                    <span><svg viewBox="0 0 30 30" aria-hidden="true"><rect x="8" y="8" width="14" height="14"/></svg></span></label>
+                  <label class="forma-qr" title="Redondeado"><input type="radio" name="qr-esquina-centro" value="redondeado" data-ajuste="esquinaCentro" />
+                    <span><svg viewBox="0 0 30 30" aria-hidden="true"><rect x="8" y="8" width="14" height="14" rx="4"/></svg></span></label>
+                  <label class="forma-qr" title="Punto"><input type="radio" name="qr-esquina-centro" value="punto" data-ajuste="esquinaCentro" />
+                    <span><svg viewBox="0 0 30 30" aria-hidden="true"><circle cx="15" cy="15" r="7.5"/></svg></span></label>
+                </div>
+              </div>
+            </div>
+
+            <p class="personalizar__etiqueta">Colores</p>
+            <div class="colores-qr">
+              <label class="fila-color-qr">
+                <span class="muestra-color-qr"><input type="color" data-ajuste="colorPuntos" aria-label="Color de los puntos" /></span>
+                <span class="fila-color-qr__texto"><strong>Puntos</strong><small data-codigo="colorPuntos"></small></span>
+              </label>
+              <label class="casilla casilla--fila"><input type="checkbox" data-ajuste="degradado" /> Degradado</label>
+              <label class="fila-color-qr" id="qr-fila-degradado">
+                <span class="muestra-color-qr"><input type="color" data-ajuste="colorDegradado" aria-label="Segundo color del degradado" /></span>
+                <span class="fila-color-qr__texto"><strong>Hasta</strong><small data-codigo="colorDegradado"></small></span>
+              </label>
+              <label class="fila-color-qr">
+                <span class="muestra-color-qr"><input type="color" data-ajuste="colorEsquinas" aria-label="Color de las esquinas" /></span>
+                <span class="fila-color-qr__texto"><strong>Esquinas</strong><small data-codigo="colorEsquinas"></small></span>
+              </label>
+              <label class="fila-color-qr">
+                <span class="muestra-color-qr"><input type="color" data-ajuste="colorFondo" aria-label="Color del fondo" /></span>
+                <span class="fila-color-qr__texto"><strong>Fondo</strong><small data-codigo="colorFondo"></small></span>
+              </label>
+              <label class="casilla casilla--fila"><input type="checkbox" data-ajuste="fondoTransparente" /> Fondo transparente</label>
+            </div>
+            <button type="button" id="qr-restablecer" class="boton boton--texto boton--chico"><span class="icono" aria-hidden="true">restart_alt</span><span class="boton__texto">Volver al diseño inicial</span></button>
+          </div>
+
+          <!-- 3. LOGO del centro -->
+          <div class="panel-qr" data-panel-qr="logo" role="tabpanel">
+            <p class="personalizar__etiqueta">Logo del centro</p>
+            <div class="chips-qr opciones-qr" role="radiogroup" aria-label="Logo del centro">
+              <label class="chip-qr"><input type="radio" name="qr-logo" value="unicah" checked /><span><span class="icono" aria-hidden="true">school</span>UNICAH</span></label>
+              <label class="chip-qr"><input type="radio" name="qr-logo" value="propio" /><span><span class="icono" aria-hidden="true">upload</span>Otro logo</span></label>
+              <label class="chip-qr"><input type="radio" name="qr-logo" value="ninguno" /><span><span class="icono" aria-hidden="true">hide_image</span>Sin logo</span></label>
+            </div>
+            <input id="qr-archivo-logo" type="file" accept=".png,.jpg,.jpeg,.webp" hidden />
+            <div id="qr-logo-propio" class="logo-propio-qr oculto">
+              <span class="icono" aria-hidden="true">image</span>
+              <span id="qr-nombre-logo" class="logo-propio-qr__nombre"></span>
+              <button type="button" id="qr-cambiar-logo" class="boton boton--texto boton--chico"><span class="icono" aria-hidden="true">swap_horiz</span><span class="boton__texto">Cambiar</span></button>
+            </div>
+
+            <div id="qr-opciones-logo">
+              <label class="control-deslizable">
+                <span>Tamaño <strong data-codigo="tamanoLogo"></strong></span>
+                <input type="range" min="12" max="26" data-ajuste="tamanoLogo" aria-label="Tamaño del logo" />
+              </label>
+              <label class="casilla"><input type="checkbox" data-ajuste="fondoLogo" /> Fondo detrás del logo <small>(se lee mejor)</small></label>
+              <p class="personalizar__etiqueta">Forma del fondo</p>
+              <div class="chips-qr" role="radiogroup" aria-label="Forma del fondo del logo">
+                <label class="chip-qr"><input type="radio" name="qr-forma-logo" value="cuadrado" data-ajuste="formaFondoLogo" /><span><span class="icono" aria-hidden="true">crop_square</span>Cuadrado</span></label>
+                <label class="chip-qr"><input type="radio" name="qr-forma-logo" value="circulo" data-ajuste="formaFondoLogo" /><span><span class="icono" aria-hidden="true">circle</span>Círculo</span></label>
+              </div>
+            </div>
+            <p class="nota">Consejo: un logo sin fondo (PNG) se ve mejor. Puedes quitárselo con la herramienta "Quitar fondo de logos".</p>
+          </div>
+
+          <!-- 4. MARCO con texto -->
+          <div class="panel-qr" data-panel-qr="marco" role="tabpanel">
+            <p class="personalizar__etiqueta">Marco</p>
+            <div class="chips-qr" role="radiogroup" aria-label="Marco">
+              <label class="chip-qr"><input type="radio" name="qr-marco" value="ninguno" data-ajuste="marco" /><span><span class="icono" aria-hidden="true">block</span>Sin marco</span></label>
+              <label class="chip-qr"><input type="radio" name="qr-marco" value="abajo" data-ajuste="marco" /><span><span class="icono" aria-hidden="true">call_to_action</span>Con texto abajo</span></label>
+            </div>
+            <div id="qr-opciones-marco" class="rejilla rejilla--una-columna">
+              <label>Texto del marco <input type="text" maxlength="18" data-ajuste="textoMarco" /></label>
+              <label class="fila-color-qr">
+                <span class="muestra-color-qr"><input type="color" data-ajuste="colorMarco" aria-label="Color del marco" /></span>
+                <span class="fila-color-qr__texto"><strong>Color del marco</strong><small data-codigo="colorMarco"></small></span>
+              </label>
+            </div>
+            <p class="nota">El marco con un texto como "ESCANÉAME" ayuda a que la gente sepa que puede escanearlo.</p>
+          </div>
+        </div>
       </div>
     </section>
 
@@ -851,9 +992,10 @@
         <summary><span class="manual__numero">6</span> Crear un código QR<span class="icono flecha-desplegable" aria-hidden="true">keyboard_arrow_down</span></summary>
         <ol>
           <li>En el inicio, elige la tarjeta <b>Generar código QR</b>.</li>
-          <li>Escribe o pega el <b>link</b>: el QR aparece al momento.</li>
-          <li>Elige el <b>logo del centro</b> (el de UNICAH, otro que subas o ninguno), su tamaño y el <b>color</b>.</li>
-          <li>Pulsa <b>Descargar PNG</b> (redes y documentos) o <b>SVG</b> (para imprimir en grande).</li>
+          <li>En <b>Contenido</b> elige qué abrirá: un link, WhatsApp, un correo, la clave del Wi-Fi o un texto. El QR aparece al momento.</li>
+          <li>En <b>Diseño</b> elige una plantilla o cambia la forma de los puntos, las esquinas y los colores. En <b>Logo</b>, el del centro; en <b>Marco</b>, un texto como "ESCANÉAME".</li>
+          <li>Fíjate en el aviso debajo del QR: <b>verde</b> = se leerá fácil; <b>amarillo</b> = te dice qué mejorar.</li>
+          <li>Elige <b>PNG</b> (redes, documentos) o <b>SVG</b> (imprenta) y pulsa <b>Descargar</b>, o <b>Copiar</b> para pegarlo directo.</li>
           <li>Antes de imprimirlo, <b>pruébalo con la cámara de tu celular</b>.</li>
         </ol>
         <button type="button" class="boton boton--chico" data-recorrido="qr"><span class="icono" aria-hidden="true">visibility</span><span class="boton__texto">Muéstrame dónde</span></button>
