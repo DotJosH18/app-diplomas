@@ -51,7 +51,7 @@ const botonCopiar = document.getElementById('qr-copiar');
 const botonRestablecer = document.getElementById('qr-restablecer');
 const mensajeQR = document.getElementById('mensaje-qr');
 
-const LOGO_UNICAH = 'img/logo-unicah.png';
+const LOGO_UNICAH = 'img/logo-qr.png'; // el logo de UNICAH que va al centro del QR (sin fondo)
 
 // El diseño actual (empieza como DISENO_INICIAL; los controles lo cambian)
 let diseno = { ...DISENO_INICIAL };

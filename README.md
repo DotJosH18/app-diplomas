@@ -390,7 +390,7 @@ Otra tarjeta del menú. Crea códigos QR con tu diseño, todo en el navegador (e
 |-----------|-----------|
 | Contenido | Qué abrirá el QR: **link** (agrega `https://` solo), **WhatsApp** (número + mensaje), **correo** (asunto y mensaje), **Wi-Fi** (se conecta sin escribir la clave) o **texto**. |
 | Diseño    | **Plantillas** (Clásico, UNICAH, Moderno, Suave, Con marco), forma de los **puntos** (cuadrados, redondeados, suaves, puntos), forma de las **esquinas** (marco y centro), **colores** (puntos, degradado, esquinas, fondo o transparente). |
-| Logo      | UNICAH, otro logo o ninguno; tamaño (12–26 %), fondo detrás y su forma (cuadrado o círculo). |
+| Logo      | UNICAH (`img/logo-qr.png`), otro logo o ninguno; tamaño (12–26 %), fondo detrás y su forma (cuadrado o círculo). |
 | Marco     | Sin marco o un marco de color con un texto abajo ("ESCANÉAME"). |
 
 **Archivos:**
@@ -446,7 +446,7 @@ El botón **"? Ayuda"** (arriba a la derecha) abre el manual. Está pensado para
 
 **Magnus, el guía.** La mascota de UNICAH acompaña el recorrido, la bienvenida y el manual. No usa librerías: solo JavaScript y animaciones CSS.
 
-- **Aparece como un avatar redondo con su cara** (`public/img/magnus/cara.png`; `completo.png` es la imagen original). `dibujarMagnus()` (en `magnus.js`) lo pone dentro de cada `<span class="magnus">`. En `estilos.css` (sección "MAGNUS ANIMADO") mueve la cabeza, parpadea (con `cara-ojos-cerrados.png`), asiente mientras habla, se inclina hacia el elemento y saluda en la bienvenida.
+- **Aparece dentro de un círculo con aro dorado.** El círculo se queda quieto y **Magnus se mueve adentro**: mira alrededor, parpadea (con `cara-ojos-cerrados.png`), asiente mientras habla, se inclina hacia el elemento, salta de emoción al cambiar de paso y, en la bienvenida, se asoma y saluda. Su imagen (`public/img/magnus/cara.png`) es más grande que el círculo, así al moverse nunca se ve un borde vacío. `dibujarMagnus()` (en `magnus.js`) lo pone dentro de cada `<span class="magnus">`; las animaciones están en `estilos.css`, sección "MAGNUS ANIMADO".
 - **Interactúa con la página** (`public/js/magnus.js`): en cada paso "vuela" hasta el elemento, se pone de su lado mirándolo y muestra cómo se usa. Cada paso elige qué hace con `demostracion` en la lista `RECORRIDOS`:
 
   | Demostración        | Qué hace Magnus                                                  |
