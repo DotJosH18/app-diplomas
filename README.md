@@ -367,7 +367,7 @@ pdf.service            dibujarBarraLateral usa el color y el logo, y dibujarEnca
 
 ## Menú: lengüetas "Documentos" y "Herramientas"
 
-El inicio tiene dos lengüetas (cada una dice cuántas tarjetas tiene):
+El inicio tiene dos lengüetas **en el encabezado**, en la fila de abajo (cada una dice cuántas tarjetas tiene). Esa misma fila muestra "Uno a la vez / Desde Excel" dentro de un documento y queda vacía en una herramienta; siempre mide lo mismo, así el encabezado no cambia de alto:
 - **Documentos:** los módulos de diplomas, placas, agradecimientos y comunicados (`<div class="menu__opciones" data-grupo="documentos">` en `index.html`). `npm run crear-modulo` agrega aquí las tarjetas nuevas.
 - **Herramientas:** quitar fondo de logos y generar QR (`data-grupo="herramientas"`).
 

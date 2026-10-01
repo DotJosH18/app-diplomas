@@ -58,12 +58,26 @@
       </div>
     </div>
 
-    <!-- Las pestañas solo se ven dentro del generador ("invisible" guarda su espacio
-         para que el encabezado tenga siempre la misma altura) -->
-    <nav id="pestanas" class="pestanas invisible">
-      <button class="pestana activa" data-panel="panel-individual"><span class="icono" aria-hidden="true">person</span><span>Uno a la vez</span></button>
-      <button class="pestana" data-panel="panel-excel"><span class="icono" aria-hidden="true">table_chart</span><span>Desde Excel</span></button>
-    </nav>
+    <!-- Fila de abajo del encabezado (siempre mide lo mismo):
+           - en el inicio: las lengüetas "Documentos" / "Herramientas"
+           - dentro de un documento: las pestañas "Uno a la vez" / "Desde Excel"
+           - en una herramienta: vacía
+         navegacion.js muestra una u otra. -->
+    <div class="encabezado__fila">
+      <!-- Cada lengüeta muestra su grupo de tarjetas del menú (data-grupo). El número lo pone navegacion.js. -->
+      <nav id="lenguetas-menu" class="pestanas lenguetas-menu" role="tablist" aria-label="Qué quieres ver">
+        <button type="button" id="lengueta-documentos" class="pestana lengueta-menu activa" role="tab" aria-selected="true" data-grupo="documentos" data-nombre="Documentos">
+          <span class="icono" aria-hidden="true">workspace_premium</span><span>Documentos</span><span class="lengueta-menu__cantidad" data-cantidad="documentos"></span>
+        </button>
+        <button type="button" id="lengueta-herramientas" class="pestana lengueta-menu" role="tab" aria-selected="false" data-grupo="herramientas" data-nombre="Herramientas">
+          <span class="icono" aria-hidden="true">handyman</span><span>Herramientas</span><span class="lengueta-menu__cantidad" data-cantidad="herramientas"></span>
+        </button>
+      </nav>
+      <nav id="pestanas" class="pestanas oculto">
+        <button class="pestana activa" data-panel="panel-individual"><span class="icono" aria-hidden="true">person</span><span>Uno a la vez</span></button>
+        <button class="pestana" data-panel="panel-excel"><span class="icono" aria-hidden="true">table_chart</span><span>Desde Excel</span></button>
+      </nav>
+    </div>
   </header>
 
   <!--
@@ -81,18 +95,7 @@
       <div class="menu__encabezado">
         <p class="chip"><span class="icono" aria-hidden="true">auto_awesome</span>PDF e imagen · uno a la vez o desde Excel</p>
         <h2 class="menu__titulo">¿Qué quieres crear hoy?</h2>
-        <p class="menu__subtitulo">Elige un tipo de documento para empezar. Puedes cambiarlo cuando quieras desde la barra de arriba.</p>
-      </div>
-
-      <!-- Lengüetas: "Documentos" (diplomas, placas, comunicados…) y "Herramientas".
-           Cada una muestra su grupo de tarjetas (data-grupo). El número lo pone navegacion.js. -->
-      <div class="lenguetas-menu" role="tablist" aria-label="Qué quieres ver">
-        <button type="button" id="lengueta-documentos" class="lengueta-menu activa" role="tab" aria-selected="true" data-grupo="documentos" data-nombre="Documentos">
-          <span class="icono" aria-hidden="true">workspace_premium</span>Documentos<span class="lengueta-menu__cantidad" data-cantidad="documentos"></span>
-        </button>
-        <button type="button" id="lengueta-herramientas" class="lengueta-menu" role="tab" aria-selected="false" data-grupo="herramientas" data-nombre="Herramientas">
-          <span class="icono" aria-hidden="true">handyman</span>Herramientas<span class="lengueta-menu__cantidad" data-cantidad="herramientas"></span>
-        </button>
+        <p class="menu__subtitulo">Elige una tarjeta para empezar. Arriba cambias entre <b>Documentos</b> y <b>Herramientas</b>.</p>
       </div>
 
       <!-- Grupo 1: los documentos (cada tarjeta es un módulo del servidor) -->

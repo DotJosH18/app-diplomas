@@ -288,11 +288,13 @@ details[open] > summary .flecha-desplegable { transform: rotate(180deg); }
 .boton-ayuda:hover { background: #ffffff26; }
 .boton-ayuda:focus-visible { outline: 2px solid var(--dorado-claro); outline-offset: 2px; }
 
-/* Pestañas "Uno a la vez / Desde Excel": botones segmentados (como en Google) */
-.pestanas {
-  max-width: var(--ancho-pagina); margin: auto; padding: 10px 16px 16px;
-  display: flex;
-}
+/* Fila de abajo del encabezado: lengüetas del menú o pestañas del documento.
+   Siempre mide lo mismo (aunque esté vacía), así el encabezado no cambia de alto. */
+.encabezado__fila { max-width: var(--ancho-pagina); margin: auto; padding: 10px 16px 16px; min-height: 66px; }
+
+/* Pestañas "Uno a la vez / Desde Excel" y lengüetas "Documentos / Herramientas":
+   botones segmentados (como en Google) */
+.pestanas { display: flex; }
 .pestana {
   display: inline-flex; align-items: center; gap: 8px; height: 40px; padding: 0 20px 0 16px;
   background: #ffffff0f; border: 1px solid #ffffff33; color: #E4E6F7; cursor: pointer;
@@ -318,25 +320,12 @@ details[open] > summary .flecha-desplegable { transform: rotate(180deg); }
 
 /* Tarjetas del menú: 4 por fila (en pantallas más angostas, 2 y luego 1).
    Para cambiar cuántas van por fila, cambia el 4. */
-/* Lengüetas "Documentos" / "Herramientas" (botones segmentados, con cuántas tarjetas hay) */
-.lenguetas-menu {
-  display: flex; width: fit-content; margin: 0 auto 24px; padding: 4px; gap: 4px;
-  border-radius: 999px; background: var(--superficie); border: 1px solid var(--borde); box-shadow: var(--sombra);
-}
-.lengueta-menu {
-  display: inline-flex; align-items: center; gap: 8px; height: 44px; padding: 0 18px 0 14px; border: 0; border-radius: 999px;
-  background: none; cursor: pointer; font: 600 .9rem Montserrat, sans-serif; color: var(--texto-suave);
-  transition: background .15s, color .15s;
-}
-.lengueta-menu .icono { font-size: 20px; }
-.lengueta-menu:hover { background: #F2F3FA; }
-.lengueta-menu.activa { background: var(--azul); color: var(--blanco); box-shadow: 0 2px 8px #14185033; }
-.lengueta-menu:focus-visible { outline: none; box-shadow: var(--foco); }
+/* Lengüetas "Documentos" / "Herramientas" (en el encabezado): con cuántas tarjetas hay */
 .lengueta-menu__cantidad {
-  display: grid; place-items: center; min-width: 22px; height: 22px; padding: 0 6px; border-radius: 999px;
-  background: var(--superficie-2); color: var(--texto-suave); font-size: .72rem; font-weight: 700;
+  display: grid; place-items: center; min-width: 22px; height: 22px; margin-left: 2px; padding: 0 6px; border-radius: 999px;
+  background: #ffffff26; color: var(--blanco); font-size: .72rem; font-weight: 700;
 }
-.lengueta-menu.activa .lengueta-menu__cantidad { background: #ffffff2e; color: var(--blanco); }
+.lengueta-menu.activa .lengueta-menu__cantidad { background: var(--azul-suave); color: var(--azul); }
 .menu__opciones:not(.oculto) { animation: aparecer .2s ease-out; }
 
 .menu__opciones { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
@@ -1262,9 +1251,6 @@ details[open] > summary .flecha-desplegable { transform: rotate(180deg); }
   .vista { position: relative; top: 0; }
 }
 @media (max-width: 560px) {
-  .lenguetas-menu { width: 100%; margin-bottom: 18px; }
-  .lengueta-menu { flex: 1; justify-content: center; gap: 6px; padding: 0 8px; font-size: .82rem; }
-  .lengueta-menu .icono { font-size: 18px; }
   .plantillas-qr { grid-template-columns: repeat(3, 1fr); }
   .formas-qr { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .formas-qr--fila { grid-template-columns: repeat(3, minmax(0, 1fr)); }
@@ -1289,8 +1275,9 @@ details[open] > summary .flecha-desplegable { transform: rotate(180deg); }
   .navegacion { flex: 1; min-width: 0; }
   .boton-ayuda { width: 44px; padding: 0; justify-content: center; }
   .boton-ayuda__texto { display: none; }   /* en celular, solo el icono */
-  .pestanas { padding-top: 8px; }
-  .pestana { flex: 1; justify-content: center; }
+  .encabezado__fila { padding-top: 8px; min-height: 64px; }
+  .pestanas { width: 100%; }
+  .pestana { flex: 1; justify-content: center; padding: 0 8px; gap: 6px; font-size: .8rem; }
   .manual__contenido { padding: 16px; }
   .manual__seccion ol, .manual__seccion ul, .manual__preguntas { padding-left: 24px; }
   .manual__seccion > .boton { margin-left: 20px; }

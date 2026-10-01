@@ -51,8 +51,9 @@ const botonInicio = document.getElementById('boton-inicio');
 const selectorModulo = document.getElementById('selector-modulo');
 const textoModuloActual = document.getElementById('nombre-modulo-actual');
 const listaModulos = document.getElementById('lista-modulos');
-const barraPestanas = document.getElementById('pestanas');
-const pestanas = document.querySelectorAll('.pestana');
+const barraPestanas = document.getElementById('pestanas');             // "Uno a la vez" / "Desde Excel"
+const barraLenguetas = document.getElementById('lenguetas-menu');      // "Documentos" / "Herramientas"
+const pestanas = barraPestanas.querySelectorAll('.pestana');
 const paneles = document.querySelectorAll('.panel');
 
 // Qué está abierto: el id del módulo ('placas'…) o el de la herramienta ('quitar-fondo')
@@ -145,7 +146,9 @@ export function volverAlInicio() {
 
   // "invisible" (y no "oculto") para que el encabezado conserve su altura
   barraNavegacion.classList.add('invisible');
-  barraPestanas.classList.add('invisible');
+  // Abajo, en el encabezado: las lengüetas del menú (no las pestañas)
+  ocultar(barraPestanas);
+  mostrar(barraLenguetas);
   abiertoAhora = null;
   window.scrollTo(0, 0);
 }
@@ -156,10 +159,12 @@ function mostrarNavegacion(idAbierto, titulo, conPestanas) {
   textoModuloActual.textContent = titulo;
   barraNavegacion.classList.remove('invisible');
 
+  // Abajo, en el encabezado: las pestañas (en un documento) o nada (en una herramienta)
+  ocultar(barraLenguetas);
   if (conPestanas) {
-    barraPestanas.classList.remove('invisible');
+    mostrar(barraPestanas);
   } else {
-    barraPestanas.classList.add('invisible');
+    ocultar(barraPestanas);
   }
 
   for (const opcion of listaModulos.querySelectorAll('.opcion-rapida')) {
