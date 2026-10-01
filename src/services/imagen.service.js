@@ -16,6 +16,13 @@
 import { pdf } from 'pdf-to-img';
 import appConfig from '../config/app.config.js';
 
+// Las conversiones se hacen UNA A LA VEZ, en fila (como en un banco).
+// Convertir un PDF en imagen usa bastante memoria; si llegan muchas juntas
+// (por ejemplo, al hacer clic en varios colores seguidos), el servidor
+// gratuito de Render (512 MB) podría quedarse sin memoria y reiniciarse.
+// "fila" es la promesa de la última conversión: cada nueva espera a esa.
+let fila = Promise.resolve();
+
 /**
  * Devuelve la PRIMERA página del PDF como imagen PNG (Buffer).
  *
@@ -25,10 +32,22 @@ import appConfig from '../config/app.config.js';
  *   Si no se pasa, se usa la del .env (IMAGEN_ESCALA). Las miniaturas usan 1.
  * @returns {Promise<Buffer>}
  */
-export async function pdfAImagen(archivoPDF, escala = appConfig.imagen.escala) {
-  const documento = await pdf(archivoPDF, { scale: escala });
+export function pdfAImagen(archivoPDF, escala = appConfig.imagen.escala) {
+  const miTurno = fila.then(function () {
+    return convertirPrimeraPagina(archivoPDF, escala);
+  });
+  // La siguiente espera a esta, aunque esta falle
+  fila = miTurno.catch(function () {});
+  return miTurno;
+}
 
-  // documento.getPage(1) = la página 1 ya convertida en PNG
-  const imagen = await documento.getPage(1);
-  return imagen;
+/** La conversión en sí. Al terminar, libera la memoria del documento (destroy). */
+async function convertirPrimeraPagina(archivoPDF, escala) {
+  const documento = await pdf(archivoPDF, { scale: escala });
+  try {
+    // documento.getPage(1) = la página 1 ya convertida en PNG
+    return await documento.getPage(1);
+  } finally {
+    await documento.destroy(); // sin esto, la memoria no se libera
+  }
 }

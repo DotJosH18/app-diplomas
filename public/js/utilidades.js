@@ -7,7 +7,8 @@
 //  EXPORTA                             LO IMPORTAN                      PARA
 //  mostrar(el), ocultar(el)            todos                            poner o quitar la clase "oculto"
 //  mostrarMensaje(el, texto, tipo)     todos                            avisos en verde (ok) o rojo (error)
-//  pedirAlServidor(url, opciones)      todos                            fetch que lanza un error con el mensaje del servidor
+//  pedirAlServidor(url, opciones)      todos                            fetch que lanza un error con un mensaje entendible
+//  SIN_CONEXION                        personalizar                     el mensaje cuando no hay conexión
 //  leerFormulario(formulario)          personalizar, individual, excel  los campos con texto de un <form>
 //  descargarArchivo(resp, nombre)      individual, excel                bajar el PDF o PNG que envió el servidor
 //  nombreDelArchivo(resp, otro)        individual, excel                el nombre que el servidor le puso al archivo
@@ -41,13 +42,27 @@ export function mostrarMensaje(elemento, texto, tipo) {
   }
 }
 
+/** Mensaje cuando no se puede hablar con el servidor. */
+export const SIN_CONEXION = 'No se pudo conectar con el servidor. Revisa tu internet e inténtalo de nuevo.';
+
 /**
  * Hace una petición al servidor.
  * Si el servidor responde con error, lanza ese error con su mensaje
  * para que lo atrape el try/catch de quien llamó a esta función.
  */
 export async function pedirAlServidor(url, opciones) {
-  const respuesta = await fetch(url, opciones);
+  let respuesta;
+  try {
+    respuesta = await fetch(url, opciones);
+  } catch (error) {
+    if (error.name === 'AbortError') {
+      throw error; // la petición se canceló a propósito (ver personalizar.js)
+    }
+    // fetch falla así cuando no hay internet o el servidor no responde
+    // (en Render gratis, por ejemplo, mientras se "despierta").
+    // El navegador solo dice "Failed to fetch": se cambia por algo entendible.
+    throw new Error(SIN_CONEXION);
+  }
 
   if (!respuesta.ok) {
     let mensaje = `Error ${respuesta.status}`;

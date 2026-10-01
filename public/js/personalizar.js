@@ -9,6 +9,7 @@
 //  IMPORTA                           DE             PARA
 //  mostrar, ocultar, mostrarMensaje  utilidades.js  mostrar avisos y botones
 //  pedirAlServidor, leerFormulario   utilidades.js  pedir la miniatura con los datos escritos
+//  SIN_CONEXION                      utilidades.js  reconocer cuándo falló la conexión (para reintentar)
 //  urlDelModulo                      estado.js      '/api/<módulo>/miniatura'
 //
 //  EXPORTA                            LO IMPORTAN              PARA
@@ -17,7 +18,7 @@
 //  personalizarAlCambiarDeModulo(id)  navegacion.js            preparar el panel para otro módulo
 //  usarComoLogo(archivo)              quitar-fondo.js          poner como logo el que quedó sin fondo
 // =============================================================
-import { mostrar, ocultar, mostrarMensaje, pedirAlServidor, leerFormulario } from './utilidades.js';
+import { mostrar, ocultar, mostrarMensaje, pedirAlServidor, leerFormulario, SIN_CONEXION } from './utilidades.js';
 import { urlDelModulo } from './estado.js';
 
 // ---------- Elementos de la página ----------
@@ -434,6 +435,8 @@ function agregarTextoSiTiene(envio, nombre, campo) {
 
 let temporizadorMiniVista = null;
 let numeroDePeticion = 0; // para ignorar respuestas viejas si llegan tarde
+let peticionEnCurso = null; // para cancelar la miniatura anterior si se pide otra (AbortController)
+let reintentos = 0;         // si falla la conexión, se vuelve a intentar UNA vez
 
 /**
  * Pide la miniatura dentro de un momento. Si hay otro cambio antes
@@ -448,10 +451,19 @@ function programarMiniVista(espera = 350) {
   temporizadorMiniVista = setTimeout(actualizarMiniVista, espera); // espera en milisegundos
 }
 
-/** Pide la miniatura al servidor y la muestra. */
+/**
+ * Pide la miniatura al servidor y la muestra.
+ * Si todavía se estaba generando una anterior (por ejemplo, al hacer clic
+ * en varios colores seguidos), esa se cancela: solo importa la última.
+ */
 async function actualizarMiniVista() {
   numeroDePeticion = numeroDePeticion + 1;
   const estaPeticion = numeroDePeticion;
+
+  if (peticionEnCurso !== null) {
+    peticionEnCurso.abort(); // cancela la anterior
+  }
+  peticionEnCurso = new AbortController();
 
   cajaMiniVista.classList.add('cargando');
   textoMiniVista.textContent = 'Generando vista previa…';
@@ -465,7 +477,11 @@ async function actualizarMiniVista() {
   agregarPersonalizacion(envio);
 
   try {
-    const respuesta = await pedirAlServidor(`${urlDelModulo()}/miniatura`, { method: 'POST', body: envio });
+    const respuesta = await pedirAlServidor(`${urlDelModulo()}/miniatura`, {
+      method: 'POST',
+      body: envio,
+      signal: peticionEnCurso.signal, // permite cancelarla
+    });
     const imagen = await respuesta.blob();
 
     if (estaPeticion !== numeroDePeticion) {
@@ -476,10 +492,20 @@ async function actualizarMiniVista() {
     }
     imagenMiniVista.src = URL.createObjectURL(imagen);
     textoMiniVista.textContent = '';
+    reintentos = 0;
   } catch (error) {
-    if (estaPeticion === numeroDePeticion) {
-      textoMiniVista.textContent = error.message;
+    if (error.name === 'AbortError' || estaPeticion !== numeroDePeticion) {
+      return; // se canceló porque hay una más nueva: no es un error
     }
+    if (error.message === SIN_CONEXION && reintentos === 0) {
+      // Sin conexión: se espera un poco y se intenta otra vez, sola
+      reintentos = 1;
+      textoMiniVista.textContent = 'Sin conexión, reintentando…';
+      programarMiniVista(2500);
+      return;
+    }
+    reintentos = 0;
+    textoMiniVista.textContent = error.message;
   }
   if (estaPeticion === numeroDePeticion) {
     cajaMiniVista.classList.remove('cargando');

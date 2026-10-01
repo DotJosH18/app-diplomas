@@ -881,6 +881,18 @@ details[open] > summary .flecha-desplegable { transform: rotate(180deg); }
 }
 @media (max-width: 800px) {
   .personalizar__contenido { grid-template-columns: 1fr; }
+  /* La miniatura sigue a la vista al bajar (sticky), pero más pequeña y
+     POR ENCIMA de los controles (z-index), para que los círculos de color
+     no se dibujen sobre ella. */
+  .mini-vista {
+    top: 8px; z-index: 5; height: 210px; margin-top: 4px;
+    box-shadow: 0 0 0 8px var(--superficie), 0 8px 18px #14185026;
+  }
+  .mini-vista__estado {
+    bottom: 6px; left: 12px; right: 12px; padding: 4px 10px; border-radius: 999px;
+    background: #ffffffe6; width: fit-content; margin: auto;
+  }
+  .mini-vista__estado:empty { display: none; }
   .editor-fondo, .editor-fondo__imagenes { grid-template-columns: 1fr; }
   .individual { grid-template-columns: 1fr; }
   .vista { position: relative; top: 0; }
