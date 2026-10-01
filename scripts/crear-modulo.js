@@ -70,10 +70,14 @@ console.log('✔ Registrado en src/modulos/index.js');
 let html = fs.readFileSync(archivoHTML, 'utf8');
 const tarjeta =
 `        <button class="opcion" data-modulo="${id}" data-titulo="${titulo}">
-          <img class="opcion__imagen" src="img/muestra-${id}.png" alt="Ejemplo de ${titulo}" />
+          <span class="opcion__marco">
+            <img class="opcion__imagen" src="img/muestra-${id}.png" alt="Ejemplo de ${titulo}" />
+            <span class="opcion__insignia"><span class="icono" aria-hidden="true">description</span></span>
+          </span>
           <span class="opcion__titulo">${titulo}</span>
           <span class="opcion__texto">Escribe aquí para qué sirve este documento.</span>
-          <span class="opcion__campos">Pide: nombre y descripción</span>
+          <span class="opcion__campos"><span class="icono" aria-hidden="true">edit_note</span><span class="opcion__pide">Pide: nombre y descripción</span></span>
+          <span class="opcion__abrir">Abrir <span class="icono" aria-hidden="true">arrow_forward</span></span>
         </button>
 
 `;
@@ -105,6 +109,7 @@ Para personalizarlo:
   • Cómo se dibuja ............................ src/modulos/${id}/${id}.pdf.js
   • Descripción de la tarjeta del menú ........ public/index.html (busca data-modulo="${id}")
   • Campos del formulario: agrega o quita "${id}" en los data-modulos de public/index.html
+  • Icono de la tarjeta ....................... cambia "description" por otro de https://fonts.google.com/icons
   • Imagen de la tarjeta ...................... reemplaza public/img/muestra-${id}.png
 `);
 

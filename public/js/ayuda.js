@@ -15,18 +15,19 @@
 //  Los pasos cuyo elemento no se ve en ese momento se saltan solos
 //  (por ejemplo, los colores de Placas en otro módulo).
 //
-//  IMPORTA              DE             PARA
-//  mostrar, ocultar     utilidades.js  mostrar el recorrido y la bienvenida
-//  pantallaActual       navegacion.js  saber qué pantalla se ve
-//  abrirPorId           navegacion.js  abrir el módulo o la herramienta del recorrido
-//  volverAlInicio       navegacion.js  ir al menú para su recorrido
-//  mostrarPestana       navegacion.js  abrir "Uno a la vez" o "Desde Excel"
-//  obtenerModuloActual  estado.js      abrir el último módulo usado
+//  IMPORTA               DE             PARA
+//  mostrar, ocultar      utilidades.js  mostrar el recorrido y la bienvenida
+//  cambiarTextoDelBoton  utilidades.js  "Siguiente" / "Terminar" sin borrar el icono
+//  pantallaActual        navegacion.js  saber qué pantalla se ve
+//  abrirPorId            navegacion.js  abrir el módulo o la herramienta del recorrido
+//  volverAlInicio        navegacion.js  ir al menú para su recorrido
+//  mostrarPestana        navegacion.js  abrir "Uno a la vez" o "Desde Excel"
+//  obtenerModuloActual   estado.js      abrir el último módulo usado
 //
 //  EXPORTA         LO IMPORTA  PARA
 //  iniciarAyuda()  main.js     arrancar esta parte
 // =============================================================
-import { mostrar, ocultar } from './utilidades.js';
+import { mostrar, ocultar, cambiarTextoDelBoton } from './utilidades.js';
 import { pantallaActual, abrirPorId, volverAlInicio, mostrarPestana } from './navegacion.js';
 import { obtenerModuloActual } from './estado.js';
 
@@ -358,10 +359,14 @@ function mostrarPaso() {
   textoTitulo.textContent = paso.titulo;
   textoExplicacion.textContent = paso.texto;
   botonAnterior.disabled = numeroDePaso === 0;
+  // En el último paso, "Siguiente →" se convierte en "Terminar ✓"
+  const iconoSiguiente = botonSiguiente.querySelector('.icono');
   if (numeroDePaso === pasosActuales.length - 1) {
-    botonSiguiente.textContent = 'Terminar ✓';
+    cambiarTextoDelBoton(botonSiguiente, 'Terminar');
+    iconoSiguiente.textContent = 'check';
   } else {
-    botonSiguiente.textContent = 'Siguiente →';
+    cambiarTextoDelBoton(botonSiguiente, 'Siguiente');
+    iconoSiguiente.textContent = 'arrow_forward';
   }
 
   // Lleva el elemento al centro de la pantalla y, ya quieto, lo resalta

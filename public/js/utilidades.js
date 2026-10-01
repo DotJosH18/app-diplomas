@@ -4,14 +4,15 @@
 //  No dependen de ninguna parte de la página en especial.
 //  Ningún import: es la base de todo lo demás.
 //
-//  EXPORTA                          LO IMPORTAN                      PARA
-//  mostrar(el), ocultar(el)         todos                            poner o quitar la clase "oculto"
-//  mostrarMensaje(el, texto, tipo)  todos                            avisos en verde (ok) o rojo (error)
-//  pedirAlServidor(url, opciones)   todos                            fetch que lanza un error con el mensaje del servidor
-//  leerFormulario(formulario)       personalizar, individual, excel  los campos con texto de un <form>
-//  descargarArchivo(resp, nombre)   individual, excel                bajar el PDF o PNG que envió el servidor
-//  nombreDelArchivo(resp, otro)     individual, excel                el nombre que el servidor le puso al archivo
-//  ponerBotonOcupado, liberarBoton  individual, excel                "Generando…" mientras se espera
+//  EXPORTA                             LO IMPORTAN                      PARA
+//  mostrar(el), ocultar(el)            todos                            poner o quitar la clase "oculto"
+//  mostrarMensaje(el, texto, tipo)     todos                            avisos en verde (ok) o rojo (error)
+//  pedirAlServidor(url, opciones)      todos                            fetch que lanza un error con el mensaje del servidor
+//  leerFormulario(formulario)          personalizar, individual, excel  los campos con texto de un <form>
+//  descargarArchivo(resp, nombre)      individual, excel                bajar el PDF o PNG que envió el servidor
+//  nombreDelArchivo(resp, otro)        individual, excel                el nombre que el servidor le puso al archivo
+//  ponerBotonOcupado, liberarBoton     individual, excel                "Generando…" (y un círculo que gira) mientras se espera
+//  cambiarTextoDelBoton(boton, texto)  excel, ayuda                     cambiar el texto de un botón sin borrar su icono
 // =============================================================
 
 /** Muestra un elemento (le quita la clase "oculto"). */
@@ -106,15 +107,40 @@ export function nombreDelArchivo(respuesta, nombrePorDefecto) {
   return cabecera.substring(inicio, fin);
 }
 
-/** Desactiva un botón y cambia su texto (mientras se genera algo). */
+// ---------- Botones ----------
+// Los botones tienen un icono y un texto:
+//   <button class="boton"><span class="icono">download</span><span class="boton__texto">Descargar PDF</span></button>
+// Estas funciones cambian SOLO el texto, para no borrar el icono.
+
+/** Devuelve el <span class="boton__texto"> del botón (o el botón mismo, si no tiene). */
+function parteDeTexto(boton) {
+  const span = boton.querySelector('.boton__texto');
+  if (span) {
+    return span;
+  }
+  return boton;
+}
+
+/** Cambia el texto de un botón sin tocar su icono. Ej. cambiarTextoDelBoton(boton, 'Generar PDF con 3') */
+export function cambiarTextoDelBoton(boton, texto) {
+  parteDeTexto(boton).textContent = texto;
+}
+
+/**
+ * Desactiva un botón mientras se genera algo: cambia su texto (ej. "Generando…")
+ * y la clase "ocupado" cambia el icono por un círculo que gira (ver estilos.css).
+ */
 export function ponerBotonOcupado(boton, texto) {
-  boton.dataset.textoOriginal = boton.textContent; // guarda el texto para después
-  boton.textContent = texto;
+  const span = parteDeTexto(boton);
+  boton.dataset.textoOriginal = span.textContent; // guarda el texto para después
+  span.textContent = texto;
+  boton.classList.add('ocupado');
   boton.disabled = true;
 }
 
 /** Vuelve a activar el botón con su texto original. */
 export function liberarBoton(boton) {
-  boton.textContent = boton.dataset.textoOriginal;
+  parteDeTexto(boton).textContent = boton.dataset.textoOriginal;
+  boton.classList.remove('ocupado');
   boton.disabled = false;
 }

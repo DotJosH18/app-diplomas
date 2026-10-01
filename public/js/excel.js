@@ -11,6 +11,7 @@
 //  pedirAlServidor, leerFormulario     utilidades.js    enviar los datos al servidor
 //  descargarArchivo, nombreDelArchivo  utilidades.js    descargar lo que responde
 //  ponerBotonOcupado, liberarBoton     utilidades.js    "Generando…" en los botones
+//  cambiarTextoDelBoton                utilidades.js    "Generar PDF con 3 diploma(s)" sin borrar el icono
 //  urlDelModulo                        estado.js        '/api/<módulo>…'
 //  agregarPersonalizacion              personalizar.js  enviar colores, textos y logo
 //
@@ -21,7 +22,7 @@
 // =============================================================
 import {
   mostrar, ocultar, mostrarMensaje, pedirAlServidor, leerFormulario,
-  descargarArchivo, nombreDelArchivo, ponerBotonOcupado, liberarBoton,
+  descargarArchivo, nombreDelArchivo, ponerBotonOcupado, liberarBoton, cambiarTextoDelBoton,
 } from './utilidades.js';
 import { urlDelModulo } from './estado.js';
 import { agregarPersonalizacion } from './personalizar.js';
@@ -242,7 +243,7 @@ function mostrarTablaDeRevision(resultado) {
   }
 
   botonGenerarExcel.disabled = resultado.validas === 0;
-  botonGenerarExcel.textContent = `Generar PDF con ${resultado.validas} diploma(s)`;
+  cambiarTextoDelBoton(botonGenerarExcel, `Generar PDF con ${resultado.validas} diploma(s)`);
 }
 
 /** Agrega una celda <td> con texto a una fila de la tabla. */
@@ -263,8 +264,16 @@ function agregarBotonVer(tr, posicion) {
   const celda = document.createElement('td');
   const boton = document.createElement('button');
   boton.type = 'button';
-  boton.textContent = 'Ver';
-  boton.classList.add('boton', 'boton--chico');
+  boton.classList.add('boton', 'boton--chico', 'boton--suave');
+  // Icono de ojo + "Ver" (igual que los botones escritos en index.html)
+  const icono = document.createElement('span');
+  icono.classList.add('icono');
+  icono.setAttribute('aria-hidden', 'true');
+  icono.textContent = 'visibility';
+  const texto = document.createElement('span');
+  texto.classList.add('boton__texto');
+  texto.textContent = 'Ver';
+  boton.append(icono, texto);
   boton.addEventListener('click', function () {
     abrirVentanaVista(posicion);
   });

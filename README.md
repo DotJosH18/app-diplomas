@@ -377,6 +377,38 @@ Es la última tarjeta del menú. No genera diplomas: deja un logo con **fondo tr
 - **Descargar PNG:** baja el resultado.
 - **Usar como logo en los diplomas:** lo deja como el logo de "Personalizar diseño", igual que "Subir logo". Luego eliges un diploma y ya sale con ese logo.
 
+## Diseño de la página: botones e iconos
+
+La página sigue el estilo de **Material Design 3 de Google**: botones redondeados con icono + texto, tarjetas blancas con bordes suaves y un solo color principal (azul UNICAH) con acento dorado. Todo está en `public/css/estilos.css`, ordenado por secciones (hay un índice al inicio).
+
+**Iconos.** Son los *Material Symbols* de Google, instalados con npm (`@material-symbols/font-400`). `app.js` los sirve en `/iconos`, así funcionan sin internet. Para poner uno, escribe su **nombre** dentro de un `<span class="icono">`:
+
+```html
+<span class="icono" aria-hidden="true">download</span>
+```
+
+Busca el nombre en <https://fonts.google.com/icons> (estilo *Rounded*), por ejemplo `download`, `visibility`, `palette`, `delete`.
+
+**Botones.** Siempre con la clase `boton` y, si quieres, una variante:
+
+| Clase                     | Cómo se ve                  | Úsalo para                                |
+|---------------------------|-----------------------------|-------------------------------------------|
+| `boton`                   | Blanco con borde            | Acciones normales (Vista previa, Cambiar) |
+| `boton boton--principal`  | Lleno de azul               | LA acción más importante (Descargar PDF)  |
+| `boton boton--suave`      | Fondo azul clarito          | Acciones secundarias (Ver, Excel modelo)  |
+| `boton boton--texto`      | Solo texto                  | Acciones menores (Salir, Quitar)          |
+| `+ boton--chico`          | Más bajito                  | Tablas, ventanas y listas                 |
+
+```html
+<button class="boton boton--principal">
+  <span class="icono" aria-hidden="true">download</span><span class="boton__texto">Descargar PDF</span>
+</button>
+```
+
+El texto va en `<span class="boton__texto">`: así `ponerBotonOcupado` y `cambiarTextoDelBoton` (en `utilidades.js`) cambian solo el texto sin borrar el icono. Mientras se genera algo, el icono se cambia por un círculo que gira.
+
+**Colores.** Al inicio de `estilos.css`, en `:root` (`--azul`, `--dorado`, `--fondo`…). Cambias uno y cambia en toda la página.
+
 ## Manual de usuario y recorrido guiado
 
 El botón **"? Ayuda"** (arriba a la derecha) abre el manual. Está pensado para quien usa la app, no para programadores.
@@ -600,6 +632,7 @@ import { generarPDF } from './services/pdf.service.js';
 | pdfkit    | Crear los PDF                                |
 | pdf-to-img | Convertir el PDF en imagen PNG (comunicado y agradecimientos) |
 | dotenv    | Leer la configuración del archivo `.env`     |
+| @material-symbols/font-400 | Los iconos de la página (Material Symbols de Google) |
 | supertest | Solo para las pruebas                        |
 
 

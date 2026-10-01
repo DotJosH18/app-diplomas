@@ -5,9 +5,16 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Generador de Diplomas · UNICAH</title>
   <link rel="icon" type="image/png" href="img/logo-unicah.png" />
+  <!-- Iconos: Material Symbols de Google (paquete npm @material-symbols/font-400,
+       lo sirve app.js en /iconos, sin internet). Para usar uno:
+         <span class="icono" aria-hidden="true">download</span>
+       El texto es el NOMBRE del icono. Búscalos en https://fonts.google.com/icons -->
+  <link rel="stylesheet" href="iconos/rounded.css" />
   <link rel="stylesheet" href="css/estilos.css" />
 </head>
 <body>
+
+
 
   <!-- ==================== ENCABEZADO ==================== -->
   <header class="encabezado">
@@ -29,12 +36,13 @@
       <div class="encabezado__acciones">
       <nav id="navegacion" class="navegacion invisible" aria-label="Navegación">
         <button type="button" id="boton-inicio" class="navegacion__inicio">
-          <span class="navegacion__icono" aria-hidden="true">⌂</span> Inicio
+          <span class="icono" aria-hidden="true">home</span><span>Inicio</span>
         </button>
-        <span class="navegacion__separador" aria-hidden="true">›</span>
+        <span class="icono navegacion__separador" aria-hidden="true">chevron_right</span>
         <details id="selector-modulo" class="selector-modulo">
           <summary class="selector-modulo__actual" title="Cambiar a otro tipo">
             <span id="nombre-modulo-actual"></span>
+            <span class="icono flecha-desplegable" aria-hidden="true">keyboard_arrow_down</span>
           </summary>
           <div class="selector-modulo__lista">
             <p class="selector-modulo__titulo">Cambiar a…</p>
@@ -45,7 +53,7 @@
 
       <!-- Ayuda: siempre visible. Abre el manual de usuario (ver ayuda.js) -->
       <button type="button" id="boton-ayuda" class="boton-ayuda" title="Manual de usuario">
-        <span class="boton-ayuda__icono" aria-hidden="true">?</span><span class="boton-ayuda__texto">Ayuda</span>
+        <span class="icono" aria-hidden="true">help</span><span class="boton-ayuda__texto">Ayuda</span>
       </button>
       </div>
     </div>
@@ -53,8 +61,8 @@
     <!-- Las pestañas solo se ven dentro del generador ("invisible" guarda su espacio
          para que el encabezado tenga siempre la misma altura) -->
     <nav id="pestanas" class="pestanas invisible">
-      <button class="pestana activa" data-panel="panel-individual">Uno a la vez</button>
-      <button class="pestana" data-panel="panel-excel">Desde Excel</button>
+      <button class="pestana activa" data-panel="panel-individual"><span class="icono" aria-hidden="true">person</span><span>Uno a la vez</span></button>
+      <button class="pestana" data-panel="panel-excel"><span class="icono" aria-hidden="true">table_chart</span><span>Desde Excel</span></button>
     </nav>
   </header>
 
@@ -70,42 +78,66 @@
     <!-- ==================== MENÚ: ELEGIR EL TIPO DE DIPLOMA ==================== -->
     <!-- data-modulo es el id del módulo en el servidor; data-titulo es lo que se muestra arriba -->
     <section id="menu" class="menu">
-      <h2 class="menu__titulo">¿Qué tipo de diploma quieres generar?</h2>
+      <div class="menu__encabezado">
+        <p class="chip"><span class="icono" aria-hidden="true">auto_awesome</span>PDF e imagen · uno a la vez o desde Excel</p>
+        <h2 class="menu__titulo">¿Qué quieres crear hoy?</h2>
+        <p class="menu__subtitulo">Elige un tipo de documento para empezar. Puedes cambiarlo cuando quieras desde la barra de arriba.</p>
+      </div>
 
       <div class="menu__opciones">
         <button class="opcion" data-modulo="reconocimientos" data-titulo="Reconocimientos">
-          <img class="opcion__imagen" src="img/muestra-reconocimientos.png" alt="Ejemplo de reconocimiento" />
+          <span class="opcion__marco">
+            <img class="opcion__imagen" src="img/muestra-reconocimientos.png" alt="Ejemplo de reconocimiento" />
+            <span class="opcion__insignia"><span class="icono" aria-hidden="true">workspace_premium</span></span>
+          </span>
           <span class="opcion__titulo">Reconocimientos</span>
           <span class="opcion__texto">Reconocimiento académico a una persona, con su nombre y una descripción.</span>
-          <span class="opcion__campos">Pide: nombre y descripción</span>
+          <span class="opcion__campos"><span class="icono" aria-hidden="true">edit_note</span><span class="opcion__pide">Pide: nombre y descripción</span></span>
+          <span class="opcion__abrir">Abrir <span class="icono" aria-hidden="true">arrow_forward</span></span>
         </button>
 
         <button class="opcion" data-modulo="lugares" data-titulo="Lugares (1º al 7º)">
-          <img class="opcion__imagen" src="img/muestra-lugares.png" alt="Ejemplo de diploma de lugar" />
+          <span class="opcion__marco">
+            <img class="opcion__imagen" src="img/muestra-lugares.png" alt="Ejemplo de diploma de lugar" />
+            <span class="opcion__insignia"><span class="icono" aria-hidden="true">trophy</span></span>
+          </span>
           <span class="opcion__titulo">Lugares (1º al 7º)</span>
           <span class="opcion__texto">Diplomas del primer al séptimo lugar (o mención honorífica) de un concurso o evento. No llevan nombre.</span>
-          <span class="opcion__campos">Pide: lugar obtenido, evento y descripción</span>
+          <span class="opcion__campos"><span class="icono" aria-hidden="true">edit_note</span><span class="opcion__pide">Pide: lugar obtenido, evento y descripción</span></span>
+          <span class="opcion__abrir">Abrir <span class="icono" aria-hidden="true">arrow_forward</span></span>
         </button>
 
         <button class="opcion" data-modulo="duelo" data-titulo="Comunicado de duelo">
-          <img class="opcion__imagen" src="img/muestra-duelo.png" alt="Ejemplo de comunicado de duelo" />
+          <span class="opcion__marco">
+            <img class="opcion__imagen" src="img/muestra-duelo.png" alt="Ejemplo de comunicado de duelo" />
+            <span class="opcion__insignia"><span class="icono" aria-hidden="true">local_florist</span></span>
+          </span>
           <span class="opcion__titulo">Comunicado de duelo</span>
           <span class="opcion__texto">Comunicado vertical en blanco y negro para informar el fallecimiento de una persona.</span>
-          <span class="opcion__campos">Pide: nombre (los tres puntos y el cierre ya vienen escritos)</span>
+          <span class="opcion__campos"><span class="icono" aria-hidden="true">edit_note</span><span class="opcion__pide">Pide: nombre (los tres puntos y el cierre ya vienen escritos)</span></span>
+          <span class="opcion__abrir">Abrir <span class="icono" aria-hidden="true">arrow_forward</span></span>
         </button>
 
         <button class="opcion" data-modulo="agradecimientos" data-titulo="Agradecimientos">
-          <img class="opcion__imagen" src="img/muestra-agradecimientos.png" alt="Ejemplo de diploma de agradecimiento" />
+          <span class="opcion__marco">
+            <img class="opcion__imagen" src="img/muestra-agradecimientos.png" alt="Ejemplo de diploma de agradecimiento" />
+            <span class="opcion__insignia"><span class="icono" aria-hidden="true">volunteer_activism</span></span>
+          </span>
           <span class="opcion__titulo">Agradecimientos</span>
           <span class="opcion__texto">Diploma vertical tamaño oficio, con fondo de pergamino y marco café.</span>
-          <span class="opcion__campos">Pide: nombre y descripción</span>
+          <span class="opcion__campos"><span class="icono" aria-hidden="true">edit_note</span><span class="opcion__pide">Pide: nombre y descripción</span></span>
+          <span class="opcion__abrir">Abrir <span class="icono" aria-hidden="true">arrow_forward</span></span>
         </button>
 
         <button class="opcion" data-modulo="placas" data-titulo="Placas">
-          <img class="opcion__imagen" src="img/muestra-placas.png" alt="Ejemplo de placa" />
+          <span class="opcion__marco">
+            <img class="opcion__imagen" src="img/muestra-placas.png" alt="Ejemplo de placa" />
+            <span class="opcion__insignia"><span class="icono" aria-hidden="true">military_tech</span></span>
+          </span>
           <span class="opcion__titulo">Placas</span>
           <span class="opcion__texto">Reconocimiento con cintas azul y dorada, marco dorado y el logo de fondo.</span>
-          <span class="opcion__campos">Pide: nombre y descripción</span>
+          <span class="opcion__campos"><span class="icono" aria-hidden="true">edit_note</span><span class="opcion__pide">Pide: nombre y descripción</span></span>
+          <span class="opcion__abrir">Abrir <span class="icono" aria-hidden="true">arrow_forward</span></span>
         </button>
 
         <!-- ← NUEVOS MÓDULOS: las tarjetas nuevas van arriba de esta línea
@@ -113,10 +145,15 @@
 
         <!-- Herramienta (no es un diploma): data-herramienta en lugar de data-modulo -->
         <button class="opcion opcion--herramienta" data-herramienta="quitar-fondo" data-titulo="Quitar fondo de logos">
-          <img class="opcion__imagen" src="img/muestra-quitar-fondo.png" alt="Ejemplo de logo sin fondo" />
+          <span class="opcion__marco">
+            <img class="opcion__imagen" src="img/muestra-quitar-fondo.png" alt="Ejemplo de logo sin fondo" />
+            <span class="opcion__insignia"><span class="icono" aria-hidden="true">wand_stars</span></span>
+            <span class="opcion__etiqueta">Herramienta</span>
+          </span>
           <span class="opcion__titulo">Quitar fondo de logos</span>
           <span class="opcion__texto">Deja un logo con fondo transparente (PNG) para usarlo en los diplomas.</span>
-          <span class="opcion__campos">Pide: una imagen PNG o JPG</span>
+          <span class="opcion__campos"><span class="icono" aria-hidden="true">edit_note</span><span class="opcion__pide">Pide: una imagen PNG o JPG</span></span>
+          <span class="opcion__abrir">Abrir <span class="icono" aria-hidden="true">arrow_forward</span></span>
         </button>
       </div>
     </section>
@@ -125,13 +162,14 @@
          Todo se hace en el navegador (js/quitar-fondo.js): la imagen no se envía al servidor. -->
     <section id="herramienta-fondo" class="herramienta oculto">
       <div class="herramienta__intro">
-        <h2 class="herramienta__titulo">Quitar el fondo de un logo</h2>
+        <h2 class="herramienta__titulo"><span class="titulo-icono"><span class="icono" aria-hidden="true">wand_stars</span></span>Quitar el fondo de un logo</h2>
         <p class="nota">Sube una imagen PNG o JPG. El color del fondo se detecta solo; si algo no queda bien, ajusta la tolerancia o haz clic sobre el fondo de la imagen original. La imagen no sale de tu computadora.</p>
       </div>
 
       <!-- Paso 1: elegir la imagen -->
       <div id="zona-fondo" class="zona" tabindex="0">
         <input id="input-fondo" type="file" accept=".png,.jpg,.jpeg,.webp" hidden />
+        <span class="zona__icono"><span class="icono" aria-hidden="true">image</span></span>
         <p class="zona__titulo">Arrastra aquí la imagen del logo</p>
         <p class="zona__texto">o <u>haz clic para buscarla</u> · PNG, JPG o WEBP</p>
       </div>
@@ -170,9 +208,9 @@
           <label class="casilla"><input id="recortar-sobrante" type="checkbox" checked /> Recortar el espacio vacío alrededor</label>
 
           <div class="acciones">
-            <button type="button" id="boton-otra-imagen" class="boton">Otra imagen</button>
-            <button type="button" id="boton-usar-logo" class="boton">Usar como logo en los diplomas</button>
-            <button type="button" id="boton-descargar-png" class="boton boton--principal">Descargar PNG</button>
+            <button type="button" id="boton-otra-imagen" class="boton"><span class="icono" aria-hidden="true">swap_horiz</span><span class="boton__texto">Otra imagen</span></button>
+            <button type="button" id="boton-usar-logo" class="boton"><span class="icono" aria-hidden="true">check_circle</span><span class="boton__texto">Usar como logo en los diplomas</span></button>
+            <button type="button" id="boton-descargar-png" class="boton boton--principal"><span class="icono" aria-hidden="true">download</span><span class="boton__texto">Descargar PNG</span></button>
           </div>
         </div>
       </div>
@@ -188,14 +226,16 @@
          Sirve para las dos pestañas. Si no se toca, se usa el diseño por defecto. -->
     <details id="personalizar" class="personalizar">
       <summary class="personalizar__resumen">
-        <span class="muestra-mini" aria-hidden="true" data-modulos="reconocimientos lugares placas"></span>
-        <span>
+        <span class="titulo-icono"><span class="icono" aria-hidden="true">palette</span></span>
+        <span class="personalizar__textos">
           <strong>Personalizar diseño</strong>
           <small data-modulos="reconocimientos lugares">Opcional · color de la banda, encabezado y logo</small>
           <small data-modulos="placas">Opcional · colores, encabezado y logo de fondo</small>
           <small data-modulos="duelo">Opcional · título y logo</small>
           <small data-modulos="agradecimientos">Opcional · logo</small>
         </span>
+        <span class="muestra-mini" aria-hidden="true" data-modulos="reconocimientos lugares placas"></span>
+        <span class="icono flecha-desplegable" aria-hidden="true">keyboard_arrow_down</span>
       </summary>
 
       <div class="personalizar__contenido">
@@ -259,6 +299,7 @@
                   <span><strong class="color-elegido__nombre"></strong> <small class="color-elegido__detalle"></small></span>
                 </span>
                 <span class="selector-color__codigo"></span>
+                <span class="icono flecha-desplegable" aria-hidden="true">keyboard_arrow_down</span>
               </summary>
               <div class="selector-color__cuerpo">
                 <div class="colores">
@@ -287,6 +328,7 @@
                   <span><strong class="color-elegido__nombre"></strong> <small class="color-elegido__detalle"></small></span>
                 </span>
                 <span class="selector-color__codigo"></span>
+                <span class="icono flecha-desplegable" aria-hidden="true">keyboard_arrow_down</span>
               </summary>
               <div class="selector-color__cuerpo">
                 <div class="colores">
@@ -315,6 +357,7 @@
                   <span><strong class="color-elegido__nombre"></strong> <small class="color-elegido__detalle"></small></span>
                 </span>
                 <span class="selector-color__codigo"></span>
+                <span class="icono flecha-desplegable" aria-hidden="true">keyboard_arrow_down</span>
               </summary>
               <div class="selector-color__cuerpo">
                 <div class="colores">
@@ -361,13 +404,13 @@
           <p class="personalizar__etiqueta">Logo</p>
           <div class="carga-logo">
             <input id="input-logo" type="file" accept=".png,.jpg,.jpeg" hidden />
-            <button type="button" id="boton-logo" class="boton">Subir logo</button>
+            <button type="button" id="boton-logo" class="boton boton--chico"><span class="icono" aria-hidden="true">upload</span><span class="boton__texto">Subir logo</span></button>
             <span id="nombre-logo" class="carga-logo__nombre">Logo de UNICAH (por defecto)</span>
-            <button type="button" id="boton-quitar-logo" class="boton boton--texto oculto">Quitar</button>
+            <button type="button" id="boton-quitar-logo" class="boton boton--texto oculto"><span class="icono" aria-hidden="true">delete</span><span class="boton__texto">Quitar</span></button>
           </div>
           <p class="nota">PNG o JPG, máximo 2 MB. Un PNG con fondo transparente se ve mejor.</p>
 
-          <button type="button" id="boton-restablecer" class="boton boton--texto">Restablecer diseño por defecto</button>
+          <button type="button" id="boton-restablecer" class="boton boton--texto"><span class="icono" aria-hidden="true">restart_alt</span><span class="boton__texto">Restablecer diseño por defecto</span></button>
           <p id="mensaje-personalizar" class="mensaje"></p>
         </div>
       </div>
@@ -377,6 +420,7 @@
     <section id="panel-individual" class="panel activo">
       <div class="individual">
         <form id="form-individual" class="tarjeta">
+          <h2 class="tarjeta__titulo"><span class="titulo-icono"><span class="icono" aria-hidden="true">edit_note</span></span>Datos del documento</h2>
           <p class="nota">Los campos vacíos usan el valor que se ve en gris. En los textos largos, escribe <b>**así**</b> para poner texto en negrita.</p>
 
           <div class="rejilla rejilla--una-columna">
@@ -441,15 +485,17 @@
             </label>
 
             <!-- Comunes -->
+            <p class="grupo"><span class="icono" aria-hidden="true">location_on</span>Lugar y fecha</p>
             <label data-modulos="reconocimientos lugares agradecimientos placas">Campus (opcional) <input name="campus" maxlength="40" placeholder="Ej. Campus Santa Clara" /></label>
             <label data-modulos="reconocimientos lugares duelo placas">Lugar <input name="lugar" maxlength="50" /></label>
             <label>Fecha <input name="fecha" maxlength="30" /></label>
+            <p class="grupo" data-modulos="reconocimientos lugares placas"><span class="icono" aria-hidden="true">draw</span>Firmas</p>
             <label data-modulos="reconocimientos lugares placas">Firmante 1 <input name="firmante1" maxlength="45" /></label>
             <label data-modulos="reconocimientos lugares placas">Cargo 1 <input name="cargo1" maxlength="45" /></label>
             <label data-modulos="reconocimientos lugares placas">Firmante 2 <input name="firmante2" maxlength="45" /></label>
             <label data-modulos="reconocimientos lugares placas">Cargo 2 <input name="cargo2" maxlength="45" /></label>
             <details class="opcional" data-modulos="reconocimientos lugares placas">
-              <summary>Agregar tercera firma (opcional)</summary>
+              <summary><span class="icono" aria-hidden="true">add</span>Agregar tercera firma (opcional)</summary>
               <p class="nota" data-modulos="reconocimientos lugares">Aparece al centro, un poco más arriba que las otras dos.</p>
               <p class="nota" data-modulos="placas">Aparece al centro, en la misma fila que las otras dos.</p>
               <label>Firmante 3 <input name="firmante3" maxlength="45" /></label>
@@ -458,16 +504,20 @@
           </div>
 
           <div class="acciones">
-            <button type="button" id="boton-vista" class="boton">Vista previa</button>
-            <button type="button" id="boton-imagen" class="boton" data-modulos="duelo agradecimientos placas">Descargar imagen (PNG)</button>
-            <button type="submit" class="boton boton--principal">Descargar PDF</button>
+            <button type="button" id="boton-vista" class="boton"><span class="icono" aria-hidden="true">visibility</span><span class="boton__texto">Vista previa</span></button>
+            <button type="button" id="boton-imagen" class="boton" data-modulos="duelo agradecimientos placas"><span class="icono" aria-hidden="true">image</span><span class="boton__texto">Descargar imagen (PNG)</span></button>
+            <button type="submit" class="boton boton--principal"><span class="icono" aria-hidden="true">download</span><span class="boton__texto">Descargar PDF</span></button>
           </div>
           <p id="mensaje-individual" class="mensaje"></p>
         </form>
 
         <div class="vista">
           <!-- El texto va DETRÁS del iframe: cuando carga el PDF, lo tapa -->
-          <p id="vista-vacia" class="vista__vacia">La vista previa aparecerá aquí</p>
+          <div id="vista-vacia" class="vista__vacia">
+            <span class="vista__icono"><span class="icono" aria-hidden="true">visibility</span></span>
+            <strong>La vista previa aparecerá aquí</strong>
+            <small>Llena los datos y pulsa «Vista previa»</small>
+          </div>
           <iframe id="vista-pdf" title="Vista previa del diploma"></iframe>
         </div>
       </div>
@@ -479,30 +529,32 @@
       <!-- Paso 1: soltar el archivo -->
       <div id="zona-excel" class="zona" tabindex="0">
         <input id="input-excel" type="file" accept=".xlsx" hidden />
+        <span class="zona__icono"><span class="icono" aria-hidden="true">table_chart</span></span>
         <p class="zona__titulo">Arrastra aquí tu libro de Excel</p>
         <p class="zona__texto">o <u>haz clic para buscarlo</u> · solo .xlsx</p>
-        <a id="enlace-modelo" class="enlace" href="/api/reconocimientos/excel/modelo">Descargar Excel modelo</a>
+        <a id="enlace-modelo" class="boton boton--chico boton--suave" href="/api/reconocimientos/excel/modelo"><span class="icono" aria-hidden="true">download</span><span class="boton__texto">Descargar Excel modelo</span></a>
       </div>
 
       <!-- Archivo cargado -->
       <div id="archivo-cargado" class="archivo oculto">
-        <div>
+        <span class="archivo__icono"><span class="icono" aria-hidden="true">table_chart</span></span>
+        <div class="archivo__datos">
           <strong id="archivo-nombre"></strong>
           <small id="archivo-tamano"></small>
         </div>
-        <button id="boton-cambiar" class="boton boton--texto">Cambiar archivo</button>
+        <button id="boton-cambiar" class="boton boton--chico"><span class="icono" aria-hidden="true">swap_horiz</span><span class="boton__texto">Cambiar archivo</span></button>
       </div>
 
       <!-- Paso 2: revisión -->
       <div id="revision" class="oculto">
         <div class="resumen">
-          <div class="dato"><span id="total-filas">0</span><small>filas</small></div>
-          <div class="dato dato--ok"><span id="total-validas">0</span><small>listas</small></div>
-          <div class="dato dato--error"><span id="total-errores">0</span><small>con errores</small></div>
+          <div class="dato"><span class="dato__icono"><span class="icono" aria-hidden="true">library_books</span></span><div><span id="total-filas">0</span><small>filas</small></div></div>
+          <div class="dato dato--ok"><span class="dato__icono"><span class="icono" aria-hidden="true">check_circle</span></span><div><span id="total-validas">0</span><small>listas</small></div></div>
+          <div class="dato dato--error"><span class="dato__icono"><span class="icono" aria-hidden="true">error</span></span><div><span id="total-errores">0</span><small>con errores</small></div></div>
         </div>
 
         <details class="comunes">
-          <summary>Datos comunes <small>se usan en las filas que tengan esa celda vacía</small></summary>
+          <summary><span class="icono" aria-hidden="true">edit_note</span><span>Datos comunes <small>se usan en las filas que tengan esa celda vacía</small></span><span class="icono flecha-desplegable" aria-hidden="true">keyboard_arrow_down</span></summary>
           <form id="form-comunes" class="rejilla">
             <!-- Solo Reconocimientos -->
             <label class="ancho-completo" data-modulos="reconocimientos placas">Descripción
@@ -586,7 +638,7 @@
         </div>
 
         <div class="acciones">
-          <button id="boton-generar-excel" class="boton boton--principal">Generar PDF</button>
+          <button id="boton-generar-excel" class="boton boton--principal"><span class="icono" aria-hidden="true">library_books</span><span class="boton__texto">Generar PDF</span></button>
         </div>
       </div>
 
@@ -600,10 +652,10 @@
       <div class="ventana__barra">
         <strong id="ventana-titulo" class="ventana__titulo"></strong>
         <div class="ventana__botones">
-          <button type="button" id="ventana-anterior" class="boton">← Anterior</button>
+          <button type="button" id="ventana-anterior" class="boton boton--chico"><span class="icono" aria-hidden="true">arrow_back</span><span class="boton__texto">Anterior</span></button>
           <span id="ventana-contador" class="ventana__contador"></span>
-          <button type="button" id="ventana-siguiente" class="boton">Siguiente →</button>
-          <button type="button" id="ventana-cerrar" class="boton boton--principal">Cerrar</button>
+          <button type="button" id="ventana-siguiente" class="boton boton--chico"><span class="boton__texto">Siguiente</span><span class="icono" aria-hidden="true">arrow_forward</span></button>
+          <button type="button" id="ventana-cerrar" class="boton boton--chico boton--principal"><span class="icono" aria-hidden="true">close</span><span class="boton__texto">Cerrar</span></button>
         </div>
       </div>
       <div class="ventana__documento">
@@ -623,8 +675,8 @@
        sus pasos están en ayuda.js, en la lista RECORRIDOS. -->
   <dialog id="manual" class="manual" aria-labelledby="manual-titulo">
     <div class="manual__barra">
-      <h2 id="manual-titulo" class="manual__titulo">Manual de usuario</h2>
-      <button type="button" id="manual-cerrar" class="manual__cerrar" aria-label="Cerrar">✕</button>
+      <h2 id="manual-titulo" class="manual__titulo"><span class="icono" aria-hidden="true">menu_book</span>Manual de usuario</h2>
+      <button type="button" id="manual-cerrar" class="manual__cerrar" aria-label="Cerrar"><span class="icono" aria-hidden="true">close</span></button>
     </div>
 
     <div class="manual__contenido">
@@ -634,34 +686,34 @@
           <strong>¿Primera vez?</strong>
           <p>Te mostramos, paso a paso y sobre la misma página, dónde está cada cosa. Toma 1 minuto.</p>
         </div>
-        <button type="button" class="boton boton--principal" data-recorrido="automatico">▶ Recorrido de esta pantalla</button>
+        <button type="button" class="boton boton--principal" data-recorrido="automatico"><span class="icono" aria-hidden="true">play_arrow</span><span class="boton__texto">Recorrido de esta pantalla</span></button>
       </div>
 
       <p class="manual__resumen">Con esta aplicación generas <b>diplomas, placas, agradecimientos y comunicados en PDF</b>: uno a la vez, o muchos de una sola vez desde un Excel.</p>
 
       <details class="manual__seccion" name="manual" open>
-        <summary><span class="manual__numero">1</span> Elegir qué vas a generar</summary>
+        <summary><span class="manual__numero">1</span> Elegir qué vas a generar<span class="icono flecha-desplegable" aria-hidden="true">keyboard_arrow_down</span></summary>
         <ol>
           <li>En el inicio verás una <b>tarjeta por cada tipo</b> de documento. Cada una dice qué datos pide.</li>
           <li>Haz clic en la que necesites.</li>
-          <li>Para cambiar de tipo después, usa el nombre que aparece arriba a la derecha (<b>Placas ▾</b>), o <b>⌂ Inicio</b> para volver a las tarjetas.</li>
+          <li>Para cambiar de tipo después, usa el nombre que aparece arriba a la derecha (por ejemplo <b>Placas</b> <span class="icono icono--en-texto" aria-hidden="true">keyboard_arrow_down</span>), o <b>Inicio</b> <span class="icono icono--en-texto" aria-hidden="true">home</span> para volver a las tarjetas.</li>
         </ol>
-        <button type="button" class="boton boton--chico" data-recorrido="menu">Muéstrame dónde</button>
+        <button type="button" class="boton boton--chico" data-recorrido="menu"><span class="icono" aria-hidden="true">visibility</span><span class="boton__texto">Muéstrame dónde</span></button>
       </details>
 
       <details class="manual__seccion" name="manual">
-        <summary><span class="manual__numero">2</span> Hacer uno a la vez</summary>
+        <summary><span class="manual__numero">2</span> Hacer uno a la vez<span class="icono flecha-desplegable" aria-hidden="true">keyboard_arrow_down</span></summary>
         <ol>
           <li>Abre la pestaña <b>Uno a la vez</b> (es la que aparece primero).</li>
           <li>Llena los datos. Los que tienen <b>*</b> son obligatorios. Si dejas un campo vacío, se usa lo que se ve en gris (por ejemplo, la <b>fecha de hoy</b>).</li>
           <li>Pulsa <b>Vista previa</b> para ver cómo queda.</li>
           <li>Pulsa <b>Descargar PDF</b>. En algunos tipos también puedes <b>Descargar imagen (PNG)</b>, útil para redes sociales o WhatsApp.</li>
         </ol>
-        <button type="button" class="boton boton--chico" data-recorrido="individual">Muéstrame dónde</button>
+        <button type="button" class="boton boton--chico" data-recorrido="individual"><span class="icono" aria-hidden="true">visibility</span><span class="boton__texto">Muéstrame dónde</span></button>
       </details>
 
       <details class="manual__seccion" name="manual">
-        <summary><span class="manual__numero">3</span> Hacer muchos desde Excel</summary>
+        <summary><span class="manual__numero">3</span> Hacer muchos desde Excel<span class="icono flecha-desplegable" aria-hidden="true">keyboard_arrow_down</span></summary>
         <ol>
           <li>Abre la pestaña <b>Desde Excel</b>.</li>
           <li>Si no tienes un Excel listo, pulsa <b>Descargar Excel modelo</b>: ya trae las columnas correctas.</li>
@@ -670,11 +722,11 @@
           <li>En <b>Datos comunes</b> puedes poner lo que se repite (lugar, fecha, firmas) para no escribirlo en cada fila.</li>
           <li>Pulsa <b>Generar PDF</b>: se descarga un solo archivo con una página por fila.</li>
         </ol>
-        <button type="button" class="boton boton--chico" data-recorrido="excel">Muéstrame dónde</button>
+        <button type="button" class="boton boton--chico" data-recorrido="excel"><span class="icono" aria-hidden="true">visibility</span><span class="boton__texto">Muéstrame dónde</span></button>
       </details>
 
       <details class="manual__seccion" name="manual">
-        <summary><span class="manual__numero">4</span> Cambiar colores, textos y logo</summary>
+        <summary><span class="manual__numero">4</span> Cambiar colores, textos y logo<span class="icono flecha-desplegable" aria-hidden="true">keyboard_arrow_down</span></summary>
         <ol>
           <li>Abre <b>Personalizar diseño</b> (arriba del formulario). Todo es opcional.</li>
           <li>A la izquierda ves una <b>miniatura</b> que cambia mientras eliges.</li>
@@ -682,21 +734,21 @@
           <li>Puedes cambiar el <b>encabezado</b> (las líneas de arriba), el <b>título</b> y subir otro <b>logo</b>.</li>
           <li>Lo que elijas sirve para "Uno a la vez" y para el Excel. <b>Restablecer</b> vuelve a lo original.</li>
         </ol>
-        <button type="button" class="boton boton--chico" data-recorrido="personalizar">Muéstrame dónde</button>
+        <button type="button" class="boton boton--chico" data-recorrido="personalizar"><span class="icono" aria-hidden="true">visibility</span><span class="boton__texto">Muéstrame dónde</span></button>
       </details>
 
       <details class="manual__seccion" name="manual">
-        <summary><span class="manual__numero">5</span> Quitar el fondo de un logo</summary>
+        <summary><span class="manual__numero">5</span> Quitar el fondo de un logo<span class="icono flecha-desplegable" aria-hidden="true">keyboard_arrow_down</span></summary>
         <ol>
           <li>En el inicio, elige la tarjeta <b>Quitar fondo de logos</b>.</li>
           <li>Sube la imagen: el fondo se quita solo. Si algo no queda bien, mueve la <b>tolerancia</b> o haz clic sobre el fondo de la imagen original.</li>
           <li>Pulsa <b>Usar como logo en los diplomas</b>, o <b>Descargar PNG</b> para guardarlo.</li>
         </ol>
-        <button type="button" class="boton boton--chico" data-recorrido="herramienta">Muéstrame dónde</button>
+        <button type="button" class="boton boton--chico" data-recorrido="herramienta"><span class="icono" aria-hidden="true">visibility</span><span class="boton__texto">Muéstrame dónde</span></button>
       </details>
 
       <details class="manual__seccion" name="manual">
-        <summary><span class="manual__numero">★</span> Consejos</summary>
+        <summary><span class="manual__numero"><span class="icono" aria-hidden="true">lightbulb</span></span> Consejos<span class="icono flecha-desplegable" aria-hidden="true">keyboard_arrow_down</span></summary>
         <ul>
           <li>Escribe <code>**así**</code> para poner un texto en <b>negrita</b>.</li>
           <li>Pulsa <b>Enter</b> para empezar otro párrafo (en el Excel: <b>Alt + Enter</b> dentro de la celda).</li>
@@ -706,7 +758,7 @@
       </details>
 
       <details class="manual__seccion" name="manual">
-        <summary><span class="manual__numero">?</span> Preguntas frecuentes</summary>
+        <summary><span class="manual__numero">?</span> Preguntas frecuentes<span class="icono flecha-desplegable" aria-hidden="true">keyboard_arrow_down</span></summary>
         <dl class="manual__preguntas">
           <dt>La página tarda en abrir la primera vez.</dt>
           <dd>Es normal: si nadie la usa por un rato, el servidor gratuito se "duerme" y tarda cerca de un minuto en despertar.</dd>
@@ -729,10 +781,10 @@
       <h3 id="recorrido-titulo" class="recorrido__titulo"></h3>
       <p id="recorrido-texto" class="recorrido__texto"></p>
       <div class="recorrido__botones">
-        <button type="button" id="recorrido-salir" class="boton boton--texto">Salir</button>
+        <button type="button" id="recorrido-salir" class="boton boton--texto"><span class="boton__texto">Salir</span></button>
         <span class="recorrido__espacio"></span>
-        <button type="button" id="recorrido-anterior" class="boton boton--chico">← Anterior</button>
-        <button type="button" id="recorrido-siguiente" class="boton boton--chico boton--principal">Siguiente →</button>
+        <button type="button" id="recorrido-anterior" class="boton boton--chico" aria-label="Paso anterior"><span class="icono" aria-hidden="true">arrow_back</span></button>
+        <button type="button" id="recorrido-siguiente" class="boton boton--chico boton--principal"><span class="boton__texto">Siguiente</span><span class="icono" aria-hidden="true">arrow_forward</span></button>
       </div>
     </div>
   </div>
@@ -742,7 +794,7 @@
     <p><strong>¿Primera vez aquí?</strong> Te mostramos cómo funciona en 1 minuto.</p>
     <div class="bienvenida__botones">
       <button type="button" id="bienvenida-no" class="boton boton--texto">No, gracias</button>
-      <button type="button" id="bienvenida-si" class="boton boton--chico boton--principal">Ver recorrido</button>
+      <button type="button" id="bienvenida-si" class="boton boton--chico boton--principal"><span class="icono" aria-hidden="true">play_arrow</span><span class="boton__texto">Ver recorrido</span></button>
     </div>
   </div>
 

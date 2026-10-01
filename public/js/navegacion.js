@@ -251,7 +251,7 @@ function armarListaDeModulos() {
     const titulo = document.createElement('strong');
     titulo.textContent = tarjeta.dataset.titulo;
     const detalle = document.createElement('small');
-    detalle.textContent = tarjeta.querySelector('.opcion__campos').textContent;
+    detalle.textContent = tarjeta.querySelector('.opcion__pide').textContent; // "Pide: …"
     textos.append(titulo, detalle);
 
     opcion.append(imagen, textos);
