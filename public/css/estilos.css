@@ -633,6 +633,7 @@ details[open] > summary .flecha-desplegable { transform: rotate(180deg); }
 .zona:hover .zona__icono, .zona.arrastrando .zona__icono { transform: translateY(-3px); }
 .zona__titulo { margin: 0; font-weight: 700; font-size: 1.1rem; color: var(--azul); }
 .zona__texto { margin: 0 0 16px; color: var(--gris); }
+.boton__logo { width: 22px; height: 22px; object-fit: contain; }
 .zona__texto u { color: var(--azul); text-decoration-color: #141B5B66; text-underline-offset: 3px; }
 
 /* El archivo que se subió */
@@ -1011,6 +1012,7 @@ details[open] > summary .flecha-desplegable { transform: rotate(180deg); }
   transition: background .15s, border-color .15s, color .15s;
 }
 .chip-qr > span .icono { font-size: 18px; }
+.chip-qr__logo { width: 22px; height: 22px; object-fit: contain; }
 .chip-qr:hover > span { background: #F2F3FA; }
 .chip-qr input:checked + span { background: var(--azul-suave); border-color: var(--azul-suave); color: var(--azul); }
 .chip-qr input:focus-visible + span { box-shadow: var(--foco); }

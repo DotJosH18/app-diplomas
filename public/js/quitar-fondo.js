@@ -33,6 +33,7 @@ import { usarComoLogo } from './personalizar.js';
 // ---------- Elementos de la página ----------
 const zonaFondo = document.getElementById('zona-fondo');
 const inputFondo = document.getElementById('input-fondo');
+const LOGO_UNICAH_CON_FONDO = 'img/logo-unicah-con-fondo.png'; // el logo oficial, para probar la herramienta
 const editorFondo = document.getElementById('editor-fondo');
 const lienzoOriginal = document.getElementById('lienzo-original');
 const lienzoResultado = document.getElementById('lienzo-resultado');
@@ -105,6 +106,14 @@ function prepararEleccionDeImagen() {
     if (archivo) {
       cargarImagen(archivo);
     }
+  });
+
+  // "Probar con el logo de UNICAH": carga el logo oficial (con su fondo blanco)
+  document.getElementById('boton-logo-unicah-fondo').addEventListener('click', async function (evento) {
+    evento.stopPropagation(); // que no abra también el buscador de archivos de la zona
+    const respuesta = await fetch(LOGO_UNICAH_CON_FONDO);
+    const imagen = await respuesta.blob();
+    cargarImagen(new File([imagen], 'logo-unicah.png', { type: imagen.type }));
   });
 
   botonOtraImagen.addEventListener('click', function () {

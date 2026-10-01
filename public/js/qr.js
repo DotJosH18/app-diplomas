@@ -355,7 +355,6 @@ function dibujarPlantillas() {
 
     const vista = new Image();
     vista.alt = '';
-    vista.src = svgComoDataURL(armarSVG('UNICAH', { ...DISENO_INICIAL, ...plantilla.diseno, logo: null, textoMarco: 'QR' }));
     const nombre = document.createElement('span');
     nombre.textContent = plantilla.nombre;
     boton.append(vista, nombre);
@@ -369,6 +368,16 @@ function dibujarPlantillas() {
       dibujarQR();
     });
     contenedorPlantillas.appendChild(boton);
+  }
+  dibujarMiniaturasDePlantillas();
+}
+
+/** La mini vista de cada plantilla, con el logo elegido (el de UNICAH, por defecto). */
+function dibujarMiniaturasDePlantillas() {
+  for (const boton of contenedorPlantillas.children) {
+    const plantilla = PLANTILLAS.find(function (p) { return p.nombre === boton.dataset.nombre; });
+    const disenoMini = { ...DISENO_INICIAL, ...plantilla.diseno, logo: diseno.logo, tamanoLogo: 26, textoMarco: 'QR' };
+    boton.querySelector('img').src = svgComoDataURL(armarSVG('https://www.unicah.edu', disenoMini));
   }
 }
 
@@ -422,6 +431,7 @@ function actualizarLogo() {
   } else {
     diseno.logo = null;
   }
+  dibujarMiniaturasDePlantillas(); // las plantillas muestran el mismo logo
   filaLogoPropio.classList.toggle('oculto', !(elegido === 'propio' && logoPropio !== null));
   cajaOpcionesLogo.classList.toggle('apagado', elegido === 'ninguno');
   dibujarQR();
