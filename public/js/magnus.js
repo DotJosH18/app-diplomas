@@ -1,15 +1,14 @@
 // =============================================================
 //  magnus.js — MAGNUS: CÓMO SE ARMA Y CÓMO INTERACTÚA CON LA PÁGINA
 //
-//  1. SE ARMA POR PARTES (como un títere de papel)
-//     Magnus no es una sola imagen: son 6 capas que se animan por
-//     separado en estilos.css (busca "MAGNUS ANIMADO"):
-//       piernas · cuerpo · brazo · mano · cabeza (+ ojos cerrados, para parpadear)
-//     Las capas están en public/img/magnus/. Todas miden lo mismo
-//     (239 x 279) y se ponen una encima de otra; juntas forman a Magnus
-//     completo (img/magnus/completo.png es la imagen original).
+//  1. SU CARA
+//     Magnus aparece como un avatar redondo con su cara
+//     (img/magnus/cara.png). Encima va otra imagen con los ojos
+//     cerrados que se muestra un instante para parpadear.
 //     En index.html basta con poner  <span class="magnus"></span>
-//     y dibujarMagnus() lo llena con sus partes.
+//     y dibujarMagnus() lo llena. Las animaciones (parpadear, mover
+//     la cabeza, asentir al hablar…) están en estilos.css, en
+//     "MAGNUS ANIMADO". img/magnus/completo.png es la imagen original.
 //
 //  2. INTERACTÚA CON LA PÁGINA
 //  Durante el recorrido guiado, Magnus (la mascota de UNICAH) no solo
@@ -30,51 +29,45 @@
 //  IMPORTA  (nada)
 //
 //  EXPORTA                       LO IMPORTA  PARA
-//  dibujarMagnus()               ayuda.js    armar a Magnus en cada <span class="magnus">
+//  dibujarMagnus()               ayuda.js    poner la cara de Magnus en cada <span class="magnus">
 //  pasarEncima(elemento)         ayuda.js    la tarjeta se levanta, como con el mouse
 //  presionar(elemento)           ayuda.js    "toca" un botón
 //  escribirEjemplo(elemento)     ayuda.js    escribe un ejemplo en un campo vacío
 //  arrastrarArchivo(elemento)    ayuda.js    la zona se pinta como al soltar un archivo
 //  recorrerOpciones(elemento)    ayuda.js    resalta las opciones una por una
 //  quitarDemostraciones()        ayuda.js    deja todo como estaba (al cambiar de paso)
-//  orientarMagnus(caja, globo)   ayuda.js    que Magnus mire y señale hacia el elemento
+//  orientarMagnus(caja, globo)   ayuda.js    que Magnus mire hacia el elemento
 // =============================================================
 
 const capaRecorrido = document.getElementById('recorrido');
 const globo = capaRecorrido.querySelector('.recorrido__globo');
 
 // =============================================================
-//  1. ARMAR A MAGNUS
+//  1. DIBUJAR A MAGNUS
 // =============================================================
 
-/**
- * Llena cada <span class="magnus"> de la página con sus partes.
- * El brazo lleva la mano adentro: así, cuando el brazo se mueve, la mano
- * se va con él (y además puede saludar por su cuenta).
- */
+/** Llena cada <span class="magnus"> de la página con la cara de Magnus. */
 export function dibujarMagnus() {
   for (const magnus of document.querySelectorAll('.magnus')) {
-    magnus.replaceChildren(
-      crearCapa('magnus__pierna-izq', 'pierna-izq.png'),
-      crearCapa('magnus__pierna-der', 'pierna-der.png'),
-      crearCapa('magnus__cuerpo', 'cuerpo.png'),
-      crearCapa('magnus__brazo', 'brazo.png', crearCapa('magnus__mano', 'mano.png')),
-      crearCapa('magnus__cabeza', 'cabeza.png', crearCapa('magnus__ojos-cerrados', 'ojos-cerrados.png')),
-    );
+    const cara = document.createElement('span');
+    cara.classList.add('magnus__cara');
+    cara.append(crearImagen('cara.png', ''), crearImagen('cara-ojos-cerrados.png', 'magnus__ojos-cerrados'));
+    magnus.replaceChildren(cara);
   }
 }
 
-/** Una capa: un <span> del tamaño de Magnus con su imagen (y lo que vaya adentro). */
-function crearCapa(clase, imagen, ...adentro) {
-  const capa = document.createElement('span');
-  capa.classList.add('magnus__capa', clase);
-  const dibujo = document.createElement('img');
-  dibujo.src = `img/magnus/${imagen}`;
-  dibujo.alt = '';
-  dibujo.draggable = false;
-  capa.append(dibujo, ...adentro);
-  return capa;
+/** Una imagen de img/magnus/ (decorativa: sin texto alternativo). */
+function crearImagen(archivo, clase) {
+  const imagen = document.createElement('img');
+  imagen.src = `img/magnus/${archivo}`;
+  imagen.alt = '';
+  imagen.draggable = false;
+  if (clase) {
+    imagen.classList.add(clase);
+  }
+  return imagen;
 }
+
 
 // =============================================================
 //  2. DEMOSTRACIONES
@@ -207,7 +200,7 @@ export function quitarDemostraciones() {
 //  3. MAGNUS SE MUEVE
 // =============================================================
 
-/** Magnus estira el brazo hacia el elemento (animación "magnus-senala" en el CSS). */
+/** Magnus inclina la cabeza hacia el elemento (animación "magnus-senala" en el CSS). */
 function senalar() {
   capaRecorrido.classList.remove('senalando');
   void capaRecorrido.offsetWidth; // truco para que la animación vuelva a empezar
@@ -226,8 +219,8 @@ function tocar(elemento) {
 
 /**
  * Pone a Magnus del lado del globo que da hacia el elemento, mirándolo.
- * Su brazo estirado (en la imagen) apunta a la derecha; si el elemento
- * está a la izquierda, se voltea como en un espejo.
+ * En la imagen mira un poco a la derecha; si el elemento está a la
+ * izquierda, se voltea como en un espejo.
  *
  * @param {DOMRect} cajaElemento  dónde está el elemento
  * @param {number} xGlobo         dónde quedó el globo (izquierda)

@@ -422,8 +422,7 @@ El botón **"? Ayuda"** (arriba a la derecha) abre el manual. Está pensado para
 
 **Magnus, el guía.** La mascota de UNICAH acompaña el recorrido, la bienvenida y el manual. No usa librerías: solo JavaScript y animaciones CSS.
 
-- **Está animado por partes**, como un títere: en `public/img/magnus/` hay 7 capas del mismo tamaño (piernas, cuerpo, brazo, mano, cabeza y "ojos cerrados") que, una encima de otra, forman a Magnus (`completo.png` es la imagen original). `dibujarMagnus()` (en `magnus.js`) las arma dentro de cada `<span class="magnus">`, y en `estilos.css` (sección "MAGNUS ANIMADO") cada parte se mueve desde su articulación: respira, mueve la cabeza, saluda con el brazo y la mano, parpadea, asiente mientras habla, estira el brazo para señalar y patalea al volar entre pasos. Cada parte tiene su propio ritmo, así el movimiento no se ve repetido.
-
+- **Aparece como un avatar redondo con su cara** (`public/img/magnus/cara.png`; `completo.png` es la imagen original). `dibujarMagnus()` (en `magnus.js`) lo pone dentro de cada `<span class="magnus">`. En `estilos.css` (sección "MAGNUS ANIMADO") mueve la cabeza, parpadea (con `cara-ojos-cerrados.png`), asiente mientras habla, se inclina hacia el elemento y saluda en la bienvenida.
 - **Interactúa con la página** (`public/js/magnus.js`): en cada paso "vuela" hasta el elemento, se pone de su lado mirándolo y muestra cómo se usa. Cada paso elige qué hace con `demostracion` en la lista `RECORRIDOS`:
 
   | Demostración        | Qué hace Magnus                                                  |
@@ -438,7 +437,7 @@ El botón **"? Ayuda"** (arriba a la derecha) abre el manual. Está pensado para
 - **Animaciones** (en `estilos.css`, busca `magnus-`): flota, vuela entre pasos, señala, se mueve mientras "habla" y saluda en la bienvenida. Su texto aparece letra por letra (`escribirPocoAPoco` en `ayuda.js`).
 - Si la computadora tiene activado "reducir movimiento", Magnus se queda quieto y el texto sale completo.
 
-Para usar otro dibujo de Magnus hay que volver a recortarlo en capas del mismo tamaño y ajustar las articulaciones (`transform-origin`) en "MAGNUS ANIMADO".
+Para usar otra imagen de Magnus, reemplaza `cara.png` (cuadrada, fondo transparente) y `cara-ojos-cerrados.png` (la misma, con los ojos cerrados).
 
 **Cambiar o agregar pasos:** edita la lista `RECORRIDOS` al principio de `public/js/ayuda.js`. Cada paso es:
 

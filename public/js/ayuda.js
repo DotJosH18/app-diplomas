@@ -5,7 +5,7 @@
 //     en index.html, en <dialog id="manual">).
 //  2. Recorrido guiado: oscurece la página, resalta un elemento real
 //     y Magnus (la mascota de UNICAH) lo explica en un globo, paso a paso.
-//     Magnus está hecho de partes animadas (img/magnus/, ver magnus.js).
+//     Magnus aparece como un avatar con su cara (img/magnus/, ver magnus.js).
 //     Magnus vuela hasta cada elemento, lo señala y muestra cómo se usa
 //     (magnus.js). Además flota, da un saltito
 //     al cambiar de paso y "habla": su texto aparece letra por letra.
@@ -29,7 +29,7 @@
 //  volverAlInicio                            navegacion.js  ir al menú para su recorrido
 //  mostrarPestana                            navegacion.js  abrir "Uno a la vez" o "Desde Excel"
 //  obtenerModuloActual                       estado.js      abrir el último módulo usado
-//  dibujarMagnus                             magnus.js      armar a Magnus por partes
+//  dibujarMagnus                             magnus.js      poner la cara de Magnus
 //  pasarEncima, presionar, escribirEjemplo,  magnus.js      lo que Magnus hace en cada paso (demostracion)
 //  arrastrarArchivo, recorrerOpciones        magnus.js
 //  quitarDemostraciones                      magnus.js      dejar todo como estaba al cambiar de paso
@@ -277,7 +277,7 @@ function abrirPanelPersonalizar() {
 
 /** Conecta el botón de ayuda, el manual, el recorrido y la bienvenida (se llama una vez, desde main.js). */
 export function iniciarAyuda() {
-  dibujarMagnus(); // arma a Magnus (por partes) en la bienvenida, el manual y el recorrido
+  dibujarMagnus(); // pone la cara de Magnus en la bienvenida, el manual y el recorrido
 
   botonAyuda.addEventListener('click', function () {
     ventanaManual.showModal();
