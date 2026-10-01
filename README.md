@@ -104,7 +104,8 @@ diplomas-app/
 │   │   ├── excel.js                      Pestaña "Desde Excel"
 │   │   ├── configuracion.js              Valores en gris y contadores de caracteres
 │   │   ├── quitar-fondo.js               Herramienta "Quitar fondo de logos"
-│   │   └── ayuda.js                      Manual de usuario ("? Ayuda") y recorrido guiado
+│   │   ├── ayuda.js                      Manual de usuario ("? Ayuda") y recorrido guiado
+│   │   └── magnus.js                     Lo que hace Magnus en el recorrido (señalar, presionar, escribir…)
 │   └── img/                              Muestras del menú y logo por defecto (vista previa)
 │
 ├── assets/                               Fuentes y logo por defecto del diploma (PNG con fondo transparente)
@@ -419,10 +420,21 @@ El botón **"? Ayuda"** (arriba a la derecha) abre el manual. Está pensado para
 - **Bienvenida:** la primera vez, abajo a la derecha aparece "¿Primera vez aquí?". Se recuerda en el navegador (`localStorage`) para no repetirla.
 - **Pasos inteligentes:** los pasos de algo que no se ve se saltan solos. Ejemplos: "Combinaciones listas" solo sale en Placas; "Sube tu Excel" ya no sale si ya subiste uno.
 
-**Magnus, el guía.** La mascota de UNICAH acompaña el recorrido, la bienvenida y el manual (`public/img/magnus-guia.png`, con el fondo ya quitado). No usa librerías: solo animaciones CSS en `estilos.css` (busca `magnus-`):
-- flota suavemente (`magnus-flota`), da un saltito al cambiar de paso (`magnus-salta`), se mueve mientras "habla" (`magnus-habla`) y saluda en la bienvenida (`magnus-saluda`);
-- su texto aparece letra por letra (`escribirPocoAPoco` en `ayuda.js`; la velocidad está en `LETRAS_POR_VEZ` y `CADA_MILISEGUNDOS`);
-- si la computadora tiene activado "reducir movimiento", Magnus se queda quieto y el texto sale completo.
+**Magnus, el guía.** La mascota de UNICAH acompaña el recorrido, la bienvenida y el manual (`public/img/magnus-guia.png`, con el fondo ya quitado). No usa librerías: solo JavaScript y animaciones CSS.
+
+- **Interactúa con la página** (`public/js/magnus.js`): en cada paso "vuela" hasta el elemento, se pone de su lado mirándolo y muestra cómo se usa. Cada paso elige qué hace con `demostracion` en la lista `RECORRIDOS`:
+
+  | Demostración        | Qué hace Magnus                                                  |
+  |---------------------|------------------------------------------------------------------|
+  | `pasarEncima`       | la tarjeta se levanta, como si pasara el mouse                   |
+  | `presionar`         | "toca" el botón: se hunde y sale un círculo dorado               |
+  | `escribirEjemplo`   | escribe un ejemplo letra por letra (ej. "María Fernanda López")  |
+  | `arrastrarArchivo`  | la zona se pinta como cuando sueltas un archivo                  |
+  | `recorrerOpciones`  | resalta las opciones una por una (pestañas, colores)             |
+
+  Son **solo efectos visuales**: Magnus no hace clic de verdad ni cambia los datos. Lo que "escribe" va en el texto gris (placeholder) y todo vuelve a como estaba al cambiar de paso o salir (`quitarDemostraciones`).
+- **Animaciones** (en `estilos.css`, busca `magnus-`): flota, vuela entre pasos, señala, se mueve mientras "habla" y saluda en la bienvenida. Su texto aparece letra por letra (`escribirPocoAPoco` en `ayuda.js`).
+- Si la computadora tiene activado "reducir movimiento", Magnus se queda quieto y el texto sale completo.
 
 Para cambiar su imagen, reemplaza `magnus-guia.png` por otro PNG con fondo transparente (puedes usar la herramienta "Quitar fondo de logos").
 

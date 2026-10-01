@@ -778,8 +778,10 @@
        Lo maneja ayuda.js. Las imágenes de Magnus están en img/. -->
   <div id="recorrido" class="recorrido oculto" role="dialog" aria-modal="true" aria-labelledby="recorrido-titulo">
     <div class="recorrido__foco" aria-hidden="true"></div>
+    <div class="recorrido__toque" aria-hidden="true"></div>   <!-- el círculo cuando Magnus "toca" algo -->
     <div class="recorrido__globo">
-      <img class="recorrido__magnus" src="img/magnus-guia.png" alt="" />
+      <!-- Magnus: la "caja" se voltea (espejo) para mirar hacia el elemento; la imagen se anima -->
+      <span class="recorrido__magnus-caja"><img class="recorrido__magnus" src="img/magnus-guia.png" alt="" /></span>
       <div class="recorrido__burbuja">
         <p class="recorrido__paso"><span class="recorrido__quien">Magnus</span> · <span id="recorrido-numero"></span></p>
         <h3 id="recorrido-titulo" class="recorrido__titulo"></h3>

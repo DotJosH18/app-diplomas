@@ -6,7 +6,8 @@
 //  2. Recorrido guiado: oscurece la página, resalta un elemento real
 //     y Magnus (la mascota de UNICAH) lo explica en un globo, paso a paso.
 //     Su imagen: img/magnus-guia.png (recorrido, manual y bienvenida).
-//     Magnus flota, da un saltito
+//     Magnus vuela hasta cada elemento, lo señala y muestra cómo se usa
+//     (magnus.js). Además flota, da un saltito
 //     al cambiar de paso y "habla": su texto aparece letra por letra.
 //  3. Bienvenida: la primera vez (en este navegador) ofrece el recorrido.
 //
@@ -15,17 +16,23 @@
 //    elemento: qué se resalta (un selector CSS, como '#boton-vista')
 //    titulo, texto: lo que dice el globo
 //    soloSi (opcional): una función; el paso solo se muestra si devuelve true
+//    demostracion (opcional): qué hace Magnus con el elemento para mostrar
+//      cómo se usa (presionar, escribirEjemplo, pasarEncima… de magnus.js)
 //  Los pasos cuyo elemento no se ve en ese momento se saltan solos
 //  (por ejemplo, los colores de Placas en otro módulo).
 //
-//  IMPORTA               DE             PARA
-//  mostrar, ocultar      utilidades.js  mostrar el recorrido y la bienvenida
-//  cambiarTextoDelBoton  utilidades.js  "Siguiente" / "Terminar" sin borrar el icono
-//  pantallaActual        navegacion.js  saber qué pantalla se ve
-//  abrirPorId            navegacion.js  abrir el módulo o la herramienta del recorrido
-//  volverAlInicio        navegacion.js  ir al menú para su recorrido
-//  mostrarPestana        navegacion.js  abrir "Uno a la vez" o "Desde Excel"
-//  obtenerModuloActual   estado.js      abrir el último módulo usado
+//  IMPORTA                                   DE             PARA
+//  mostrar, ocultar                          utilidades.js  mostrar el recorrido y la bienvenida
+//  cambiarTextoDelBoton                      utilidades.js  "Siguiente" / "Terminar" sin borrar el icono
+//  pantallaActual                            navegacion.js  saber qué pantalla se ve
+//  abrirPorId                                navegacion.js  abrir el módulo o la herramienta del recorrido
+//  volverAlInicio                            navegacion.js  ir al menú para su recorrido
+//  mostrarPestana                            navegacion.js  abrir "Uno a la vez" o "Desde Excel"
+//  obtenerModuloActual                       estado.js      abrir el último módulo usado
+//  pasarEncima, presionar, escribirEjemplo,  magnus.js      lo que Magnus hace en cada paso (demostracion)
+//  arrastrarArchivo, recorrerOpciones        magnus.js
+//  quitarDemostraciones                      magnus.js      dejar todo como estaba al cambiar de paso
+//  orientarMagnus                            magnus.js      que Magnus mire hacia el elemento
 //
 //  EXPORTA         LO IMPORTA  PARA
 //  iniciarAyuda()  main.js     arrancar esta parte
@@ -33,6 +40,10 @@
 import { mostrar, ocultar, cambiarTextoDelBoton } from './utilidades.js';
 import { pantallaActual, abrirPorId, volverAlInicio, mostrarPestana } from './navegacion.js';
 import { obtenerModuloActual } from './estado.js';
+import {
+  pasarEncima, presionar, escribirEjemplo, arrastrarArchivo, recorrerOpciones,
+  quitarDemostraciones, orientarMagnus,
+} from './magnus.js';
 
 // ---------- Elementos de la página ----------
 const botonAyuda = document.getElementById('boton-ayuda');
@@ -65,16 +76,19 @@ const RECORRIDOS = {
     pasos: [
       {
         elemento: '.opcion',
+        demostracion: pasarEncima,
         titulo: 'Elige qué vas a generar',
         texto: '¡Hola, soy Magnus! Cada tarjeta es un tipo de documento y dice qué datos pide. Haz clic en la que necesites.',
       },
       {
         elemento: '[data-herramienta="quitar-fondo"]',
+        demostracion: pasarEncima,
         titulo: '¿Tu logo tiene fondo blanco?',
         texto: 'Aquí le quito el fondo a tu logo en segundos, ¡y queda listo para tus documentos!',
       },
       {
         elemento: '#boton-ayuda',
+        demostracion: presionar,
         titulo: 'La ayuda siempre a mano',
         texto: 'Aquí está el manual. Cuando me necesites, toca "Ayuda" y vuelvo a acompañarte.',
       },
@@ -92,21 +106,25 @@ const RECORRIDOS = {
       },
       {
         elemento: '#pestanas',
+        demostracion: recorrerOpciones,
         titulo: 'Dos formas de trabajar',
         texto: '¿Es solo uno? Quédate en "Uno a la vez". ¿Son muchos? "Desde Excel" los hace todos de un jalón.',
       },
       {
         elemento: '#form-individual .rejilla',
+        demostracion: escribirEjemplo,
         titulo: 'Llena los datos',
         texto: 'Llena lo que tiene *, eso sí es obligatorio. Si dejas algo vacío, uso lo que ves en gris (como la fecha de hoy). Tip: escribe **así** para negrita.',
       },
       {
         elemento: '#boton-vista',
+        demostracion: presionar,
         titulo: 'Mira cómo queda',
         texto: 'Antes de descargar, revisa cómo queda. ¡Así no hay sorpresas!',
       },
       {
         elemento: '#form-individual .acciones',
+        demostracion: presionar,
         titulo: 'Descarga',
         texto: '¡Listo! Descarga tu PDF. En algunos tipos también sale como imagen (PNG), perfecta para redes sociales o WhatsApp.',
       },
@@ -124,12 +142,14 @@ const RECORRIDOS = {
     pasos: [
       {
         elemento: '#enlace-modelo',
+        demostracion: presionar,
         titulo: 'Empieza con el Excel modelo',
         texto: '¡Empecemos con el Excel! Descarga este modelo: ya trae las columnas correctas. Llena una fila por persona.',
         soloSi: noHayExcelRevisado,
       },
       {
         elemento: '#zona-excel',
+        demostracion: arrastrarArchivo,
         titulo: 'Sube tu Excel',
         texto: 'Ahora suéltalo aquí (o haz clic para buscarlo) y yo reviso cada fila por ti.',
         soloSi: noHayExcelRevisado,
@@ -146,11 +166,13 @@ const RECORRIDOS = {
       },
       {
         elemento: '#revision .tabla-contenedor',
+        demostracion: presionar,
         titulo: 'Cada fila',
         texto: 'Si una fila tiene error, te digo qué le falta. Con "Ver" miras cómo quedará cada documento.',
       },
       {
         elemento: '#boton-generar-excel',
+        demostracion: presionar,
         titulo: 'Genera todos',
         texto: '¡El momento final! Te doy un solo PDF con una página por cada fila lista. Las que tienen error las salto.',
       },
@@ -169,31 +191,37 @@ const RECORRIDOS = {
       },
       {
         elemento: '.paletas',
+        demostracion: recorrerOpciones,
         titulo: 'Combinaciones listas',
         texto: 'Sin complicarte: un clic y cambian todos los colores, ya combinados.',
       },
       {
         elemento: '.colores-panel',
+        demostracion: recorrerOpciones,
         titulo: 'Colores',
         texto: '¿Prefieres elegir tú? Toca una fila y escoge el color, o escribe su código (por ejemplo #7A1428).',
       },
       {
         elemento: '.campos-encabezado',
+        demostracion: escribirEjemplo,
         titulo: 'Encabezado',
         texto: 'Aquí cambias las líneas de arriba. Si las dejas vacías, pongo el texto de siempre.',
       },
       {
         elemento: '#input-titulo',
+        demostracion: escribirEjemplo,
         titulo: 'Título',
         texto: 'Puedes cambiar "COMUNICADO" por otro título, como "NOTA DE DUELO".',
       },
       {
         elemento: '.carga-logo',
+        demostracion: presionar,
         titulo: 'Logo',
         texto: 'Sube otro logo (PNG o JPG). Consejo de Magnus: sin fondo se ve mucho mejor.',
       },
       {
         elemento: '#boton-restablecer',
+        demostracion: presionar,
         titulo: 'Volver a lo original',
         texto: '¿Te arrepentiste? Tranquilo, aquí todo vuelve a como estaba.',
       },
@@ -205,6 +233,7 @@ const RECORRIDOS = {
     pasos: [
       {
         elemento: '#zona-fondo',
+        demostracion: arrastrarArchivo,
         titulo: 'Sube la imagen del logo',
         texto: 'Suelta aquí la imagen de tu logo (o haz clic para buscarla) y yo le quito el fondo solito.',
         soloSi: noHayLogoCargado,
@@ -221,6 +250,7 @@ const RECORRIDOS = {
       },
       {
         elemento: '#boton-usar-logo',
+        demostracion: presionar,
         titulo: 'Úsalo en los documentos',
         texto: '¡Quedó genial! Úsalo en tus documentos o descárgalo como PNG.',
       },
@@ -378,15 +408,35 @@ function mostrarPaso() {
 
   // Lleva el elemento al centro de la pantalla. De resaltarlo se encarga
   // seguirAlElemento(), que revisa su posición todo el tiempo.
-  elemento.scrollIntoView({ block: 'center', behavior: 'instant' });
+  // Si es muy alto (más de la mitad de la pantalla), se muestra desde arriba,
+  // para que se vea su principio (ahí es donde Magnus hace la demostración).
+  const esMuyAlto = elemento.getBoundingClientRect().height > window.innerHeight * 0.5;
+  if (esMuyAlto) {
+    elemento.scrollIntoView({ block: 'start', behavior: 'instant' });
+    window.scrollBy(0, -24); // un poquito de espacio arriba
+  } else {
+    elemento.scrollIntoView({ block: 'center', behavior: 'instant' });
+  }
 
-  // Al cambiar de paso, el hueco y el globo se deslizan (ver estilos.css)
+  // Al cambiar de paso, Magnus "vuela" hasta el elemento (ver estilos.css)…
+  quitarDemostraciones(); // (deja como estaba lo que mostró en el paso anterior)
   capaRecorrido.classList.add('cambiando-paso');
   clearTimeout(temporizadorAnimacion);
   temporizadorAnimacion = setTimeout(function () {
     capaRecorrido.classList.remove('cambiando-paso');
-  }, 300);
+  }, DURACION_DEL_VUELO);
+
+  // …y al llegar, muestra cómo se usa (si el paso tiene demostración)
+  clearTimeout(temporizadorDemostracion);
+  if (paso.demostracion) {
+    temporizadorDemostracion = setTimeout(function () {
+      paso.demostracion(elemento);
+    }, DURACION_DEL_VUELO + 100);
+  }
 }
+
+const DURACION_DEL_VUELO = 650; // milisegundos (igual que en estilos.css)
+let temporizadorDemostracion = null;
 
 // ---------- Magnus "habla": el texto aparece poco a poco ----------
 // El texto completo se pone desde el inicio en dos partes:
@@ -484,6 +534,9 @@ function ubicarFocoYGlobo(elemento) {
   }
   capaRecorrido.style.setProperty('--globo-x', `${elegido.x}px`);
   capaRecorrido.style.setProperty('--globo-y', `${elegido.y}px`);
+
+  // Magnus se pone del lado del elemento y lo mira
+  orientarMagnus(caja, elegido.x);
 }
 
 function pasoSiguiente() {
@@ -504,6 +557,8 @@ function pasoAnterior() {
 
 function terminarRecorrido() {
   clearInterval(temporizadorEscritura);
+  clearTimeout(temporizadorDemostracion);
+  quitarDemostraciones();
   ocultar(capaRecorrido);
   pasosActuales = [];
 }

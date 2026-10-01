@@ -17,6 +17,7 @@
 //    configuracion.js  valores en gris (fecha de hoy…) y contadores de caracteres
 //    quitar-fondo.js   herramienta "Quitar fondo de logos"
 //    ayuda.js          manual de usuario (botón "? Ayuda") y recorrido guiado
+//    magnus.js         lo que hace Magnus en el recorrido (señalar, presionar, escribir…)
 //
 //  Quién importa a quién (las flechas van hacia lo que se usa):
 //
@@ -24,7 +25,7 @@
 //                       ├──► individual  ──► personalizar
 //                       └──► excel       ──► personalizar
 //    main ──► configuracion, quitar-fondo ──► personalizar
-//    main ──► ayuda ──► navegacion, utilidades, estado
+//    main ──► ayuda ──► navegacion, utilidades, estado, magnus
 //
 //  La regla de la página: JavaScript solo agrega o quita clases y pone
 //  variables CSS (--color-elegido…). Los estilos están en css/estilos.css.
