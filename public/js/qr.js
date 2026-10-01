@@ -15,12 +15,13 @@
 //
 //  IMPORTA                              DE             PARA
 //  armarSVG, DISENO_INICIAL, PLANTILLAS  qr-dibujo.js   dibujar el QR y los diseños listos
+//  svgDeEsquina, svgDePuntos            qr-dibujo.js   los dibujitos de cada opción de forma
 //  mostrar, ocultar, mostrarMensaje     utilidades.js  mostrar partes y avisos
 //
 //  EXPORTA          LO IMPORTA  PARA
 //  iniciarQR()      main.js     arrancar esta parte
 // =============================================================
-import { armarSVG, DISENO_INICIAL, PLANTILLAS } from './qr-dibujo.js';
+import { armarSVG, svgDeEsquina, svgDePuntos, DISENO_INICIAL, PLANTILLAS } from './qr-dibujo.js';
 import { mostrar, ocultar, mostrarMensaje } from './utilidades.js';
 
 // ---------- Elementos de la página ----------
@@ -50,6 +51,8 @@ const botonDescargar = document.getElementById('qr-descargar');
 const botonCopiar = document.getElementById('qr-copiar');
 const botonRestablecer = document.getElementById('qr-restablecer');
 const mensajeQR = document.getElementById('mensaje-qr');
+const vistaEsquina = document.getElementById('qr-vista-esquina');
+const dibujosDeFormas = seccion.querySelectorAll('.forma-qr__dibujo');
 
 const LOGO_UNICAH = 'img/logo-qr.png'; // el logo de UNICAH que va al centro del QR (sin fondo)
 
@@ -236,6 +239,7 @@ function prepararControlesDeDiseno() {
   }
 
   dibujarPlantillas();
+  prepararPruebaAlPasarElMouse();
 
   botonRestablecer.addEventListener('click', function () {
     const logo = diseno.logo;
@@ -288,6 +292,54 @@ function sincronizarControles() {
   filaDegradado.classList.toggle('apagado', !diseno.degradado);
   cajaOpcionesMarco.classList.toggle('apagado', diseno.marco === 'ninguno');
   marcarPlantillaElegida();
+  dibujarFormas();
+}
+
+/**
+ * Los dibujitos de cada opción de forma, con el color y el diseño actuales:
+ *   puntos  -> un pedacito de QR con ese estilo de puntos
+ *   esquina -> una esquina con ese marco (o ese centro) y lo demás como está
+ * Y la esquina en grande ("Así quedan los 3 cuadros grandes").
+ */
+function dibujarFormas() {
+  for (const lugar of dibujosDeFormas) {
+    const opcion = lugar.closest('label').querySelector('input');
+    const conEstaOpcion = { ...diseno, [opcion.dataset.ajuste]: opcion.value };
+    if (lugar.dataset.dibujo === 'puntos') {
+      lugar.innerHTML = svgDePuntos(conEstaOpcion);   // SVG armado por nosotros (no viene de afuera)
+    } else {
+      lugar.innerHTML = svgDeEsquina(conEstaOpcion);
+    }
+  }
+  vistaEsquina.innerHTML = svgDeEsquina(diseno);
+}
+
+/**
+ * "Probar antes de elegir": al pasar el mouse por una forma o una plantilla,
+ * el QR grande (y la esquina en grande) la muestran. Al salir, vuelve a lo elegido.
+ */
+function prepararPruebaAlPasarElMouse() {
+  for (const opcion of seccion.querySelectorAll('.forma-qr')) {
+    const input = opcion.querySelector('input');
+    opcion.addEventListener('mouseenter', function () {
+      probarDiseno({ [input.dataset.ajuste]: input.value });
+    });
+    opcion.addEventListener('mouseleave', dejarDeProbar);
+  }
+}
+
+/** Muestra el QR con unos cambios, sin guardarlos en "diseno". */
+function probarDiseno(cambios) {
+  const disenoDePrueba = { ...diseno, ...cambios };
+  vistaEsquina.innerHTML = svgDeEsquina(disenoDePrueba);
+  vistaEsquina.classList.add('probando');
+  dibujarQR(disenoDePrueba);
+}
+
+function dejarDeProbar() {
+  vistaEsquina.innerHTML = svgDeEsquina(diseno);
+  vistaEsquina.classList.remove('probando');
+  dibujarQR();
 }
 
 /** Botones con una mini vista de cada plantilla (se dibujan con el mismo armarSVG). */
@@ -305,6 +357,8 @@ function dibujarPlantillas() {
     nombre.textContent = plantilla.nombre;
     boton.append(vista, nombre);
 
+    boton.addEventListener('mouseenter', function () { probarDiseno(plantilla.diseno); });
+    boton.addEventListener('mouseleave', dejarDeProbar);
     boton.addEventListener('click', function () {
       diseno = { ...diseno, ...plantilla.diseno }; // el logo y el texto del marco se respetan
       esquinasConColorPropio = diseno.colorEsquinas !== diseno.colorPuntos;
@@ -422,7 +476,11 @@ function comoDataURL(archivo) {
 //  3. DIBUJAR Y REVISAR QUE SE PUEDA LEER
 // =============================================================
 
-function dibujarQR() {
+/**
+ * Dibuja el QR grande. Normalmente con "diseno"; al pasar el mouse por una
+ * opción, con un diseño de prueba (ver probarDiseno).
+ */
+function dibujarQR(disenoAUsar = diseno) {
   const texto = textoDelQR();
   if (texto === '') {
     svgActual = '';
@@ -434,7 +492,7 @@ function dibujarQR() {
   }
 
   try {
-    svgActual = armarSVG(texto, diseno);
+    svgActual = armarSVG(texto, disenoAUsar);
   } catch (error) {
     // La librería falla si el contenido es demasiado largo para un QR
     svgActual = '';
@@ -450,7 +508,8 @@ function dibujarQR() {
   vista.alt = 'Vista previa del código QR';
   vista.src = svgComoDataURL(svgActual);
   dibujo.replaceChildren(vista);
-  dibujo.classList.toggle('transparente', diseno.fondoTransparente);
+  dibujo.classList.toggle('transparente', disenoAUsar.fondoTransparente);
+  dibujo.classList.toggle('probando', disenoAUsar !== diseno);
   textoEstado.textContent = acortar(texto, 70);
   mostrarAvisoDeLectura();
   activarDescargas(true);

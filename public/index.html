@@ -338,41 +338,46 @@
             <p class="personalizar__etiqueta">Plantillas</p>
             <div id="qr-plantillas" class="plantillas-qr"></div>
 
+            <!-- Los dibujos de cada opción los pone qr.js con el color y el diseño actuales.
+                 Al pasar el mouse por una opción, el QR de la izquierda la muestra (sin elegirla). -->
             <p class="personalizar__etiqueta">Puntos</p>
             <div class="formas-qr" role="radiogroup" aria-label="Estilo de los puntos">
               <label class="forma-qr"><input type="radio" name="qr-puntos" value="cuadrados" data-ajuste="puntos" />
-                <span><svg viewBox="0 0 30 30" aria-hidden="true"><path d="M3 3h8v8H3zM11 11h8v8h-8zM19 3h8v8h-8zM3 19h8v8H3zM19 19h8v8h-8z"/></svg>Cuadrados</span></label>
+                <span><span class="forma-qr__dibujo" data-dibujo="puntos"></span>Cuadrados</span></label>
               <label class="forma-qr"><input type="radio" name="qr-puntos" value="redondeados" data-ajuste="puntos" />
-                <span><svg viewBox="0 0 30 30" aria-hidden="true"><path d="M3 7a4 4 0 0 1 8 0v4h4a4 4 0 0 1 0 8h-4v4a4 4 0 0 1-8 0z"/><circle cx="23" cy="7" r="4"/><circle cx="23" cy="23" r="4"/></svg>Redondeados</span></label>
+                <span><span class="forma-qr__dibujo" data-dibujo="puntos"></span>Redondeados</span></label>
               <label class="forma-qr"><input type="radio" name="qr-puntos" value="suaves" data-ajuste="puntos" />
-                <span><svg viewBox="0 0 30 30" aria-hidden="true"><rect x="3.5" y="3.5" width="7" height="7" rx="2.5"/><rect x="11.5" y="11.5" width="7" height="7" rx="2.5"/><rect x="19.5" y="3.5" width="7" height="7" rx="2.5"/><rect x="3.5" y="19.5" width="7" height="7" rx="2.5"/><rect x="19.5" y="19.5" width="7" height="7" rx="2.5"/></svg>Suaves</span></label>
+                <span><span class="forma-qr__dibujo" data-dibujo="puntos"></span>Suaves</span></label>
               <label class="forma-qr"><input type="radio" name="qr-puntos" value="puntos" data-ajuste="puntos" />
-                <span><svg viewBox="0 0 30 30" aria-hidden="true"><circle cx="7" cy="7" r="3.8"/><circle cx="15" cy="15" r="3.8"/><circle cx="23" cy="7" r="3.8"/><circle cx="7" cy="23" r="3.8"/><circle cx="23" cy="23" r="3.8"/></svg>Puntos</span></label>
+                <span><span class="forma-qr__dibujo" data-dibujo="puntos"></span>Puntos</span></label>
             </div>
-
             <p class="nota nota-qr">Todos se leen con la cámara del celular. Los <b>cuadrados</b> son los más seguros con lectores antiguos.</p>
 
-            <div class="dos-columnas-qr">
-              <div>
-                <p class="personalizar__etiqueta">Esquinas: marco</p>
-                <div class="formas-qr formas-qr--chicas" role="radiogroup" aria-label="Marco de las esquinas">
-                  <label class="forma-qr" title="Cuadrado"><input type="radio" name="qr-esquina-marco" value="cuadrada" data-ajuste="esquinaMarco" />
-                    <span><svg viewBox="0 0 30 30" aria-hidden="true"><path fill-rule="evenodd" d="M3 3h24v24H3zM7 7v16h16V7z"/></svg></span></label>
-                  <label class="forma-qr" title="Redondeado"><input type="radio" name="qr-esquina-marco" value="redondeada" data-ajuste="esquinaMarco" />
-                    <span><svg viewBox="0 0 30 30" aria-hidden="true"><path fill-rule="evenodd" d="M10 3h10a7 7 0 0 1 7 7v10a7 7 0 0 1-7 7H10a7 7 0 0 1-7-7V10a7 7 0 0 1 7-7zM11 7a4 4 0 0 0-4 4v8a4 4 0 0 0 4 4h8a4 4 0 0 0 4-4v-8a4 4 0 0 0-4-4z"/></svg></span></label>
-                  <label class="forma-qr" title="Círculo"><input type="radio" name="qr-esquina-marco" value="circulo" data-ajuste="esquinaMarco" />
-                    <span><svg viewBox="0 0 30 30" aria-hidden="true"><path fill-rule="evenodd" d="M15 3a12 12 0 1 1 0 24 12 12 0 0 1 0-24zm0 4a8 8 0 1 0 0 16 8 8 0 0 0 0-16z"/></svg></span></label>
-                </div>
+            <p class="personalizar__etiqueta">Esquinas</p>
+            <div class="esquinas-qr">
+              <!-- Una esquina en grande, tal como quedará -->
+              <div class="esquinas-qr__vista">
+                <span id="qr-vista-esquina" class="esquinas-qr__dibujo"></span>
+                <small>Así quedan los 3 cuadros grandes</small>
               </div>
-              <div>
-                <p class="personalizar__etiqueta">Esquinas: centro</p>
+              <div class="esquinas-qr__opciones">
+                <p class="esquinas-qr__titulo">Marco</p>
+                <div class="formas-qr formas-qr--chicas" role="radiogroup" aria-label="Marco de las esquinas">
+                  <label class="forma-qr"><input type="radio" name="qr-esquina-marco" value="cuadrada" data-ajuste="esquinaMarco" />
+                    <span><span class="forma-qr__dibujo" data-dibujo="esquina"></span>Cuadrado</span></label>
+                  <label class="forma-qr"><input type="radio" name="qr-esquina-marco" value="redondeada" data-ajuste="esquinaMarco" />
+                    <span><span class="forma-qr__dibujo" data-dibujo="esquina"></span>Redondeado</span></label>
+                  <label class="forma-qr"><input type="radio" name="qr-esquina-marco" value="circulo" data-ajuste="esquinaMarco" />
+                    <span><span class="forma-qr__dibujo" data-dibujo="esquina"></span>Círculo</span></label>
+                </div>
+                <p class="esquinas-qr__titulo">Centro</p>
                 <div class="formas-qr formas-qr--chicas" role="radiogroup" aria-label="Centro de las esquinas">
-                  <label class="forma-qr" title="Cuadrado"><input type="radio" name="qr-esquina-centro" value="cuadrado" data-ajuste="esquinaCentro" />
-                    <span><svg viewBox="0 0 30 30" aria-hidden="true"><rect x="8" y="8" width="14" height="14"/></svg></span></label>
-                  <label class="forma-qr" title="Redondeado"><input type="radio" name="qr-esquina-centro" value="redondeado" data-ajuste="esquinaCentro" />
-                    <span><svg viewBox="0 0 30 30" aria-hidden="true"><rect x="8" y="8" width="14" height="14" rx="4"/></svg></span></label>
-                  <label class="forma-qr" title="Punto"><input type="radio" name="qr-esquina-centro" value="punto" data-ajuste="esquinaCentro" />
-                    <span><svg viewBox="0 0 30 30" aria-hidden="true"><circle cx="15" cy="15" r="7.5"/></svg></span></label>
+                  <label class="forma-qr"><input type="radio" name="qr-esquina-centro" value="cuadrado" data-ajuste="esquinaCentro" />
+                    <span><span class="forma-qr__dibujo" data-dibujo="esquina"></span>Cuadrado</span></label>
+                  <label class="forma-qr"><input type="radio" name="qr-esquina-centro" value="redondeado" data-ajuste="esquinaCentro" />
+                    <span><span class="forma-qr__dibujo" data-dibujo="esquina"></span>Redondeado</span></label>
+                  <label class="forma-qr"><input type="radio" name="qr-esquina-centro" value="punto" data-ajuste="esquinaCentro" />
+                    <span><span class="forma-qr__dibujo" data-dibujo="esquina"></span>Punto</span></label>
                 </div>
               </div>
             </div>

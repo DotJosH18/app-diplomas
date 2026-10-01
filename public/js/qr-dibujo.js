@@ -18,6 +18,8 @@
 //  DISENO_INICIAL     qr.js       el diseño con el que empieza la herramienta
 //  PLANTILLAS         qr.js       diseños listos ("Clásico", "UNICAH"…)
 //  armarSVG(texto, d) qr.js       el dibujo del QR como texto SVG
+//  svgDeEsquina(d)    qr.js       una sola esquina (para elegir su forma)
+//  svgDePuntos(d)     qr.js       unos cuantos puntos (para elegir su estilo)
 // =============================================================
 import qrcode from '/librerias/qrcode/qrcode.mjs';
 import { stringToBytes } from '/librerias/qrcode/qrcode_UTF8.mjs';
@@ -342,4 +344,40 @@ function escaparTexto(texto) {
 
 function escaparAtributo(texto) {
   return escaparTexto(texto).replace(/"/g, '&quot;');
+}
+
+
+// =============================================================
+//  MINIATURAS (para los botones donde se elige la forma)
+// =============================================================
+
+/** Una sola esquina del QR (marco + centro), con el diseño y el color de "d". */
+export function svgDeEsquina(d) {
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="-0.5 -0.5 8 8" aria-hidden="true">`
+    + `<g fill="${d.colorEsquinas}">${dibujarEsquina(d, 0, 0)}</g></svg>`;
+}
+
+/** Un pedacito de QR (5 x 5) con el estilo de puntos y el color de "d". */
+export function svgDePuntos(d) {
+  // Un dibujo fijo, elegido para que se noten bien las diferencias entre estilos
+  const muestra = [
+    [1, 1, 0, 1, 0],
+    [1, 0, 0, 1, 1],
+    [0, 1, 1, 1, 0],
+    [1, 1, 0, 0, 1],
+    [0, 1, 0, 1, 1],
+  ];
+  function hayPunto(fila, columna) {
+    return fila >= 0 && columna >= 0 && fila < 5 && columna < 5 && muestra[fila][columna] === 1;
+  }
+  let puntos = '';
+  for (let fila = 0; fila < 5; fila++) {
+    for (let columna = 0; columna < 5; columna++) {
+      if (hayPunto(fila, columna)) {
+        puntos += dibujarPunto(d.puntos, columna, fila, fila, columna, hayPunto);
+      }
+    }
+  }
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="-0.3 -0.3 5.6 5.6" aria-hidden="true">`
+    + `<path d="${puntos}" fill="${d.colorPuntos}"/></svg>`;
 }

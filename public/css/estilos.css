@@ -1030,23 +1030,54 @@ details[open] > summary .flecha-desplegable { transform: rotate(180deg); }
 .plantilla-qr:focus-visible { outline: none; box-shadow: var(--foco); }
 .plantilla-qr.magnus-encima { border-color: var(--azul); transform: translateY(-2px); }
 
-/* Formas (puntos y esquinas): tarjetitas con un dibujo */
+/* Formas (puntos y esquinas): tarjetitas con un dibujo en el color actual.
+   Al pasar el mouse se levantan (y el QR grande muestra cómo quedaría);
+   la elegida lleva borde azul y una ✓ en la esquina. */
 .formas-qr { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
 .formas-qr--chicas { grid-template-columns: repeat(3, 1fr); }
-.forma-qr { cursor: pointer; }
+.forma-qr { position: relative; cursor: pointer; }
 .forma-qr input { position: absolute; opacity: 0; pointer-events: none; }
 .forma-qr > span {
-  display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 10px 4px 8px;
-  border: 1px solid var(--borde); border-radius: 12px; font-size: .72rem; font-weight: 600; color: var(--texto-suave);
-  transition: border-color .15s, background .15s;
+  position: relative; display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 12px 4px 9px;
+  border: 1px solid var(--borde); border-radius: 14px; background: var(--superficie);
+  font-size: .72rem; font-weight: 600; color: var(--texto-suave);
+  transition: border-color .15s, background .15s, transform .15s, box-shadow .15s;
 }
-.forma-qr svg { width: 30px; height: 30px; fill: var(--texto-suave); }
-.forma-qr:hover > span { background: #F7F8FC; }
-.forma-qr input:checked + span { border-color: var(--azul); background: var(--azul-suave); color: var(--azul); box-shadow: 0 0 0 1px var(--azul); }
-.forma-qr input:checked + span svg { fill: var(--azul); }
+.forma-qr__dibujo { display: block; width: 36px; height: 36px; transition: transform .2s; }
+.forma-qr__dibujo svg { display: block; width: 100%; height: 100%; }
+.forma-qr:hover > span { transform: translateY(-3px); border-color: var(--borde-fuerte); box-shadow: 0 6px 14px #1418501a; }
+.forma-qr:hover .forma-qr__dibujo { transform: scale(1.12); }
+.forma-qr input:checked + span {
+  border-color: var(--azul); background: var(--azul-suave); color: var(--azul);
+  box-shadow: 0 0 0 1px var(--azul); animation: forma-elegida .3s ease-out;
+}
+.forma-qr input:checked + span::after {   /* la ✓ de la opción elegida */
+  content: 'check'; position: absolute; top: -7px; right: -7px; display: grid; place-items: center;
+  width: 20px; height: 20px; border-radius: 50%; background: var(--azul); color: var(--blanco);
+  font-family: 'Material Symbols Rounded'; font-size: 14px; line-height: 1; font-feature-settings: 'liga';
+  box-shadow: 0 0 0 2px var(--superficie);
+}
 .forma-qr input:focus-visible + span { box-shadow: var(--foco); }
-.nota-qr { margin: 8px 0 0; }
-.dos-columnas-qr { display: grid; grid-template-columns: 1fr 1fr; gap: 0 14px; }
+@keyframes forma-elegida { 50% { transform: scale(1.06); } }
+
+/* Esquinas: una esquina en grande + las opciones de marco y centro */
+.esquinas-qr { display: grid; grid-template-columns: 130px 1fr; gap: 14px; align-items: start; }
+.esquinas-qr__vista {
+  display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 14px 10px;
+  border-radius: 16px; background: var(--superficie-2); text-align: center;
+}
+.esquinas-qr__vista small { font-size: .7rem; color: var(--gris); line-height: 1.3; }
+.esquinas-qr__dibujo {
+  display: block; width: 84px; height: 84px; padding: 8px; border-radius: 14px; background: var(--superficie);
+  box-shadow: var(--sombra); transition: transform .2s, box-shadow .2s;
+}
+.esquinas-qr__dibujo svg { display: block; width: 100%; height: 100%; }
+.esquinas-qr__dibujo.probando { transform: scale(1.06); box-shadow: 0 0 0 2px var(--dorado-claro), var(--sombra); }
+.esquinas-qr__titulo { margin: 0 0 6px; font-size: .75rem; font-weight: 700; color: var(--texto-suave); }
+.esquinas-qr__titulo:not(:first-child) { margin-top: 12px; }
+
+/* El QR grande mientras se "prueba" una opción (mouse encima): borde dorado */
+.estudio-qr__dibujo.probando { box-shadow: inset 0 0 0 2px var(--dorado-claro); }
 
 /* Colores: un círculo (el selector de color) + nombre + código */
 .colores-qr { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
@@ -1222,7 +1253,9 @@ details[open] > summary .flecha-desplegable { transform: rotate(180deg); }
   .formas-qr { grid-template-columns: repeat(2, 1fr); }
   .formas-qr--chicas { grid-template-columns: repeat(3, 1fr); }
   .estudio-qr__dibujo { width: min(100%, 260px); padding: 12px; }
-  .dos-columnas-qr, .colores-qr { grid-template-columns: 1fr; }
+  .colores-qr { grid-template-columns: 1fr; }
+  .esquinas-qr { grid-template-columns: 1fr; }
+  .esquinas-qr__vista { flex-direction: row; justify-content: center; }
   .pestana-qr { font-size: .72rem; }
   .panel-qr { padding: 8px 14px 18px; }
   .recorrido__magnus { width: 52px; }
