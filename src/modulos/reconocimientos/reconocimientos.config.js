@@ -2,6 +2,11 @@
 //  MÓDULO RECONOCIMIENTOS - configuración
 //  Textos, límites y posiciones propios de este tipo de diploma.
 //  (Lo común a todos los diplomas está en src/config/diseno.config.js)
+//
+//  EXPORTA           LO IMPORTAN                PARA
+//  config (default)  reconocimientos.schema.js  límites y valores por defecto
+//                    reconocimientos.pdf.js     medidas, colores y textos del dibujo
+//                    reconocimientos.modulo.js  unir todo (y la API lo lee como modulo.config)
 // =============================================================
 
 const reconocimientosConfig = {

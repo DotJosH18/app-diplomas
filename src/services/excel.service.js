@@ -2,6 +2,17 @@
 //  SERVICIO EXCEL
 //  - Lee el Excel de participantes (una persona por fila).
 //  - Crea el Excel modelo que se descarga desde la página.
+//
+//  IMPORTA              DE                    PARA
+//  ExcelJS              exceljs (librería)    leer y crear archivos .xlsx
+//  HttpError            utils/HttpError.js    errores del Excel (sin columna obligatoria…)
+//  limpiar, normalizar  utils/texto.js        comparar encabezados sin tildes ni mayúsculas
+//  appConfig            config/app.config.js  filas máximas
+//  fechaEnTexto         utils/fecha.js        celdas con formato de fecha
+//
+//  EXPORTA            LO IMPORTA                          PARA
+//  leerParticipantes  controllers/diplomas.controller.js  leer las filas del Excel
+//  crearExcelModelo   controllers/diplomas.controller.js  el Excel modelo de cada módulo
 // =============================================================
 import ExcelJS from 'exceljs';
 import HttpError from '../utils/HttpError.js';

@@ -5,6 +5,13 @@
 //
 //  Lo propio de cada módulo (sus textos, sus campos y la parte
 //  central del diploma) está en src/modulos/<módulo>/.
+//
+//  EXPORTA           LO IMPORTAN                         PARA
+//  diseno (default)  services/pdf.service.js             dibujar las partes comunes de los diplomas
+//  diseno (default)  utils/pdfFuentes.js                 las fuentes (archivos .woff)
+//  diseno (default)  schemas/campos.schema.js            límites y valores por defecto comunes
+//  diseno (default)  controllers/diplomas.controller.js  valores por defecto (GET /api/configuracion)
+//  diseno (default)  modulos/*/…pdf.js                   colores y encabezado comunes
 // =============================================================
 import path from 'node:path';
 

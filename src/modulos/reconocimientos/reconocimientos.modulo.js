@@ -1,6 +1,15 @@
 // =============================================================
 //  MÓDULO RECONOCIMIENTOS
 //  Une las 3 piezas del módulo: configuración, esquema y PDF.
+//
+//  IMPORTA                DE                         PARA
+//  sinNegritas            ../../utils/texto.js       el resumen de la tabla del Excel
+//  config                 reconocimientos.config.js  configuración
+//  reconocimientosSchema  reconocimientos.schema.js  validar
+//  dibujarCuerpo          reconocimientos.pdf.js     dibujar
+//
+//  EXPORTA              LO IMPORTA   PARA
+//  el módulo (default)  ../index.js  agregarlo a la lista de módulos
 // =============================================================
 import { sinNegritas } from '../../utils/texto.js';
 import config from './reconocimientos.config.js';

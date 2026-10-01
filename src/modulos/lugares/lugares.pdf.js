@@ -7,6 +7,14 @@
 //
 //    CONCURSO DE ORATORIA 2026        ← evento, en azul
 //    Texto de la descripción…         ← descripción (uno o varios párrafos)
+//
+//  IMPORTA               DE                       PARA
+//  escribir…, acomodar…  ../../utils/pdfTexto.js  escribir textos y párrafos
+//  config                lugares.config.js        medidas, colores y textos
+//
+//  EXPORTA              LO IMPORTA         PARA
+//  dibujarCuerpo        lugares.modulo.js  dibujar la parte central (lo común lo dibuja pdf.service.js)
+//  acomodarDescripcion  lugares.schema.js  validar con el mismo cálculo del dibujo
 // =============================================================
 import diseno from '../../config/diseno.config.js';
 import { escribirCentrado, tamanoParaUnaLinea, acomodarParrafos, escribirParrafos } from '../../utils/pdfTexto.js';

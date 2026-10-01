@@ -14,6 +14,14 @@
 //    │            UNICAH            │
 //    │     CAMPUS SANTA CLARA       │   ← campus (opcional)
 //    └──────────────────────────────┘
+//
+//  IMPORTA               DE                         PARA
+//  escribir…, acomodar…  ../../utils/pdfTexto.js    escribir textos y párrafos
+//  config                agradecimientos.config.js  medidas, colores y textos
+//
+//  EXPORTA              LO IMPORTA                 PARA
+//  dibujarPagina        agradecimientos.modulo.js  dibujar la página completa
+//  acomodarDescripcion  agradecimientos.schema.js  validar con el mismo cálculo del dibujo
 // =============================================================
 import { escribirCentrado, acomodarParrafos, escribirParrafos } from '../../utils/pdfTexto.js';
 import config from './agradecimientos.config.js';

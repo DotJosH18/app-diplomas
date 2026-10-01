@@ -18,6 +18,13 @@
 //
 //  El texto va justificado. {nombre} se reemplaza por el nombre y
 //  **texto** va en negrita.
+//
+//  IMPORTA               DE                       PARA
+//  escribir…, acomodar…  ../../utils/pdfTexto.js  escribir textos y párrafos
+//  config                duelo.config.js          medidas, colores y textos
+//
+//  EXPORTA        LO IMPORTA       PARA
+//  dibujarPagina  duelo.modulo.js  dibujar la página completa
 // =============================================================
 import { escribirJustificado, altoDeTexto } from '../../utils/pdfTexto.js';
 import config from './duelo.config.js';

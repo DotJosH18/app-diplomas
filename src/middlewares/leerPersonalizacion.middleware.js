@@ -12,6 +12,14 @@
 //      titulo:     'NOTA DE DUELO' o '' (vacío = título por defecto; solo lo usa el comunicado),
 //      logo:       Buffer con la imagen, o null (null = logo por defecto),
 //    }
+//
+//  IMPORTA                DE                                 PARA
+//  personalizacionSchema  schemas/personalizacion.schema.js  validar colores y textos
+//  HttpError              utils/HttpError.js                 responder 400
+//  appConfig              config/app.config.js               tamaño máximo del logo
+//
+//  EXPORTA    LO IMPORTA                 PARA
+//  (default)  routes/diplomas.routes.js  dejar req.personalizacion listo para los PDF
 // =============================================================
 import { personalizacionSchema } from '../schemas/personalizacion.schema.js';
 import HttpError from '../utils/HttpError.js';

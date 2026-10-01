@@ -2,6 +2,12 @@
 //  ESQUEMA DE PERSONALIZACIÓN (con Zod)
 //  Opciones de diseño que se pueden elegir en la página.
 //  Todas son opcionales: si no vienen, se usa el diseño por defecto.
+//
+//  IMPORTA  DE              PARA
+//  z        zod (librería)  describir los datos
+//
+//  EXPORTA                LO IMPORTA                       PARA
+//  personalizacionSchema  middlewares/leerPersonalizacion  validar colores, encabezado y título
 // =============================================================
 import { z } from 'zod';
 

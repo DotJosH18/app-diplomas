@@ -3,6 +3,11 @@
 //  Diploma vertical en tamaño OFICIO (legal), con fondo de
 //  pergamino y marco café. No usa el diseño de los otros diplomas
 //  (banda, firmas…): dibuja su propia página (ver agradecimientos.pdf.js).
+//
+//  EXPORTA           LO IMPORTAN                PARA
+//  config (default)  agradecimientos.schema.js  límites y valores por defecto
+//                    agradecimientos.pdf.js     medidas, colores y textos del dibujo
+//                    agradecimientos.modulo.js  unir todo (y la API lo lee como modulo.config)
 // =============================================================
 import path from 'node:path';
 

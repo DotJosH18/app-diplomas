@@ -12,21 +12,35 @@
   <!-- ==================== ENCABEZADO ==================== -->
   <header class="encabezado">
     <div class="encabezado__contenido">
-      <!-- Logo + título -->
-      <div class="marca">
+      <!-- Logo + título: también llevan al inicio (como en casi todas las páginas) -->
+      <a href="./" id="enlace-marca" class="marca" title="Ir al inicio">
         <img class="marca__logo" src="img/logo-unicah.png" alt="Logo de UNICAH" />
         <div>
           <p class="encabezado__sub">Generador de</p>
           <h1 class="encabezado__titulo">Diplomas</h1>
         </div>
-      </div>
+      </a>
 
-      <!-- Tipo de diploma elegido (se ve dentro del generador) -->
-      <div id="tipo-elegido" class="tipo-elegido invisible">
-        <span class="tipo-elegido__etiqueta">Tipo de diploma</span>
-        <strong id="tipo-elegido-nombre"></strong>
-        <button id="boton-menu" class="boton-menu">Cambiar tipo</button>
-      </div>
+      <!-- Navegación (se ve dentro de un módulo):   ⌂ Inicio  ›  Placas ▾
+           - "Inicio" vuelve al menú.
+           - El nombre del módulo abre una lista para cambiar a otro directamente.
+             Esa lista la arma navegacion.js copiando las tarjetas del menú, así
+             un módulo nuevo aparece aquí solo con agregar su tarjeta. -->
+      <nav id="navegacion" class="navegacion invisible" aria-label="Navegación">
+        <button type="button" id="boton-inicio" class="navegacion__inicio">
+          <span class="navegacion__icono" aria-hidden="true">⌂</span> Inicio
+        </button>
+        <span class="navegacion__separador" aria-hidden="true">›</span>
+        <details id="selector-modulo" class="selector-modulo">
+          <summary class="selector-modulo__actual" title="Cambiar a otro tipo">
+            <span id="nombre-modulo-actual"></span>
+          </summary>
+          <div class="selector-modulo__lista">
+            <p class="selector-modulo__titulo">Cambiar a…</p>
+            <div id="lista-modulos"></div>
+          </div>
+        </details>
+      </nav>
     </div>
 
     <!-- Las pestañas solo se ven dentro del generador ("invisible" guarda su espacio
@@ -86,6 +100,9 @@
           <span class="opcion__texto">Reconocimiento con cintas azul y dorada, marco dorado y el logo de fondo.</span>
           <span class="opcion__campos">Pide: nombre y descripción</span>
         </button>
+
+        <!-- ← NUEVOS MÓDULOS: las tarjetas nuevas van arriba de esta línea
+             (npm run crear-modulo las agrega aquí; no borres esta marca) -->
 
         <!-- Herramienta (no es un diploma): data-herramienta en lugar de data-modulo -->
         <button class="opcion opcion--herramienta" data-herramienta="quitar-fondo" data-titulo="Quitar fondo de logos">
@@ -619,7 +636,7 @@
     </div>
   </footer>
 
-  <script src="js/app.js"></script>
-  <script src="js/quitar-fondo.js"></script>
+  <!-- Toda la lógica de la página empieza en js/main.js (ver ese archivo). -->
+  <script type="module" src="js/main.js"></script>
 </body>
 </html>

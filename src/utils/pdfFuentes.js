@@ -8,6 +8,14 @@
 //  para MEDIR textos (cuánto ancho y alto ocupan) al validar los
 //  datos, antes de generar el diploma. Así se puede avisar
 //  "la descripción no cabe" en lugar de entregar un diploma roto.
+//
+//  IMPORTA      DE                       PARA
+//  PDFDocument  pdfkit (librería)        el documento para medir
+//  diseno       config/diseno.config.js  los archivos de las fuentes
+//
+//  EXPORTA           LO IMPORTAN               PARA
+//  registrarFuentes  services/pdf.service.js   usar las fuentes al dibujar
+//  obtenerMedidor    schemas/campos.schema.js  medir textos al validar
 // =============================================================
 import PDFDocument from 'pdfkit';
 import diseno from '../config/diseno.config.js';

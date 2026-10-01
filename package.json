@@ -6,7 +6,8 @@
   "scripts": {
     "test": "node --test \"tests/**/*.test.js\"",
     "start": "node src/server.js",
-    "dev": "node --watch src/server.js"
+    "dev": "node --watch src/server.js",
+    "crear-modulo": "node scripts/crear-modulo.js"
   },
   "keywords": [],
   "author": "josehernanfigueroa18@gmail.com",

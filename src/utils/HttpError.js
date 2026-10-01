@@ -5,6 +5,9 @@
 //
 //  El middleware de errores lo atrapa y responde:
 //    status 400  →  { "error": "El campo Nombre es obligatorio" }
+//
+//  EXPORTA              LO IMPORTAN                         PARA
+//  HttpError (default)  controllers, middlewares, services  lanzar errores con su código HTTP
 // =============================================================
 export default class HttpError extends Error {
   constructor(status, mensaje) {

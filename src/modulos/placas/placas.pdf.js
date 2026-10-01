@@ -18,6 +18,15 @@
 //     ║   Cargo                 Cargo            ║
 //     ╚══════════════════════════════════════════╝
 //                                             cintas ◢
+//
+//  IMPORTA               DE                       PARA
+//  escribir…, acomodar…  ../../utils/pdfTexto.js  escribir textos y párrafos
+//  config                placas.config.js         medidas, colores y textos
+//
+//  EXPORTA              LO IMPORTA              PARA
+//  dibujarPagina        placas.modulo.js        dibujar la página completa
+//  acomodarDescripcion  placas.schema.js        validar con el mismo cálculo del dibujo
+//  rubricaDe            tests/diplomas.test.js  probar cómo se arma la rúbrica
 // =============================================================
 import diseno from '../../config/diseno.config.js';
 import { escribirCentrado, tamanoParaUnaLinea, acomodarParrafos, escribirParrafos, yParaLineaBase } from '../../utils/pdfTexto.js';

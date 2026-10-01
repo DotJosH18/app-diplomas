@@ -1,6 +1,11 @@
 // =============================================================
 //  UTILIDADES DE TEXTO
 //  Funciones pequeñas que se usan en varias partes del proyecto.
+//
+//  EXPORTA              LO IMPORTAN                                 PARA
+//  limpiar, normalizar  services/excel.service.js, modulos/lugares  limpiar celdas y comparar textos
+//  nombreArchivoPDF     controllers/diplomas.controller.js          el nombre del archivo que se descarga
+//  sinNegritas          modulos/*/…modulo.js                        el resumen de la tabla del Excel
 // =============================================================
 
 /**

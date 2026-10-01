@@ -4,6 +4,11 @@
 //  No llevan nombre de persona: en la línea grande va el lugar
 //  obtenido ("Primer Lugar") y debajo el evento.
 //  (Lo común a todos los diplomas está en src/config/diseno.config.js)
+//
+//  EXPORTA           LO IMPORTAN        PARA
+//  config (default)  lugares.schema.js  límites y valores por defecto
+//                    lugares.pdf.js     medidas, colores y textos del dibujo
+//                    lugares.modulo.js  unir todo (y la API lo lee como modulo.config)
 // =============================================================
 
 const lugaresConfig = {

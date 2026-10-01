@@ -6,6 +6,15 @@
 //
 //  (Se separa de server.js para poder usarla en las pruebas
 //  sin encender el servidor.)
+//
+//  IMPORTA                           DE                                  PARA
+//  rutasApi                          routes/index.js                     todas las rutas /api
+//  registrarPeticiones               middlewares/registro.middleware.js  mostrar cada petición en la consola
+//  rutaNoEncontrada, manejarErrores  middlewares/errores.middleware.js   responder 404 y los errores
+//
+//  EXPORTA        LO IMPORTAN             PARA
+//  app (default)  server.js               encender el servidor
+//  app (default)  tests/diplomas.test.js  probar la API sin encenderlo
 // =============================================================
 import path from 'node:path';
 import express from 'express';

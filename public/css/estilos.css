@@ -72,15 +72,54 @@ body > main { flex: 1; width: 100%; }
 .pie__derechos { text-align: right; }
 .pie strong { color: var(--blanco); }
 
-/* ---------- Tipo de diploma elegido (encabezado) ---------- */
-.tipo-elegido { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
-.tipo-elegido__etiqueta { font-size: .75rem; color: #c9cbe6; }
-.tipo-elegido strong { color: var(--dorado-claro); }
-.boton-menu {
-  background: none; border: 1px solid #ffffff55; color: var(--blanco); cursor: pointer;
-  font: 600 .8rem Montserrat, sans-serif; padding: 6px 12px; border-radius: 7px;
+/* ---------- Navegación del encabezado:  ⌂ Inicio  ›  Placas ▾ ---------- */
+.marca { color: inherit; text-decoration: none; border-radius: 10px; }
+.marca:focus-visible { outline: 2px solid var(--dorado-claro); outline-offset: 4px; }
+
+.navegacion {
+  display: flex; align-items: center; gap: 4px; padding: 4px;
+  background: #ffffff14; border: 1px solid #ffffff26; border-radius: 12px;
 }
-.boton-menu:hover { background: var(--azul-claro); }
+.navegacion__inicio, .selector-modulo__actual {
+  display: flex; align-items: center; gap: 8px; padding: 8px 14px; border-radius: 9px;
+  font: 600 .88rem Montserrat, sans-serif; color: var(--blanco); cursor: pointer;
+  background: none; border: 0; transition: background .15s;
+}
+.navegacion__inicio:hover, .selector-modulo__actual:hover { background: #ffffff1f; }
+.navegacion__inicio:focus-visible, .selector-modulo__actual:focus-visible { outline: 2px solid var(--dorado-claro); outline-offset: 1px; }
+.navegacion__icono { font-size: 1.05rem; line-height: 1; }
+.navegacion__separador { color: #ffffff66; }
+
+/* El módulo actual (en dorado) con una flecha: se ve que se puede abrir */
+.selector-modulo { position: relative; }
+.selector-modulo__actual { list-style: none; color: var(--dorado-claro); }
+.selector-modulo__actual::-webkit-details-marker { display: none; }
+.selector-modulo__actual::after { content: '▾'; display: inline-block; color: var(--blanco); transition: transform .2s; }
+.selector-modulo[open] .selector-modulo__actual { background: #ffffff26; }
+.selector-modulo[open] .selector-modulo__actual::after { transform: rotate(180deg); }
+
+/* La lista que se abre debajo */
+.selector-modulo__lista {
+  position: absolute; right: 0; top: calc(100% + 10px); z-index: 20; width: 340px;
+  padding: 8px; background: var(--blanco); color: var(--texto);
+  border-radius: 12px; box-shadow: 0 16px 40px #0b0f2f40, 0 0 0 1px var(--borde);
+}
+.selector-modulo__titulo { margin: 4px 8px 6px; font-size: .72rem; font-weight: 700; color: var(--gris); text-transform: uppercase; letter-spacing: .08em; }
+.opcion-rapida {
+  display: flex; align-items: center; gap: 12px; width: 100%; padding: 8px; text-align: left;
+  background: none; border: 0; border-radius: 8px; cursor: pointer; font: inherit; color: inherit;
+}
+.opcion-rapida:hover, .opcion-rapida:focus-visible { background: var(--fondo); outline: none; }
+.opcion-rapida img {
+  width: 56px; height: 40px; object-fit: contain; flex-shrink: 0;
+  background: var(--fondo); border-radius: 6px; box-shadow: 0 0 0 1px var(--borde);
+}
+.opcion-rapida__textos { display: flex; flex-direction: column; min-width: 0; }
+.opcion-rapida__textos strong { font-size: .88rem; color: var(--azul); }
+.opcion-rapida__textos small { font-size: .72rem; color: var(--gris); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+/* El módulo en el que estás: resaltado y con "Actual" */
+.opcion-rapida.actual { background: #fbf8ec; }
+.opcion-rapida.actual strong::after { content: ' · Actual'; color: var(--dorado); font-weight: 600; font-size: .72rem; }
 
 /* Oculta algo pero conserva su espacio (para que el encabezado no cambie de altura) */
 .invisible { visibility: hidden; }
@@ -454,11 +493,13 @@ body > main { flex: 1; width: 100%; }
   .paletas { grid-template-columns: repeat(2, 1fr); }
   .menu__opciones { grid-template-columns: 1fr; }
   /* En celular el tipo elegido va en una sola línea (así el encabezado no cambia de alto) */
-  .tipo-elegido { flex-wrap: nowrap; width: 100%; }
-  .tipo-elegido__etiqueta { display: none; }
+  .navegacion { width: 100%; }
+  .selector-modulo { flex: 1; min-width: 0; }
+  .selector-modulo__actual { justify-content: space-between; }
+  .selector-modulo__lista { width: calc(100vw - 32px); }
   .marca__logo { width: 56px; height: 56px; }
   .pie__derechos { text-align: left; }
-  .tipo-elegido strong { flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  #nombre-modulo-actual { min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .rejilla { grid-template-columns: 1fr; }
   .resumen { gap: 8px; }
   .dato span { font-size: 1.4rem; }

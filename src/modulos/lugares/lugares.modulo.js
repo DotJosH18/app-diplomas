@@ -1,6 +1,15 @@
 // =============================================================
 //  MÓDULO LUGARES
 //  Une las 3 piezas del módulo: configuración, esquema y PDF.
+//
+//  IMPORTA        DE                    PARA
+//  limpiar        ../../utils/texto.js  el resumen de la tabla del Excel
+//  config         lugares.config.js     configuración
+//  lugaresSchema  lugares.schema.js     validar
+//  dibujarCuerpo  lugares.pdf.js        dibujar
+//
+//  EXPORTA              LO IMPORTA   PARA
+//  el módulo (default)  ../index.js  agregarlo a la lista de módulos
 // =============================================================
 import { limpiar } from '../../utils/texto.js';
 import config from './lugares.config.js';

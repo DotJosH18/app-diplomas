@@ -10,6 +10,13 @@
 //    - req.body                     tiene los demás campos del formulario
 //
 //  Si la petición es JSON (sin archivos), multer no hace nada y sigue.
+//
+//  IMPORTA    DE                    PARA
+//  multer     (librería)            recibir archivos en memoria
+//  appConfig  config/app.config.js  tamaños máximos
+//
+//  EXPORTA    LO IMPORTA                 PARA
+//  (default)  routes/diplomas.routes.js  recibir el Excel (campo "archivo") y el logo (campo "logo")
 // =============================================================
 import multer from 'multer';
 import HttpError from '../utils/HttpError.js';

@@ -7,6 +7,13 @@
 //  Este middleware busca ese módulo y lo deja en req.modulo,
 //  para que el resto (validación, controlador) sepa qué tipo
 //  de diploma está haciendo.
+//
+//  IMPORTA       DE                  PARA
+//  buscarModulo  modulos/index.js    encontrar el módulo por su id
+//  HttpError     utils/HttpError.js  responder 404 si no existe
+//
+//  EXPORTA    LO IMPORTA                 PARA
+//  (default)  routes/diplomas.routes.js  primer paso de todas las rutas /api/:modulo
 // =============================================================
 import { buscarModulo } from '../modulos/index.js';
 import HttpError from '../utils/HttpError.js';

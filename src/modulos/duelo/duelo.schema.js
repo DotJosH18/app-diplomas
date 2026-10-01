@@ -3,6 +3,13 @@
 //  Nombre (obligatorio); los 3 puntos y la despedida ya vienen
 //  escritos (se pueden cambiar); lugar y fecha.
 //  No lleva campus ni firmas.
+//
+//  IMPORTA           DE                              PARA
+//  camposComunes, …  ../../schemas/campos.schema.js  piezas de validación compartidas
+//  config            duelo.config.js                 límites y valores por defecto
+//
+//  EXPORTA      LO IMPORTA       PARA
+//  dueloSchema  duelo.modulo.js  la API valida con modulo.esquema
 // =============================================================
 import { z } from 'zod';
 import { camposComunes, textoObligatorio, textoOpcional } from '../../schemas/campos.schema.js';

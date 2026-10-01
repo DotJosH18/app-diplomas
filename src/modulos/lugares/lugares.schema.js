@@ -2,6 +2,14 @@
 //  MÓDULO LUGARES - esquema de validación
 //  Lugar obtenido + evento + descripción + campos comunes.
 //  No lleva nombre de persona: el diploma presenta solo el lugar.
+//
+//  IMPORTA              DE                              PARA
+//  camposComunes, …     ../../schemas/campos.schema.js  piezas de validación compartidas
+//  config               lugares.config.js               límites y valores por defecto
+//  acomodarDescripcion  lugares.pdf.js                  medir que la descripción quepa
+//
+//  EXPORTA        LO IMPORTA         PARA
+//  lugaresSchema  lugares.modulo.js  la API valida con modulo.esquema
 // =============================================================
 import { z } from 'zod';
 import { camposComunes, descripcionQueCabe, textoObligatorio } from '../../schemas/campos.schema.js';

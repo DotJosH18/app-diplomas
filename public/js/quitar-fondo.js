@@ -18,9 +18,17 @@
 //    4. A los píxeles de fondo se les pone alfa 0 (transparentes).
 //    5. Se recorta el espacio vacío y se dibuja el resultado.
 //
-//  Usa funciones de app.js (mostrar, ocultar, mostrarMensaje) y
-//  sus variables del logo (archivoLogo…), porque se carga después.
+//  (Mostrar u ocultar esta pantalla lo hace navegacion.js.)
+//
+//  IMPORTA                           DE               PARA
+//  mostrar, ocultar, mostrarMensaje  utilidades.js    pasos y avisos
+//  usarComoLogo                      personalizar.js  "Usar como logo en los diplomas"
+//
+//  EXPORTA               LO IMPORTA  PARA
+//  iniciarQuitarFondo()  main.js     arrancar esta parte
 // =============================================================
+import { mostrar, ocultar, mostrarMensaje } from './utilidades.js';
+import { usarComoLogo } from './personalizar.js';
 
 // ---------- Elementos de la página ----------
 const zonaFondo = document.getElementById('zona-fondo');
@@ -50,63 +58,61 @@ let temporizadorFondo = null;
 
 
 // =============================================================
-//  1. ABRIR LA HERRAMIENTA (desde la tarjeta del menú)
+//  ARRANQUE
 // =============================================================
 
-/** Muestra la herramienta. La llama app.js al hacer clic en su tarjeta. */
-function abrirQuitarFondo(titulo) {
-  ocultar(pantallaMenu);
-  ocultar(pantallaGenerador);
-  mostrar(pantallaHerramientaFondo);
-
-  textoTipoElegido.textContent = titulo;
-  cajaTipoElegido.classList.remove('invisible');
-  // Las pestañas no aplican aquí ("invisible" guarda su espacio en el encabezado)
-  barraPestanas.classList.add('invisible');
+/** Conecta la zona de la imagen, los controles y los botones (se llama una vez, desde main.js). */
+export function iniciarQuitarFondo() {
+  prepararEleccionDeImagen();
+  prepararControles();
+  prepararBotonesFinales();
 }
 
 
 // =============================================================
-//  2. ELEGIR LA IMAGEN (clic o arrastrar y soltar)
+//  1. ELEGIR LA IMAGEN (clic o arrastrar y soltar)
 // =============================================================
 
-zonaFondo.addEventListener('click', function () {
-  inputFondo.click();
-});
-zonaFondo.addEventListener('keydown', function (evento) {
-  if (evento.key === 'Enter') {
+/** Clic, teclado y arrastrar y soltar en la zona; "Otra imagen" vuelve a la zona. */
+function prepararEleccionDeImagen() {
+  zonaFondo.addEventListener('click', function () {
     inputFondo.click();
-  }
-});
-inputFondo.addEventListener('change', function () {
-  if (inputFondo.files[0]) {
-    cargarImagen(inputFondo.files[0]);
-  }
-  inputFondo.value = ''; // permite volver a elegir el mismo archivo
-});
+  });
+  zonaFondo.addEventListener('keydown', function (evento) {
+    if (evento.key === 'Enter') {
+      inputFondo.click();
+    }
+  });
+  inputFondo.addEventListener('change', function () {
+    if (inputFondo.files[0]) {
+      cargarImagen(inputFondo.files[0]);
+    }
+    inputFondo.value = ''; // permite volver a elegir el mismo archivo
+  });
 
-// Arrastrar y soltar (igual que la zona del Excel)
-zonaFondo.addEventListener('dragover', function (evento) {
-  evento.preventDefault();
-  zonaFondo.classList.add('arrastrando'); // mismo estilo que la zona del Excel
-});
-zonaFondo.addEventListener('dragleave', function () {
-  zonaFondo.classList.remove('arrastrando');
-});
-zonaFondo.addEventListener('drop', function (evento) {
-  evento.preventDefault();
-  zonaFondo.classList.remove('arrastrando');
-  const archivo = evento.dataTransfer.files[0];
-  if (archivo) {
-    cargarImagen(archivo);
-  }
-});
+  // Arrastrar y soltar (igual que la zona del Excel)
+  zonaFondo.addEventListener('dragover', function (evento) {
+    evento.preventDefault();
+    zonaFondo.classList.add('arrastrando'); // mismo estilo que la zona del Excel
+  });
+  zonaFondo.addEventListener('dragleave', function () {
+    zonaFondo.classList.remove('arrastrando');
+  });
+  zonaFondo.addEventListener('drop', function (evento) {
+    evento.preventDefault();
+    zonaFondo.classList.remove('arrastrando');
+    const archivo = evento.dataTransfer.files[0];
+    if (archivo) {
+      cargarImagen(archivo);
+    }
+  });
 
-botonOtraImagen.addEventListener('click', function () {
-  ocultar(editorFondo);
-  mostrar(zonaFondo);
-  mostrarMensaje(mensajeFondo, '', 'normal');
-});
+  botonOtraImagen.addEventListener('click', function () {
+    ocultar(editorFondo);
+    mostrar(zonaFondo);
+    mostrarMensaje(mensajeFondo, '', 'normal');
+  });
+}
 
 /** Lee la imagen, la dibuja en el lienzo "Original" y la procesa. */
 async function cargarImagen(archivo) {
@@ -154,7 +160,7 @@ async function cargarImagen(archivo) {
 
 
 // =============================================================
-//  3. COLOR DEL FONDO
+//  2. COLOR DEL FONDO
 // =============================================================
 
 /**
@@ -221,8 +227,8 @@ function mostrarColorDeFondo(origen) {
   cajaFondoDetectado.style.setProperty('--color-fondo', codigo); // variable CSS de la muestra
 }
 
-// Clic en la imagen original: ese es el color del fondo
-lienzoOriginal.addEventListener('click', function (evento) {
+/** Clic en la imagen original: ese es el color del fondo. */
+function elegirFondoConClic(evento) {
   if (pixelesOriginales === null) {
     return;
   }
@@ -236,22 +242,28 @@ lienzoOriginal.addEventListener('click', function (evento) {
   colorFondo = [datos[i], datos[i + 1], datos[i + 2]];
   mostrarColorDeFondo('elegido por ti');
   procesar();
-});
+}
 
 
 // =============================================================
-//  4. QUITAR EL FONDO
+//  3. QUITAR EL FONDO
 // =============================================================
 
-// Cada control vuelve a procesar (con una pequeña espera mientras se mueve el deslizador)
-deslizadorTolerancia.addEventListener('input', function () {
-  textoTolerancia.textContent = deslizadorTolerancia.value;
-  clearTimeout(temporizadorFondo);
-  temporizadorFondo = setTimeout(procesar, 60);
-});
-casillaSoloExterior.addEventListener('change', procesar);
-casillaSuavizar.addEventListener('change', procesar);
-casillaRecortar.addEventListener('change', procesar);
+/**
+ * Cada control vuelve a procesar la imagen (con una pequeña espera
+ * mientras se mueve el deslizador). Clic en el original = color del fondo.
+ */
+function prepararControles() {
+  deslizadorTolerancia.addEventListener('input', function () {
+    textoTolerancia.textContent = deslizadorTolerancia.value;
+    clearTimeout(temporizadorFondo);
+    temporizadorFondo = setTimeout(procesar, 60);
+  });
+  casillaSoloExterior.addEventListener('change', procesar);
+  casillaSuavizar.addEventListener('change', procesar);
+  casillaRecortar.addEventListener('change', procesar);
+  lienzoOriginal.addEventListener('click', elegirFondoConClic);
+}
 
 /**
  * Distancia entre el color de un píxel y el del fondo, de 0 (igual) a 100
@@ -394,7 +406,7 @@ function areaVisible(datos, ancho, alto, margen) {
 
 
 // =============================================================
-//  5. DESCARGAR O USAR COMO LOGO
+//  4. DESCARGAR O USAR COMO LOGO
 // =============================================================
 
 /** El resultado como archivo PNG (Blob). */
@@ -404,25 +416,30 @@ function resultadoComoPNG() {
   });
 }
 
-botonDescargarPNG.addEventListener('click', async function () {
+/** "Descargar PNG" y "Usar como logo en los diplomas". */
+function prepararBotonesFinales() {
+  botonDescargarPNG.addEventListener('click', descargarPNG);
+  botonUsarLogo.addEventListener('click', usarResultadoComoLogo);
+}
+
+/** Descarga el resultado como "<nombre>-sin-fondo.png". */
+async function descargarPNG() {
   const png = await resultadoComoPNG();
   const enlace = document.createElement('a');
   enlace.href = URL.createObjectURL(png);
   enlace.download = `${nombreImagen}-sin-fondo.png`;
   enlace.click();
   URL.revokeObjectURL(enlace.href);
-});
+}
 
-// Lo deja como el logo de "Personalizar diseño" (el mismo que "Subir logo")
-botonUsarLogo.addEventListener('click', async function () {
+/** Deja el resultado como el logo de "Personalizar diseño" (como "Subir logo"). */
+async function usarResultadoComoLogo() {
   const png = await resultadoComoPNG();
-  if (png.size > 2 * 1024 * 1024) {
-    mostrarMensaje(mensajeFondo, 'El logo sin fondo pesa más de 2 MB: usa una imagen más pequeña', 'error');
-    return;
-  }
+  const archivo = new File([png], `${nombreImagen}-sin-fondo.png`, { type: 'image/png' });
 
-  archivoLogo = new File([png], `${nombreImagen}-sin-fondo.png`, { type: 'image/png' });
-  textoNombreLogo.textContent = archivoLogo.name;
-  mostrar(botonQuitarLogo);
-  mostrarMensaje(mensajeFondo, 'Listo: se usará como logo. Pulsa "Cambiar tipo" y elige un diploma.', 'ok');
-});
+  if (usarComoLogo(archivo)) {
+    mostrarMensaje(mensajeFondo, 'Listo: se usará como logo. Pulsa "Inicio" (o el nombre de arriba) y elige un diploma.', 'ok');
+  } else {
+    mostrarMensaje(mensajeFondo, 'El logo sin fondo pesa más de 2 MB: usa una imagen más pequeña', 'error');
+  }
+}

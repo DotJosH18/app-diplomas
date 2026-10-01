@@ -10,6 +10,27 @@
 //
 //  Si algo sale mal, basta con "throw new HttpError(...)":
 //  el middleware de errores se encarga de responder.
+//
+//  IMPORTA                              DE                          PARA
+//  generarPDF, generarPDFConVarios      services/pdf.service.js     crear los PDF
+//  leerParticipantes, crearExcelModelo  services/excel.service.js   leer el Excel y crear el modelo
+//  pdfAImagen                           services/imagen.service.js  PDF -> PNG (imagen y miniatura)
+//  validarConEsquema                    schemas/campos.schema.js    validar cada fila del Excel
+//  modulos                              modulos/index.js            la lista de módulos
+//  diseno                               config/diseno.config.js     valores por defecto comunes
+//  HttpError                            utils/HttpError.js          responder errores con su código
+//  nombreArchivoPDF                     utils/texto.js              el nombre del archivo descargado
+//  fechaDeHoy                           utils/fecha.js              la fecha por defecto (en gris)
+//
+//  EXPORTA (una función por ruta)  LO IMPORTA                 RUTA
+//  listarModulos                   routes/index.js            GET  /api/modulos
+//  obtenerConfiguracion            routes/index.js            GET  /api/configuracion
+//  generarUnDocumento              routes/diplomas.routes.js  POST /api/:modulo
+//  generarImagenPNG                routes/diplomas.routes.js  POST /api/:modulo/imagen
+//  generarMiniatura                routes/diplomas.routes.js  POST /api/:modulo/miniatura
+//  revisarExcel                    routes/diplomas.routes.js  POST /api/:modulo/excel/revisar
+//  generarDesdeExcel               routes/diplomas.routes.js  POST /api/:modulo/excel
+//  descargarModelo                 routes/diplomas.routes.js  GET  /api/:modulo/excel/modelo
 // =============================================================
 import { generarPDF, generarPDFConVarios } from '../services/pdf.service.js';
 import { leerParticipantes, crearExcelModelo } from '../services/excel.service.js';
@@ -42,7 +63,7 @@ export function listarModulos(req, res) {
  * Valores por defecto de los campos (la página los muestra en gris).
  */
 export function obtenerConfiguracion(req, res) {
-  // Los comunes + los de cada módulo que tenga los suyos (ej. condolencias en Nota de duelo)
+  // Los comunes + los de cada módulo que tenga los suyos (ej. condolencias en el Comunicado de duelo)
   const valoresPorDefecto = { ...diseno.valoresPorDefecto };
   for (const modulo of modulos) {
     if (modulo.config.valoresPorDefecto) {
@@ -58,10 +79,10 @@ export function obtenerConfiguracion(req, res) {
 /**
  * POST /api/:modulo
  * Devuelve el PDF de UNA persona.
- * Los datos ya llegan validados por el middleware validarDiploma.
+ * Los datos ya llegan validados por el middleware validarDatos.
  * Con ?vista=1 el PDF se abre en el navegador en vez de descargarse.
  */
-export async function generarUno(req, res) {
+export async function generarUnDocumento(req, res) {
   const modulo = req.modulo;
   const diploma = req.body;
   const pdf = await generarPDF(modulo, diploma, req.personalizacion);
@@ -79,10 +100,10 @@ export async function generarUno(req, res) {
 
 /**
  * POST /api/:modulo/imagen
- * Igual que generarUno, pero responde una imagen PNG en lugar del PDF.
+ * Igual que generarUnDocumento, pero responde una imagen PNG en lugar del PDF.
  * Solo para los módulos con "descargaImagen: true" (lo revisa el middleware permiteImagen).
  */
-export async function generarImagen(req, res) {
+export async function generarImagenPNG(req, res) {
   const modulo = req.modulo;
   const diploma = req.body;
   const pdf = await generarPDF(modulo, diploma, req.personalizacion);

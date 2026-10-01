@@ -8,6 +8,18 @@
 //  Aquí están las piezas que usan TODOS los módulos. Cada módulo
 //  arma su esquema en src/modulos/<módulo>/<módulo>.schema.js
 //  juntando "camposComunes" con sus propios campos.
+//
+//  IMPORTA         DE                       PARA
+//  z               zod (librería)           describir los datos
+//  diseno          config/diseno.config.js  límites y valores por defecto comunes
+//  obtenerMedidor  utils/pdfFuentes.js      medir si una descripción cabe
+//  fechaDeHoy      utils/fecha.js           fecha por defecto
+//
+//  EXPORTA                          LO IMPORTAN                                                   PARA
+//  textoObligatorio, textoOpcional  modulos/*/…schema.js                                          armar el esquema de cada módulo
+//  descripcionQueCabe               modulos/*/…schema.js                                          descripción que se mide para que quepa
+//  camposComunes                    modulos/*/…schema.js                                          campus, lugar, fecha y firmas
+//  validarConEsquema                middlewares/validarDatos, controllers/diplomas.controller.js  validar y juntar los errores en una lista
 // =============================================================
 import { z } from 'zod';
 import diseno from '../config/diseno.config.js';

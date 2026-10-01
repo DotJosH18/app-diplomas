@@ -3,6 +3,15 @@
 //  Une las 3 piezas del módulo: configuración, esquema y PDF.
 //  A diferencia de los diplomas, tiene "dibujarPagina": dibuja
 //  la página completa con su propio diseño.
+//
+//  IMPORTA               DE                    PARA
+//  sinNegritas, limpiar  ../../utils/texto.js  el resumen de la tabla del Excel
+//  config                duelo.config.js       configuración
+//  dueloSchema           duelo.schema.js       validar
+//  dibujarPagina         duelo.pdf.js          dibujar
+//
+//  EXPORTA              LO IMPORTA   PARA
+//  el módulo (default)  ../index.js  agregarlo a la lista de módulos
 // =============================================================
 import { sinNegritas, limpiar } from '../../utils/texto.js';
 import config from './duelo.config.js';

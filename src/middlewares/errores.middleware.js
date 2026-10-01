@@ -1,6 +1,14 @@
 // =============================================================
 //  MIDDLEWARES DE ERRORES
 //  Se registran al final de app.js.
+//
+//  IMPORTA    DE                    PARA
+//  HttpError  utils/HttpError.js    reconocer los errores con código
+//  appConfig  config/app.config.js  mensajes de tamaño máximo
+//
+//  EXPORTA           LO IMPORTA  PARA
+//  rutaNoEncontrada  app.js      responder 404 a las rutas que no existen
+//  manejarErrores    app.js      convertir cualquier error en { error: "…" }
 // =============================================================
 import multer from 'multer';
 import HttpError from '../utils/HttpError.js';

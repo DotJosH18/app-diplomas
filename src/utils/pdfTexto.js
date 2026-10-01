@@ -6,6 +6,13 @@
 //    1. Partir el texto en palabras, anotando cuáles van en negrita.
 //    2. Acomodar las palabras en líneas que quepan en el ancho.
 //    3. Dibujar cada línea centrada.
+//
+//  EXPORTA                                LO IMPORTAN                                 PARA
+//  escribirCentrado, escribirJustificado  services/pdf.service.js, modulos/*/…pdf.js  escribir textos con **negrita**
+//  tamanoParaUnaLinea                     services/pdf.service.js, modulos/*/…pdf.js  achicar un texto para que quepa en una línea
+//  acomodarParrafos, escribirParrafos     modulos/*/…pdf.js                           párrafos: medir si caben y escribirlos
+//  altoDeTexto, altoDeParrafos            modulos/duelo, (uso interno)                medir sin dibujar
+//  yParaLineaBase                         modulos/placas                              "sentar" un texto sobre una línea
 // =============================================================
 
 /**

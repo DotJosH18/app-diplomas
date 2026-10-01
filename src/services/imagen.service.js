@@ -5,6 +5,13 @@
 //
 //  Usa la librería "pdf-to-img" (por dentro usa pdf.js, el mismo
 //  lector de PDF de Firefox).
+//
+//  IMPORTA    DE                     PARA
+//  pdf        pdf-to-img (librería)  convertir PDF en PNG
+//  appConfig  config/app.config.js   la escala por defecto
+//
+//  EXPORTA     LO IMPORTA                          PARA
+//  pdfAImagen  controllers/diplomas.controller.js  descargar PNG y miniaturas
 // =============================================================
 import { pdf } from 'pdf-to-img';
 import appConfig from '../config/app.config.js';

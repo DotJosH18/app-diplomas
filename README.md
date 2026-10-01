@@ -1,6 +1,6 @@
 # Generador de Diplomas
 
-Aplicación en Node.js que genera diplomas y documentos en PDF. Tiene **tres módulos**, uno por cada tipo de documento:
+Aplicación en Node.js que genera diplomas y documentos en PDF. Tiene **cinco módulos** (uno por cada tipo de documento) y **una herramienta**:
 
 | Módulo              | Para qué                                   | Datos propios                                        |
 |---------------------|--------------------------------------------|------------------------------------------------------|
@@ -8,8 +8,8 @@ Aplicación en Node.js que genera diplomas y documentos en PDF. Tiene **tres mó
 | **Lugares**         | Del 1º al 7º lugar de un concurso o evento | Lugar obtenido, Evento, Descripción. **Sin nombre de persona** |
 | **Comunicado de duelo** | Comunicar el fallecimiento de una persona | Nombre, 3 puntos y Despedida (ya vienen escritos). Hoja vertical estilo "COMUNICADO", **sin banda ni firmas** |
 | **Agradecimientos** | Agradecer a una persona, familia o institución | Nombre, Descripción, Título (opcional), Campus y Fecha. Hoja **oficio vertical** con fondo de pergamino, **sin firmas** |
-| **Quitar fondo de logos** (herramienta) | Dejar un logo con fondo transparente | Una imagen PNG, JPG o WEBP. Se hace en el navegador |
 | **Placas** | Reconocimiento más formal | Igual que Reconocimientos. Cintas azul y dorada, marco dorado, **logo transparente de fondo** y firmas con rúbrica |
+| **Quitar fondo de logos** (herramienta) | Dejar un logo con fondo transparente | Una imagen PNG, JPG o WEBP. Se hace en el navegador |
 
 Al abrir la página aparece un **menú** para elegir el tipo de documento. Después de elegir, en todos puedes:
 
@@ -22,6 +22,7 @@ Al abrir la página aparece un **menú** para elegir el tipo de documento. Despu
 npm install     # instala las librerías (solo la primera vez)
 npm run dev     # enciende el servidor y lo reinicia solo cada vez que guardas un archivo
 npm test        # ejecuta las pruebas automáticas
+npm run crear-modulo -- <id> "<Título>"   # crea un módulo nuevo (ver "Crear un módulo nuevo")
 ```
 
 Abre **http://localhost:3000** y elige el tipo de diploma en el menú. Para cambiar de tipo, usa **"Cambiar tipo"** arriba a la derecha.
@@ -30,14 +31,27 @@ Abre **http://localhost:3000** y elige el tipo de diploma en el menú. Para camb
 
 ## Estructura del proyecto
 
+**Cómo leer el código:** cada archivo empieza con una tabla que dice qué **IMPORTA** (de qué archivo y para qué) y qué **EXPORTA** (quién lo importa y para qué). Así puedes seguir el camino de cualquier función sin buscar. Ejemplo (`public/js/individual.js`):
+
+```
+//  IMPORTA                 DE               PARA
+//  urlDelModulo            estado.js        '/api/<módulo>…'
+//  agregarPersonalizacion  personalizar.js  enviar colores, textos y logo
+//
+//  EXPORTA                        LO IMPORTA     PARA
+//  iniciarIndividual()            main.js        arrancar esta parte
+//  individualAlCambiarDeModulo()  navegacion.js  borrar la vista previa del módulo anterior
+```
+
 ```
 diplomas-app/
 ├── src/                                  ← BACKEND (el servidor)
 │   ├── server.js                         Enciende el servidor
 │   ├── app.js                            Arma la aplicación: middlewares, rutas y errores
 │   │
-│   ├── modulos/                          ⭐ LOS TIPOS DE DIPLOMA
-│   │   ├── index.js                      Lista de módulos
+│   ├── modulos/                          ⭐ LOS TIPOS DE DOCUMENTO
+│   │   ├── index.js                      Lista de módulos (y qué debe tener cada uno)
+│   │   ├── _plantilla/                   Plantilla para crear módulos (npm run crear-modulo)
 │   │   ├── reconocimientos/
 │   │   │   ├── reconocimientos.config.js   Textos, límites, posiciones, columnas del Excel
 │   │   │   ├── reconocimientos.schema.js   Reglas de sus campos
@@ -64,7 +78,7 @@ diplomas-app/
 │   │   └── imagen.service.js             Convierte el PDF en imagen PNG
 │   ├── middlewares/
 │   │   ├── buscarModulo.middleware.js    Lee el módulo de la URL y lo deja en req.modulo
-│   │   ├── validarDiploma.middleware.js  Revisa los datos con el esquema del módulo
+│   │   ├── validarDatos.middleware.js    Revisa los datos con el esquema del módulo
 │   │   ├── subirArchivos.middleware.js   Recibe el Excel y el logo
 │   │   ├── leerPersonalizacion.middleware.js  Revisa el color, el título y el logo elegidos
 │   │   ├── permiteImagen.middleware.js   Deja pasar solo los módulos que se descargan como imagen
@@ -73,15 +87,27 @@ diplomas-app/
 │   └── utils/
 │       ├── HttpError.js                  Error con código HTTP (400, 404…)
 │       ├── texto.js                      Quitar tildes, comparar textos, nombre del PDF
-│       └── pdfTexto.js                   Escribir texto centrado con **negritas** en el PDF
+│       ├── fecha.js                      La fecha de hoy en texto (28 de septiembre de 2026)
+│       ├── pdfFuentes.js                 Fuentes del PDF y el "medidor" de textos
+│       └── pdfTexto.js                   Escribir textos y párrafos (centrados, justificados, **negritas**)
 │
 ├── public/                               ← FRONTEND (la página)
 │   ├── index.html                        Estructura: menú, generador y formularios (sin estilos ni lógica)
 │   ├── css/estilos.css                   Diseño
-│   ├── js/app.js                         Comportamiento
+│   ├── js/                               Comportamiento, en archivos pequeños con import/export:
+│   │   ├── main.js                       ⭐ Punto de entrada: arranca todo (empieza a leer aquí)
+│   │   ├── estado.js                     El módulo elegido y la dirección de su API
+│   │   ├── utilidades.js                 Funciones de ayuda (mostrar, mensajes, pedir al servidor…)
+│   │   ├── navegacion.js                 Menú, encabezado (Inicio › Módulo ▾), pestañas, cambiar de módulo
+│   │   ├── personalizar.js               Panel "Personalizar diseño"
+│   │   ├── individual.js                 Pestaña "Uno a la vez"
+│   │   ├── excel.js                      Pestaña "Desde Excel"
+│   │   ├── configuracion.js              Valores en gris y contadores de caracteres
+│   │   └── quitar-fondo.js               Herramienta "Quitar fondo de logos"
 │   └── img/                              Muestras del menú y logo por defecto (vista previa)
 │
 ├── assets/                               Fuentes y logo por defecto del diploma (PNG con fondo transparente)
+├── scripts/crear-modulo.js               Crea un módulo nuevo desde la plantilla
 ├── tests/diplomas.test.js                Pruebas automáticas
 └── ejemplos/                             Un Excel de ejemplo por módulo
 ```
@@ -122,24 +148,36 @@ Cada módulo decide, en su archivo `<módulo>.modulo.js`:
 
 ### Recorrido de una petición
 
-Esto pasa cuando la página pide un diploma de Lugares (`POST /api/lugares`):
+Esto pasa cuando, en "Uno a la vez", pulsas **Descargar PDF** en Lugares (`POST /api/lugares`):
 
 ```
-public/js/app.js        envía { puesto, evento, ... }
+EN LA PÁGINA (public/js)
+individual.js           descargarPDF(): lee el formulario + agregarPersonalizacion() (personalizar.js)
+      │                 y lo envía a urlDelModulo() (estado.js) = '/api/lugares'
       ▼
+EN EL SERVIDOR (src)
 routes/index.js         '/:modulo'  →  diplomas.routes.js   (modulo = 'lugares')
       ▼
 buscarModulo            busca 'lugares' en src/modulos y lo deja en req.modulo
       ▼
-validarDiploma          revisa req.body con el esquema de ESE módulo (req.modulo.esquema):
+subirArchivos           recibe el logo, si viene (req.files.logo)
+      ▼
+leerPersonalizacion     revisa colores, encabezado y logo → req.personalizacion
+      ▼
+validarDatos            revisa req.body con el esquema de ESE módulo (req.modulo.esquema):
       │                   - ¿hay errores? responde 400 y se detiene aquí
       │                   - ¿todo bien? deja los datos limpios en req.body
       ▼
-generarUno              (controlador) generarPDF(req.modulo, req.body) → res.send(pdf)
+generarUnDocumento      (controlador) generarPDF(req.modulo, req.body, req.personalizacion)
       ▼
 pdf.service             dibuja las partes comunes y llama a req.modulo.dibujarCuerpo()
+                        (o, en los de diseño propio, a req.modulo.dibujarPagina())
+      ▼
+EN LA PÁGINA
+individual.js           descargarArchivo() (utilidades.js) baja el PDF
 
 Si algo falla → throw new HttpError(400, 'mensaje') → errores.middleware responde { error: 'mensaje' }
+               → la página lo muestra en rojo con mostrarMensaje() (utilidades.js)
 ```
 
 ---
@@ -181,39 +219,44 @@ export const lugaresSchema = z.object({
 - **Campos comunes:** las reglas de campus, lugar, fecha y firmas están en `schemas/campos.schema.js`.
 - **El nombre no es común:** solo lo tiene Reconocimientos, en su propio esquema.
 
-### 3. Crear un módulo nuevo (ejemplo: "Participación")
+### 3. Crear un módulo nuevo (ejemplo: "Certificados de curso")
 
-Hay dos clases de módulo:
+**La forma rápida** (recomendada): un comando.
 
-- **Diploma** (como Reconocimientos y Lugares): usa la banda, el encabezado y las firmas comunes. Solo dibuja su parte central con `dibujarCuerpo`. Copia la carpeta `lugares`.
-- **Diseño propio** (como el Comunicado de duelo): dibuja la página completa con `dibujarPagina`, y puede tener otro tamaño de hoja (`pagina` en su config). Copia la carpeta `duelo`.
+```bash
+npm run crear-modulo -- certificados "Certificados de curso"
+```
 
-1. **Copia la carpeta** `src/modulos/lugares` como `src/modulos/participacion`. Renombra los 4 archivos, por ejemplo `participacion.config.js`.
-2. **Edita cada pieza:**
-   - `participacion.config.js`: saludo, límites, posiciones, columnas del Excel, `columnaObligatoria` y fila de ejemplo.
-   - `participacion.schema.js`: sus campos propios.
-   - `participacion.pdf.js`: qué dibuja en el centro (`dibujarCuerpo`) o la página completa (`dibujarPagina`).
-   - `participacion.modulo.js`: `id: 'participacion'`, `titulo`, `textoPrincipal` y `resumen`.
-3. **Regístralo** en `src/modulos/index.js`:
-   ```js
-   import participacion from './participacion/participacion.modulo.js';
-   export const modulos = [reconocimientos, lugares, participacion];
-   ```
-4. **En la página** (`public/index.html`):
-   - Agrega su tarjeta al menú, copiando una de las que hay dentro de `<section id="menu">`:
-     ```html
-     <button class="opcion" data-modulo="participacion" data-titulo="Participación">
-       <img class="opcion__imagen" src="img/muestra-participacion.png" alt="Ejemplo" />
-       <span class="opcion__titulo">Participación</span>
-       <span class="opcion__texto">Para qué sirve este diploma.</span>
-       <span class="opcion__campos">Pide: …</span>
-     </button>
-     ```
-   - Agrega sus campos propios, marcados con `data-modulos="participacion"`.
-   - Si un campo que ya existe también le sirve, agrega el módulo a su lista. Por ejemplo, `data-modulos="reconocimientos duelo participacion"`.
-   - Para la imagen de muestra, genera un ejemplo y guarda una captura en `public/img/`.
+El script (`scripts/crear-modulo.js`, solo usa Node) hace todo esto:
 
-No hace falta tocar `app.js`: la página muestra u oculta cada campo según su `data-modulos`. Las rutas, el controlador y el Excel también funcionan solos para el módulo nuevo.
+1. Copia la plantilla `src/modulos/_plantilla` en `src/modulos/certificados/`: los 4 archivos, con el id y el título ya puestos.
+2. Lo registra en `src/modulos/index.js`.
+3. Agrega su tarjeta al menú de `public/index.html`. También sale sola en la lista del encabezado.
+4. Le activa los mismos campos que Reconocimientos (nombre, descripción, campus, lugar, fecha y firmas).
+5. Le pone una imagen provisional en `public/img/muestra-certificados.png`.
+
+Reinicia el servidor: el módulo **ya genera PDF, imagen de vista previa y Excel modelo**. Después lo personalizas:
+
+| Quiero cambiar…                           | Archivo                                                        |
+|-------------------------------------------|----------------------------------------------------------------|
+| Textos, límites, columnas del Excel       | `src/modulos/certificados/certificados.config.js`              |
+| Qué datos pide                            | `src/modulos/certificados/certificados.schema.js`              |
+| Cómo se dibuja                            | `src/modulos/certificados/certificados.pdf.js`                 |
+| La tarjeta del menú                       | `public/index.html` (busca `data-modulo="certificados"`)       |
+| Qué campos ve                             | `public/index.html`: agrega o quita `certificados` en los `data-modulos` |
+| La imagen de la tarjeta                   | `public/img/muestra-certificados.png`                          |
+
+**Dos clases de módulo** (ver lo que debe tener cada uno en `src/modulos/index.js`):
+
+- **Diseño común de diploma** (como la plantilla, Reconocimientos y Lugares): pdf.service.js dibuja la banda, el encabezado, el nombre, lugar y fecha, y las firmas. El módulo solo dibuja el centro, con `dibujarCuerpo`.
+- **Diseño propio** (como Placas, Agradecimientos y el Comunicado): dibuja la página completa con `dibujarPagina`. Puede tener otro tamaño de hoja (`pagina` en su config).
+  - Para cambiar a este tipo, exporta `dibujarPagina` en su `.pdf.js` y úsala en su `.modulo.js`.
+
+**Si lo haces a mano**, son los mismos 5 pasos de arriba:
+
+- **Importarlo:** agrégalo en `src/modulos/index.js`, arriba de las marcas `← NUEVOS MÓDULOS`.
+- **No borres las marcas** `← NUEVOS MÓDULOS` (en `index.js` y en `index.html`): el script las usa. Hay una prueba que avisa si faltan.
+- **No hace falta tocar ningún archivo de `public/js/`:** la página muestra u oculta cada campo según su `data-modulos`, y la lista del encabezado se arma copiando las tarjetas del menú. Las rutas, el controlador y el Excel también funcionan solos para cualquier módulo de la lista.
 
 ### 4. Agregar un dato nuevo a un módulo (ejemplo: "Categoría" en Lugares)
 
@@ -363,10 +406,15 @@ En "Personalizar diseño", los colores se eligen en dos niveles, de lo más ráp
   - **Qué muestra:** abre una ventana grande con el PDF de esa fila, tal como quedará: con los datos comunes y la personalización.
   - **Moverse entre filas:** con **← Anterior** y **Siguiente →**, o con las flechas del teclado.
   - **Cerrar:** con **Cerrar** o con Esc.
-  - **Dónde está:** la ventana es un `<dialog>` en `index.html` (`ventana-vista`). Su código está en `app.js`, en "Ventana de vista previa de las filas".
+  - **Dónde está:** la ventana es un `<dialog>` en `index.html` (`ventana-vista`). Su código está en `public/js/excel.js`, en "3. Ventana de vista previa de las filas".
 
 ## Encabezado y pie de la página
 
+- **Navegación (dentro de un módulo):** arriba a la derecha aparece **⌂ Inicio › Placas ▾**.
+  - **Inicio** (o el logo con el título) vuelve al menú, sin recargar la página: no se pierde lo que elegiste en "Personalizar diseño" ni el Excel cargado.
+  - **Placas ▾** abre una lista con todos los módulos (imagen, nombre y lo que piden) para **cambiar directamente** a otro, sin pasar por el menú. El actual está marcado como "Actual".
+  - La lista se cierra al elegir, al hacer clic fuera o con Esc.
+  - Se arma sola copiando las tarjetas del menú (`armarListaDeModulos` en `navegacion.js`).
 - **Encabezado:** el logo de UNICAH va a la par de "Generador de Diplomas". También sale como icono en la pestaña del navegador.
   - El logo es `public/img/logo-unicah.png`; para cambiarlo, reemplaza ese archivo.
   - El tamaño está en `.marca__logo` de `estilos.css`.
@@ -374,7 +422,7 @@ En "Personalizar diseño", los colores se eligen en dos niveles, de lo más ráp
   - **Izquierda** (`pie__marca`): logo, nombre de la universidad y campus.
   - **Centro** (`pie__enlaces`): enlaces. Agrega más copiando la línea `<a href="…">…</a>`.
   - **Derecha** (`pie__derechos`): © año y "Desarrollado por". **Cambia "Tu nombre o departamento" por el tuyo.**
-  - El año se actualiza solo (`anio-actual` en `app.js`).
+  - El año se actualiza solo (`anio-actual` en `main.js`).
   - Los colores y espacios están en `estilos.css`, en la sección "Pie de página".
   - El pie siempre queda al fondo, aunque la página tenga poco contenido.
 
@@ -505,7 +553,7 @@ curl -X POST http://localhost:3000/api/lugares \
 
 ## `import` / `export`
 
-El proyecto usa módulos modernos de JavaScript (`"type": "module"` en `package.json`):
+El servidor **y la página** usan módulos de JavaScript: el servidor por `"type": "module"` en `package.json`, y la página por `<script type="module" src="js/main.js">` en `index.html`. El navegador ya lo entiende, no hay que instalar nada.
 
 ```js
 // Exportar desde un archivo

@@ -2,6 +2,15 @@
 //  CONFIGURACIÓN GENERAL DE LA APLICACIÓN
 //  Los valores se pueden cambiar con un archivo .env
 //  (copia .env.example como .env).
+//
+//  EXPORTA              LO IMPORTAN                      PARA
+//  appConfig (default)  server.js                        el puerto
+//  appConfig (default)  middlewares/subirArchivos        tamaño máximo del Excel y del logo
+//  appConfig (default)  middlewares/leerPersonalizacion  tamaño máximo del logo
+//  appConfig (default)  middlewares/errores              mensajes de tamaño máximo
+//  appConfig (default)  services/excel.service.js        filas máximas del Excel
+//  appConfig (default)  services/imagen.service.js       escala de las imágenes PNG
+//  appConfig (default)  utils/fecha.js                   la zona horaria (fecha de hoy)
 // =============================================================
 import dotenv from 'dotenv';
 

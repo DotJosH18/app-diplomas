@@ -11,6 +11,7 @@ import { buscarModulo } from '../src/modulos/index.js';
 import { nombreArchivoPDF } from '../src/utils/texto.js';
 import { fechaEnTexto, fechaDeHoy } from '../src/utils/fecha.js';
 import { rubricaDe } from '../src/modulos/placas/placas.pdf.js';
+import fs from 'node:fs';
 
 // Se avisa que es una prueba ANTES de cargar la app (así no muestra
 // cada petición en la consola). Por eso app.js se importa aquí abajo.
@@ -585,4 +586,17 @@ test('placas acepta sus 3 colores y rechaza un color inválido', async () => {
     .send({ ...datos, colorSecundario: 'plateado' })
     .expect(400);
   assert.match(res.body.error, /cinta secundaria/);
+});
+
+// ---------- Plantilla para crear módulos ----------
+
+test('las marcas que usa "npm run crear-modulo" siguen en su lugar', () => {
+  const indice = fs.readFileSync(new URL('../src/modulos/index.js', import.meta.url), 'utf8');
+  const html = fs.readFileSync(new URL('../public/index.html', import.meta.url), 'utf8');
+  assert.match(indice, /← NUEVOS MÓDULOS: sus import van arriba de esta línea/);
+  assert.match(indice, /← NUEVOS MÓDULOS: se agregan arriba de esta línea/);
+  assert.match(html, /← NUEVOS MÓDULOS: las tarjetas nuevas van arriba de esta línea/);
+
+  const plantilla = fs.readdirSync(new URL('../src/modulos/_plantilla', import.meta.url)).sort();
+  assert.deepEqual(plantilla, ['plantilla.config.js', 'plantilla.modulo.js', 'plantilla.pdf.js', 'plantilla.schema.js']);
 });

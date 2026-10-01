@@ -5,6 +5,14 @@
 //
 //  Usa Intl.DateTimeFormat, que ya viene en Node (no hace falta
 //  instalar nada) y sabe los nombres de los meses en español.
+//
+//  IMPORTA    DE                    PARA
+//  appConfig  config/app.config.js  la zona horaria
+//
+//  EXPORTA       LO IMPORTAN                         PARA
+//  fechaDeHoy    schemas/campos.schema.js            fecha por defecto al validar
+//  fechaDeHoy    controllers/diplomas.controller.js  fecha por defecto en gris (página)
+//  fechaEnTexto  services/excel.service.js           celdas con formato de fecha
 // =============================================================
 import appConfig from '../config/app.config.js';
 

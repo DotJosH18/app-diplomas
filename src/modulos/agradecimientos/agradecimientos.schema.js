@@ -2,6 +2,14 @@
 //  MÓDULO AGRADECIMIENTOS - esquema de validación
 //  Nombre y descripción (obligatorios), título (opcional),
 //  campus y fecha. No lleva firmas ni lugar.
+//
+//  IMPORTA              DE                              PARA
+//  camposComunes, …     ../../schemas/campos.schema.js  piezas de validación compartidas
+//  config               agradecimientos.config.js       límites y valores por defecto
+//  acomodarDescripcion  agradecimientos.pdf.js          medir que la descripción quepa
+//
+//  EXPORTA                LO IMPORTA                 PARA
+//  agradecimientosSchema  agradecimientos.modulo.js  la API valida con modulo.esquema
 // =============================================================
 import { z } from 'zod';
 import { camposComunes, descripcionQueCabe, textoObligatorio, textoOpcional } from '../../schemas/campos.schema.js';

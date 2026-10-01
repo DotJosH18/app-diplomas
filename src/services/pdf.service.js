@@ -17,6 +17,16 @@
 //
 //  Para mover o cambiar algo, lo normal es editar
 //  src/config/diseno.config.js, no este archivo.
+//
+//  IMPORTA                               DE                       PARA
+//  PDFDocument                           pdfkit (librería)        crear el PDF
+//  diseno                                config/diseno.config.js  medidas y colores comunes
+//  escribirCentrado, tamanoParaUnaLinea  utils/pdfTexto.js        escribir textos
+//  registrarFuentes                      utils/pdfFuentes.js      las fuentes
+//
+//  EXPORTA              LO IMPORTA                          PARA
+//  generarPDF           controllers/diplomas.controller.js  un documento
+//  generarPDFConVarios  controllers/diplomas.controller.js  un PDF con una página por fila del Excel
 // =============================================================
 import PDFDocument from 'pdfkit';
 import diseno from '../config/diseno.config.js';

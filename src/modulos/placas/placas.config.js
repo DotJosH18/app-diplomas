@@ -5,6 +5,11 @@
 //  como marca de agua (transparente). Las firmas llevan una rúbrica
 //  en letra cursiva encima de la línea.
 //  Dibuja su propia página (ver placas.pdf.js).
+//
+//  EXPORTA           LO IMPORTAN       PARA
+//  config (default)  placas.schema.js  límites y valores por defecto
+//                    placas.pdf.js     medidas, colores y textos del dibujo
+//                    placas.modulo.js  unir todo (y la API lo lee como modulo.config)
 // =============================================================
 import path from 'node:path';
 

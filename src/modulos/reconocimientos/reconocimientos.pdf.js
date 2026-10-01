@@ -3,6 +3,14 @@
 //  Se dibuja entre el nombre y la línea de lugar y fecha.
 //  El resto del diploma (encabezado, nombre, firmas) lo dibuja
 //  src/services/pdf.service.js, igual para todos los módulos.
+//
+//  IMPORTA               DE                         PARA
+//  escribir…, acomodar…  ../../utils/pdfTexto.js    escribir textos y párrafos
+//  config                reconocimientos.config.js  medidas, colores y textos
+//
+//  EXPORTA              LO IMPORTA                 PARA
+//  dibujarCuerpo        reconocimientos.modulo.js  dibujar la parte central (lo común lo dibuja pdf.service.js)
+//  acomodarDescripcion  reconocimientos.schema.js  validar con el mismo cálculo del dibujo
 // =============================================================
 import diseno from '../../config/diseno.config.js';
 import { acomodarParrafos, escribirParrafos } from '../../utils/pdfTexto.js';

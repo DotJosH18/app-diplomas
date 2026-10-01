@@ -2,6 +2,11 @@
 //  MÓDULO COMUNICADO DE DUELO - configuración
 //  Este módulo NO usa el diseño de diploma (banda, firmas…):
 //  dibuja su propia página vertical (ver duelo.pdf.js).
+//
+//  EXPORTA           LO IMPORTAN      PARA
+//  config (default)  duelo.schema.js  límites y valores por defecto
+//                    duelo.pdf.js     medidas, colores y textos del dibujo
+//                    duelo.modulo.js  unir todo (y la API lo lee como modulo.config)
 // =============================================================
 import path from 'node:path';
 
