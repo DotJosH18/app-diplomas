@@ -682,7 +682,7 @@
     <div class="manual__contenido">
       <!-- Lo más rápido: el recorrido de la pantalla en la que estás -->
       <div class="manual__inicio">
-        <img class="manual__magnus" src="img/magnus-guia.png" alt="Magnus, la mascota de UNICAH" />
+        <span class="magnus manual__magnus" aria-hidden="true"></span>
         <div class="manual__inicio-texto">
           <strong>¿Primera vez? Magnus te guía</strong>
           <p>Te muestra, paso a paso y sobre la misma página, dónde está cada cosa. Toma 1 minuto.</p>
@@ -780,8 +780,9 @@
     <div class="recorrido__foco" aria-hidden="true"></div>
     <div class="recorrido__toque" aria-hidden="true"></div>   <!-- el círculo cuando Magnus "toca" algo -->
     <div class="recorrido__globo">
-      <!-- Magnus: la "caja" se voltea (espejo) para mirar hacia el elemento; la imagen se anima -->
-      <span class="recorrido__magnus-caja"><img class="recorrido__magnus" src="img/magnus-guia.png" alt="" /></span>
+      <!-- Magnus: la "caja" se voltea (espejo) para mirar hacia el elemento.
+           Sus partes (cabeza, brazo, piernas…) las pone magnus.js y se animan en estilos.css -->
+      <span class="recorrido__magnus-caja"><span class="magnus recorrido__magnus" aria-hidden="true"></span></span>
       <div class="recorrido__burbuja">
         <p class="recorrido__paso"><span class="recorrido__quien">Magnus</span> · <span id="recorrido-numero"></span></p>
         <h3 id="recorrido-titulo" class="recorrido__titulo"></h3>
@@ -798,7 +799,7 @@
 
   <!-- Aviso de bienvenida (solo la primera vez en este navegador) -->
   <div id="bienvenida" class="bienvenida oculto" role="status">
-    <img class="bienvenida__magnus" src="img/magnus-guia.png" alt="" />
+    <span class="magnus bienvenida__magnus" aria-hidden="true"></span>
     <div class="bienvenida__contenido">
       <p><strong>¡Hola! Soy Magnus.</strong> ¿Es tu primera vez aquí? Te enseño cómo funciona en 1 minuto.</p>
       <div class="bienvenida__botones">

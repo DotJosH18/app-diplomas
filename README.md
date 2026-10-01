@@ -420,7 +420,9 @@ El botón **"? Ayuda"** (arriba a la derecha) abre el manual. Está pensado para
 - **Bienvenida:** la primera vez, abajo a la derecha aparece "¿Primera vez aquí?". Se recuerda en el navegador (`localStorage`) para no repetirla.
 - **Pasos inteligentes:** los pasos de algo que no se ve se saltan solos. Ejemplos: "Combinaciones listas" solo sale en Placas; "Sube tu Excel" ya no sale si ya subiste uno.
 
-**Magnus, el guía.** La mascota de UNICAH acompaña el recorrido, la bienvenida y el manual (`public/img/magnus-guia.png`, con el fondo ya quitado). No usa librerías: solo JavaScript y animaciones CSS.
+**Magnus, el guía.** La mascota de UNICAH acompaña el recorrido, la bienvenida y el manual. No usa librerías: solo JavaScript y animaciones CSS.
+
+- **Está animado por partes**, como un títere: en `public/img/magnus/` hay 7 capas del mismo tamaño (piernas, cuerpo, brazo, mano, cabeza y "ojos cerrados") que, una encima de otra, forman a Magnus (`completo.png` es la imagen original). `dibujarMagnus()` (en `magnus.js`) las arma dentro de cada `<span class="magnus">`, y en `estilos.css` (sección "MAGNUS ANIMADO") cada parte se mueve desde su articulación: respira, mueve la cabeza, saluda con el brazo y la mano, parpadea, asiente mientras habla, estira el brazo para señalar y patalea al volar entre pasos. Cada parte tiene su propio ritmo, así el movimiento no se ve repetido.
 
 - **Interactúa con la página** (`public/js/magnus.js`): en cada paso "vuela" hasta el elemento, se pone de su lado mirándolo y muestra cómo se usa. Cada paso elige qué hace con `demostracion` en la lista `RECORRIDOS`:
 
@@ -436,7 +438,7 @@ El botón **"? Ayuda"** (arriba a la derecha) abre el manual. Está pensado para
 - **Animaciones** (en `estilos.css`, busca `magnus-`): flota, vuela entre pasos, señala, se mueve mientras "habla" y saluda en la bienvenida. Su texto aparece letra por letra (`escribirPocoAPoco` en `ayuda.js`).
 - Si la computadora tiene activado "reducir movimiento", Magnus se queda quieto y el texto sale completo.
 
-Para cambiar su imagen, reemplaza `magnus-guia.png` por otro PNG con fondo transparente (puedes usar la herramienta "Quitar fondo de logos").
+Para usar otro dibujo de Magnus hay que volver a recortarlo en capas del mismo tamaño y ajustar las articulaciones (`transform-origin`) en "MAGNUS ANIMADO".
 
 **Cambiar o agregar pasos:** edita la lista `RECORRIDOS` al principio de `public/js/ayuda.js`. Cada paso es:
 

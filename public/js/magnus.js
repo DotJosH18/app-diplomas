@@ -1,6 +1,17 @@
 // =============================================================
-//  magnus.js — MAGNUS INTERACTÚA CON LA PÁGINA
+//  magnus.js — MAGNUS: CÓMO SE ARMA Y CÓMO INTERACTÚA CON LA PÁGINA
 //
+//  1. SE ARMA POR PARTES (como un títere de papel)
+//     Magnus no es una sola imagen: son 6 capas que se animan por
+//     separado en estilos.css (busca "MAGNUS ANIMADO"):
+//       piernas · cuerpo · brazo · mano · cabeza (+ ojos cerrados, para parpadear)
+//     Las capas están en public/img/magnus/. Todas miden lo mismo
+//     (239 x 279) y se ponen una encima de otra; juntas forman a Magnus
+//     completo (img/magnus/completo.png es la imagen original).
+//     En index.html basta con poner  <span class="magnus"></span>
+//     y dibujarMagnus() lo llena con sus partes.
+//
+//  2. INTERACTÚA CON LA PÁGINA
 //  Durante el recorrido guiado, Magnus (la mascota de UNICAH) no solo
 //  explica: "usa" la página para mostrar cómo se hace. Por ejemplo:
 //    - pasa el mouse por una tarjeta y se levanta,
@@ -19,6 +30,7 @@
 //  IMPORTA  (nada)
 //
 //  EXPORTA                       LO IMPORTA  PARA
+//  dibujarMagnus()               ayuda.js    armar a Magnus en cada <span class="magnus">
 //  pasarEncima(elemento)         ayuda.js    la tarjeta se levanta, como con el mouse
 //  presionar(elemento)           ayuda.js    "toca" un botón
 //  escribirEjemplo(elemento)     ayuda.js    escribe un ejemplo en un campo vacío
@@ -30,6 +42,43 @@
 
 const capaRecorrido = document.getElementById('recorrido');
 const globo = capaRecorrido.querySelector('.recorrido__globo');
+
+// =============================================================
+//  1. ARMAR A MAGNUS
+// =============================================================
+
+/**
+ * Llena cada <span class="magnus"> de la página con sus partes.
+ * El brazo lleva la mano adentro: así, cuando el brazo se mueve, la mano
+ * se va con él (y además puede saludar por su cuenta).
+ */
+export function dibujarMagnus() {
+  for (const magnus of document.querySelectorAll('.magnus')) {
+    magnus.replaceChildren(
+      crearCapa('magnus__pierna-izq', 'pierna-izq.png'),
+      crearCapa('magnus__pierna-der', 'pierna-der.png'),
+      crearCapa('magnus__cuerpo', 'cuerpo.png'),
+      crearCapa('magnus__brazo', 'brazo.png', crearCapa('magnus__mano', 'mano.png')),
+      crearCapa('magnus__cabeza', 'cabeza.png', crearCapa('magnus__ojos-cerrados', 'ojos-cerrados.png')),
+    );
+  }
+}
+
+/** Una capa: un <span> del tamaño de Magnus con su imagen (y lo que vaya adentro). */
+function crearCapa(clase, imagen, ...adentro) {
+  const capa = document.createElement('span');
+  capa.classList.add('magnus__capa', clase);
+  const dibujo = document.createElement('img');
+  dibujo.src = `img/magnus/${imagen}`;
+  dibujo.alt = '';
+  dibujo.draggable = false;
+  capa.append(dibujo, ...adentro);
+  return capa;
+}
+
+// =============================================================
+//  2. DEMOSTRACIONES
+// =============================================================
 
 // Los temporizadores de la demostración actual (para poder detenerlos)
 let temporizadores = [];
@@ -48,10 +97,6 @@ function despues(milisegundos, accion) {
   temporizadores.push(setTimeout(accion, milisegundos));
 }
 
-
-// =============================================================
-//  DEMOSTRACIONES
-// =============================================================
 
 /** La tarjeta (o lo que sea) se levanta como si el mouse pasara encima. */
 export function pasarEncima(elemento) {
@@ -159,7 +204,7 @@ export function quitarDemostraciones() {
 
 
 // =============================================================
-//  MAGNUS SE MUEVE
+//  3. MAGNUS SE MUEVE
 // =============================================================
 
 /** Magnus estira el brazo hacia el elemento (animación "magnus-senala" en el CSS). */
