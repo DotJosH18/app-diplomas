@@ -9,6 +9,7 @@
 //      colorSecundario, colorNombre: igual (solo los usa Placas),
 //      encabezado1: 'UNIVERSIDAD …' o '' (vacío = texto por defecto; lo usan los diplomas),
 //      encabezado2: 'NUESTRA SEÑORA …' o '' (igual que la línea 1),
+//      encabezado1EnBlanco, encabezado2EnBlanco: true si esa línea debe quedar vacía,
 //      titulo:     'NOTA DE DUELO' o '' (vacío = título por defecto; solo lo usa el comunicado),
 //      logo:       Buffer con la imagen, o null (null = logo por defecto),
 //    }
@@ -36,6 +37,8 @@ export default function leerPersonalizacion(req, res, next) {
     titulo: body.titulo,
     encabezado1: body.encabezado1,
     encabezado2: body.encabezado2,
+    encabezado1EnBlanco: body.encabezado1EnBlanco,
+    encabezado2EnBlanco: body.encabezado2EnBlanco,
   });
   if (!resultado.success) {
     throw new HttpError(400, resultado.error.issues[0].message);
@@ -55,6 +58,8 @@ export default function leerPersonalizacion(req, res, next) {
     titulo: resultado.data.titulo || '',
     encabezado1: resultado.data.encabezado1 || '',
     encabezado2: resultado.data.encabezado2 || '',
+    encabezado1EnBlanco: resultado.data.encabezado1EnBlanco, // true = esa línea va vacía
+    encabezado2EnBlanco: resultado.data.encabezado2EnBlanco,
     logo: logo,
   };
   next();

@@ -4,7 +4,10 @@
 //  Pantallas de la página (solo una se ve a la vez):
 //    - Menú (#menu): las tarjetas para elegir qué generar.
 //    - Generador (#generador): el formulario del módulo elegido.
-//    - Herramienta (#herramienta-fondo): quitar el fondo de un logo.
+//    - Herramientas (<section class="herramienta" data-herramienta="…">):
+//      quitar el fondo de un logo (#herramienta-fondo) y generar un QR
+//      (#herramienta-qr). Para agregar otra: su <section> con
+//      data-herramienta="mi-id" + una tarjeta con el mismo data-herramienta.
 //
 //  En el encabezado:   ⌂ Inicio  ›  Placas ▾
 //    - "Inicio" (o el logo) vuelve al menú.
@@ -22,6 +25,7 @@
 //  EXPORTA                 LO IMPORTA  PARA
 //  iniciarNavegacion()     main.js     arrancar esta parte
 //  pantallaActual()        ayuda.js    saber qué se está viendo ('menu', 'generador', 'herramienta')
+//  herramientaAbierta()    ayuda.js    cuál herramienta se ve ('quitar-fondo', 'qr' o null)
 //  abrirPorId(id)          ayuda.js    llevar al usuario a un módulo o herramienta para el recorrido
 //  volverAlInicio()        ayuda.js    llevarlo al menú
 //  mostrarPestana(idPanel) ayuda.js    abrir "Uno a la vez" o "Desde Excel"
@@ -35,7 +39,7 @@ import { excelAlCambiarDeModulo } from './excel.js';
 // ---------- Elementos de la página ----------
 const pantallaMenu = document.getElementById('menu');
 const pantallaGenerador = document.getElementById('generador');
-const pantallaHerramientaFondo = document.getElementById('herramienta-fondo');
+const pantallasHerramientas = document.querySelectorAll('section.herramienta'); // una por herramienta
 const tarjetasDelMenu = document.querySelectorAll('.opcion');
 const enlaceMarca = document.getElementById('enlace-marca');
 const barraNavegacion = document.getElementById('navegacion');
@@ -101,16 +105,22 @@ function abrirModulo(idModulo, titulo) {
   }
 
   ocultar(pantallaMenu);
-  ocultar(pantallaHerramientaFondo);
+  ocultarHerramientas();
   mostrar(pantallaGenerador);
   mostrarNavegacion(idModulo, titulo, true);
 }
 
-/** Muestra una herramienta (por ahora solo 'quitar-fondo'). */
+/** Muestra una herramienta: 'quitar-fondo' o 'qr' (la <section> con ese data-herramienta). */
 function abrirHerramienta(idHerramienta, titulo) {
   ocultar(pantallaMenu);
   ocultar(pantallaGenerador);
-  mostrar(pantallaHerramientaFondo);
+  for (const pantalla of pantallasHerramientas) {
+    if (pantalla.dataset.herramienta === idHerramienta) {
+      mostrar(pantalla);
+    } else {
+      ocultar(pantalla);
+    }
+  }
   mostrarNavegacion(idHerramienta, titulo, false); // las herramientas no tienen pestañas
 }
 
@@ -118,7 +128,7 @@ function abrirHerramienta(idHerramienta, titulo) {
 export function volverAlInicio() {
   mostrar(pantallaMenu);
   ocultar(pantallaGenerador);
-  ocultar(pantallaHerramientaFondo);
+  ocultarHerramientas();
   selectorModulo.open = false;
 
   // "invisible" (y no "oculto") para que el encabezado conserve su altura
@@ -170,10 +180,27 @@ export function pantallaActual() {
   if (!pantallaGenerador.classList.contains('oculto')) {
     return 'generador';
   }
-  if (!pantallaHerramientaFondo.classList.contains('oculto')) {
+  if (herramientaAbierta() !== null) {
     return 'herramienta';
   }
   return 'menu';
+}
+
+/** El id de la herramienta que se ve ('quitar-fondo', 'qr'), o null si no hay ninguna. */
+export function herramientaAbierta() {
+  for (const pantalla of pantallasHerramientas) {
+    if (!pantalla.classList.contains('oculto')) {
+      return pantalla.dataset.herramienta;
+    }
+  }
+  return null;
+}
+
+/** Oculta todas las herramientas. */
+function ocultarHerramientas() {
+  for (const pantalla of pantallasHerramientas) {
+    ocultar(pantalla);
+  }
 }
 
 

@@ -11,6 +11,7 @@ import { buscarModulo } from '../src/modulos/index.js';
 import { nombreArchivoPDF } from '../src/utils/texto.js';
 import { fechaEnTexto, fechaDeHoy } from '../src/utils/fecha.js';
 import { rubricaDe } from '../src/modulos/placas/placas.pdf.js';
+import { lineasDelEncabezado } from '../src/utils/encabezado.js';
 import fs from 'node:fs';
 
 // Se avisa que es una prueba ANTES de cargar la app (así no muestra
@@ -599,4 +600,40 @@ test('las marcas que usa "npm run crear-modulo" siguen en su lugar', () => {
 
   const plantilla = fs.readdirSync(new URL('../src/modulos/_plantilla', import.meta.url)).sort();
   assert.deepEqual(plantilla, ['plantilla.config.js', 'plantilla.modulo.js', 'plantilla.pdf.js', 'plantilla.schema.js']);
+});
+
+
+// ---------- Encabezado en blanco ----------
+test('lineasDelEncabezado: la de siempre, la escrita o en blanco', () => {
+  const fijos = { universidad: 'UNIVERSIDAD X', sede: 'SEDE Y' };
+  assert.deepEqual(lineasDelEncabezado({}, fijos), { linea1: 'UNIVERSIDAD X', linea2: 'SEDE Y' });
+  assert.deepEqual(lineasDelEncabezado({ encabezado1: 'facultad' }, fijos), { linea1: 'FACULTAD', linea2: 'SEDE Y' });
+  assert.deepEqual(
+    lineasDelEncabezado({ encabezado1: 'facultad', encabezado1EnBlanco: true, encabezado2EnBlanco: true }, fijos),
+    { linea1: '', linea2: '' },
+  );
+});
+
+test('El encabezado se puede dejar en blanco en diplomas y placas', async () => {
+  for (const modulo of ['reconocimientos', 'lugares', 'placas']) {
+    const respuesta = await request(app)
+      .post(`/api/${modulo}/miniatura`)
+      .field('encabezado1EnBlanco', 'si')
+      .field('encabezado2EnBlanco', 'si');
+    assert.equal(respuesta.status, 200, modulo);
+    assert.equal(respuesta.headers['content-type'], 'image/png');
+  }
+});
+
+test('"En blanco" con un valor raro responde 400 con un mensaje claro', async () => {
+  const respuesta = await request(app).post('/api/placas/miniatura').field('encabezado1EnBlanco', 'talvez');
+  assert.equal(respuesta.status, 400);
+  assert.match(respuesta.body.error, /En blanco/);
+});
+
+// ---------- Herramienta QR ----------
+test('La librería del QR se sirve en /librerias/qrcode', async () => {
+  const respuesta = await request(app).get('/librerias/qrcode/qrcode.mjs');
+  assert.equal(respuesta.status, 200);
+  assert.match(respuesta.headers['content-type'], /javascript/);
 });

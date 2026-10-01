@@ -16,6 +16,7 @@
 //    excel.js          pestaña "Desde Excel" (revisión, vista previa de filas, PDF con todas)
 //    configuracion.js  valores en gris (fecha de hoy…) y contadores de caracteres
 //    quitar-fondo.js   herramienta "Quitar fondo de logos"
+//    qr.js             herramienta "Generar código QR" (con logo en el centro)
 //    ayuda.js          manual de usuario (botón "? Ayuda") y recorrido guiado
 //    magnus.js         lo que hace Magnus en el recorrido (señalar, presionar, escribir…)
 //
@@ -36,12 +37,14 @@ import { iniciarIndividual } from './individual.js';
 import { iniciarExcel, mostrarErrorDeExcel } from './excel.js';
 import { iniciarConfiguracion } from './configuracion.js';
 import { iniciarQuitarFondo } from './quitar-fondo.js';
+import { iniciarQR } from './qr.js';
 import { iniciarAyuda } from './ayuda.js';
 
 iniciarPersonalizar();   // primero: los demás le envían lo elegido al generar
 iniciarIndividual();
 iniciarExcel();
 iniciarQuitarFondo();
+iniciarQR();
 iniciarNavegacion();     // la página empieza en el menú
 iniciarAyuda();          // botón "? Ayuda", manual y recorrido guiado
 

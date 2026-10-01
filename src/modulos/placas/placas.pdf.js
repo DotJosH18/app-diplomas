@@ -19,9 +19,10 @@
 //     ╚══════════════════════════════════════════╝
 //                                             cintas ◢
 //
-//  IMPORTA               DE                       PARA
-//  escribir…, acomodar…  ../../utils/pdfTexto.js  escribir textos y párrafos
-//  config                placas.config.js         medidas, colores y textos
+//  IMPORTA               DE                         PARA
+//  escribir…, acomodar…  ../../utils/pdfTexto.js    escribir textos y párrafos
+//  config                placas.config.js           medidas, colores y textos
+//  lineasDelEncabezado   ../../utils/encabezado.js  las 2 líneas de arriba (o en blanco)
 //
 //  EXPORTA              LO IMPORTA              PARA
 //  dibujarPagina        placas.modulo.js        dibujar la página completa
@@ -31,6 +32,7 @@
 import diseno from '../../config/diseno.config.js';
 import { escribirCentrado, tamanoParaUnaLinea, acomodarParrafos, escribirParrafos, yParaLineaBase } from '../../utils/pdfTexto.js';
 import config from './placas.config.js';
+import { lineasDelEncabezado } from '../../utils/encabezado.js';
 
 const colores = config.colores;
 const y = config.posiciones;
@@ -247,14 +249,8 @@ function lineaDegradada(doc, centroX, y, ancho, grosor, color) {
 
 /** Universidad, sede (se pueden cambiar en "Personalizar") y campus. */
 function dibujarEncabezado(doc, centro, placa, personalizacion, paleta) {
-  let linea1 = diseno.textosFijos.universidad;
-  if (personalizacion.encabezado1) {
-    linea1 = personalizacion.encabezado1.toUpperCase();
-  }
-  let linea2 = diseno.textosFijos.sede;
-  if (personalizacion.encabezado2) {
-    linea2 = personalizacion.encabezado2.toUpperCase();
-  }
+  // Cada línea: la de siempre, la que escribió el usuario, o '' (en blanco)
+  const { linea1, linea2 } = lineasDelEncabezado(personalizacion, diseno.textosFijos);
 
   // Sin campus, el encabezado baja un poco para no dejar un hueco
   let bajar = 0;
@@ -262,15 +258,19 @@ function dibujarEncabezado(doc, centro, placa, personalizacion, paleta) {
     bajar = 14;
   }
 
-  const opciones1 = { tamano: 21, ancho: 620, espaciado: 1.2, espacioPalabras: 5 };
-  opciones1.tamano = tamanoParaUnaLinea(doc, linea1, opciones1, 12);
-  const opciones2 = { tamano: 14.5, ancho: 620, espaciado: 1.5 };
-  opciones2.tamano = tamanoParaUnaLinea(doc, linea2, opciones2, 10);
-
-  doc.fillColor(colores.texto);
-  escribirCentrado(doc, linea1, centro, y.universidad + bajar, opciones1);
-  doc.fillColor(colores.textoSuave);
-  escribirCentrado(doc, linea2, centro, y.sede + bajar, opciones2);
+  // Una línea en blanco ('') simplemente no se dibuja
+  if (linea1 !== '') {
+    const opciones1 = { tamano: 21, ancho: 620, espaciado: 1.2, espacioPalabras: 5 };
+    opciones1.tamano = tamanoParaUnaLinea(doc, linea1, opciones1, 12);
+    doc.fillColor(colores.texto);
+    escribirCentrado(doc, linea1, centro, y.universidad + bajar, opciones1);
+  }
+  if (linea2 !== '') {
+    const opciones2 = { tamano: 14.5, ancho: 620, espaciado: 1.5 };
+    opciones2.tamano = tamanoParaUnaLinea(doc, linea2, opciones2, 10);
+    doc.fillColor(colores.textoSuave);
+    escribirCentrado(doc, linea2, centro, y.sede + bajar, opciones2);
+  }
 
   if (placa.campus !== '') {
     dibujarCampus(doc, centro, placa.campus.toUpperCase(), paleta);

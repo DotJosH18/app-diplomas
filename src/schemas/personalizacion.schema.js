@@ -55,4 +55,19 @@ export const personalizacionSchema = z.object({
     .trim()
     .max(LIMITE_ENCABEZADO, `La línea 2 del encabezado puede tener máximo ${LIMITE_ENCABEZADO} caracteres`)
     .optional(),
+
+  // "En blanco": la página envía 'si' cuando una línea del encabezado
+  // debe quedar vacía (sin el texto de siempre). Se convierte en true/false.
+  encabezado1EnBlanco: siONo(),
+  encabezado2EnBlanco: siONo(),
 });
+
+/** Una casilla que llega como 'si' (marcada) o no llega: se convierte en true / false. */
+function siONo() {
+  return z
+    .enum(['si', ''], { message: 'La opción "En blanco" del encabezado no es válida' })
+    .optional()
+    .transform(function (valor) {
+      return valor === 'si';
+    });
+}

@@ -27,6 +27,8 @@ const selectoresColor = document.querySelectorAll('.selector-color'); // uno por
 const botonesPaleta = document.querySelectorAll('.paleta');            // combinaciones listas (Placas)
 const inputEncabezado1 = document.getElementById('input-encabezado1');
 const inputEncabezado2 = document.getElementById('input-encabezado2');
+const casillaBlanco1 = document.getElementById('blanco-encabezado1'); // "En blanco" de la línea 1
+const casillaBlanco2 = document.getElementById('blanco-encabezado2');
 const inputTitulo = document.getElementById('input-titulo');
 const inputLogo = document.getElementById('input-logo');
 const botonLogo = document.getElementById('boton-logo');
@@ -64,6 +66,14 @@ export function iniciarPersonalizar() {
   inputEncabezado1.addEventListener('input', function () { programarMiniVista(); });
   inputEncabezado2.addEventListener('input', function () { programarMiniVista(); });
   inputTitulo.addEventListener('input', function () { programarMiniVista(); });
+
+  // Casillas "En blanco" del encabezado
+  casillaBlanco1.addEventListener('change', function () {
+    marcarLineaEnBlanco(inputEncabezado1, casillaBlanco1.checked);
+  });
+  casillaBlanco2.addEventListener('change', function () {
+    marcarLineaEnBlanco(inputEncabezado2, casillaBlanco2.checked);
+  });
 
   prepararLogo();
   botonRestablecer.addEventListener('click', restablecerDiseno);
@@ -380,11 +390,36 @@ function quitarLogo() {
   programarMiniVista();
 }
 
+/**
+ * "En blanco": la línea del encabezado no aparece en el documento.
+ * El campo de texto se ve apagado y no se puede escribir en él
+ * (readOnly, no disabled: "disabled" lo usa navegacion.js para los
+ * campos de otros módulos).
+ */
+function marcarLineaEnBlanco(campo, enBlanco) {
+  if (campo.dataset.placeholderOriginal === undefined) {
+    campo.dataset.placeholderOriginal = campo.placeholder; // para devolverlo después
+  }
+  campo.readOnly = enBlanco;
+  if (enBlanco) {
+    campo.classList.add('en-blanco');
+    campo.placeholder = '(esta línea queda en blanco)';
+  } else {
+    campo.classList.remove('en-blanco');
+    campo.placeholder = campo.dataset.placeholderOriginal;
+  }
+  programarMiniVista();
+}
+
 /** "Restablecer diseño por defecto": borra textos, colores y logo elegidos. */
 function restablecerDiseno() {
   inputTitulo.value = '';
   inputEncabezado1.value = '';
   inputEncabezado2.value = '';
+  casillaBlanco1.checked = false;
+  casillaBlanco2.checked = false;
+  marcarLineaEnBlanco(inputEncabezado1, false);
+  marcarLineaEnBlanco(inputEncabezado2, false);
   restablecerColores();
   quitarLogo();
   mostrarMensaje(mensajePersonalizar, '', 'normal');
@@ -409,11 +444,23 @@ export function agregarPersonalizacion(envio) {
     }
   }
   agregarTextoSiTiene(envio, 'titulo', inputTitulo);           // comunicado de duelo
-  agregarTextoSiTiene(envio, 'encabezado1', inputEncabezado1); // diplomas y placas
-  agregarTextoSiTiene(envio, 'encabezado2', inputEncabezado2);
+  agregarLineaEncabezado(envio, '1', inputEncabezado1, casillaBlanco1); // diplomas y placas
+  agregarLineaEncabezado(envio, '2', inputEncabezado2, casillaBlanco2);
   if (archivoLogo !== null) {
     envio.append('logo', archivoLogo);
   }
+}
+
+/**
+ * Una línea del encabezado: si está marcada "En blanco" se envía
+ * encabezado1EnBlanco=si; si no, su texto (si escribieron algo).
+ */
+function agregarLineaEncabezado(envio, numero, campo, casillaBlanco) {
+  if (!casillaBlanco.disabled && casillaBlanco.checked) {
+    envio.append(`encabezado${numero}EnBlanco`, 'si');
+    return;
+  }
+  agregarTextoSiTiene(envio, `encabezado${numero}`, campo);
 }
 
 /** Agrega un campo de texto al envío, si está activo y no está vacío. */

@@ -104,6 +104,7 @@ diplomas-app/
 │   │   ├── excel.js                      Pestaña "Desde Excel"
 │   │   ├── configuracion.js              Valores en gris y contadores de caracteres
 │   │   ├── quitar-fondo.js               Herramienta "Quitar fondo de logos"
+│   │   ├── qr.js                         Herramienta "Generar código QR" (con logo en el centro)
 │   │   ├── ayuda.js                      Manual de usuario ("? Ayuda") y recorrido guiado
 │   │   └── magnus.js                     Lo que hace Magnus en el recorrido (señalar, presionar, escribir…)
 │   └── img/                              Muestras del menú y logo por defecto (vista previa)
@@ -296,7 +297,7 @@ En el generador, **"Personalizar diseño"** permite elegir:
 - **Encabezado** (Reconocimientos y Lugares): las 2 líneas de arriba del diploma, "UNIVERSIDAD CATÓLICA DE HONDURAS" y "NUESTRA SEÑORA REINA DE LA PAZ".
   - Cada línea acepta máximo 45 caracteres y siempre sale en mayúsculas.
   - Si una línea es larga, su letra se achica para que quepa en una sola línea.
-  - Si dejas una línea vacía, se usa el texto de siempre.
+  - Si una línea se deja vacía, sale el texto de siempre. Para que **no aparezca**, marca su casilla **En blanco**: la página envía `encabezado1EnBlanco=si` (o `encabezado2EnBlanco`) y `utils/encabezado.js` (`lineasDelEncabezado`) decide qué se escribe en cada línea, tanto en los diplomas como en Placas.
 - **Título** (Comunicado de duelo): ver la sección del comunicado.
 - **Logo:**
   - Se sube un PNG o JPG de máximo 2 MB. Se ajusta solo, sin deformarse, aunque sea ancho o alto.
@@ -377,6 +378,17 @@ Es la última tarjeta del menú. No genera diplomas: deja un logo con **fondo tr
   4. **Recortar el espacio vacío:** quita el espacio transparente de alrededor.
 - **Descargar PNG:** baja el resultado.
 - **Usar como logo en los diplomas:** lo deja como el logo de "Personalizar diseño", igual que "Subir logo". Luego eliges un diploma y ya sale con ese logo.
+
+## Herramienta: generar código QR
+
+Otra tarjeta del menú. Crea un QR para cualquier link (página, formulario, video, WhatsApp…) con un logo en el centro.
+
+- **Todo pasa en el navegador** (`public/js/qr.js`): el link y el logo no se envían al servidor.
+- **Librería:** `qrcode-generator` (npm, MIT). Solo calcula qué cuadritos del QR van oscuros; `app.js` la sirve en `/librerias/qrcode`. El resto (esquinas redondeadas, logo, colores) lo dibuja `qr.js`.
+- **Cómo se arma:** con los cuadritos se escribe un dibujo **SVG**. Ese mismo SVG se muestra como vista previa, se descarga como `.svg` (para imprimir en grande sin que se vea borroso) y se pinta en un `<canvas>` para descargarlo como `.png` (512, 1024 o 2048 px).
+- **¿Por qué se lee aunque el logo tape el centro?** El QR usa corrección de errores **alta ('H')**: aguanta que falte cerca del 30 %. Por eso el logo puede ocupar como máximo el 26 % del ancho, y por defecto lleva un fondo blanco detrás.
+- **Opciones:** logo de UNICAH, otro logo subido o sin logo; tamaño del logo; color (avisa si es tan claro que algunos celulares no lo leerían).
+- Lo probamos leyendo los PNG con un lector de QR: links con tildes y ñ, links largos, logo al 26 %, sin fondo, otros colores y otros logos.
 
 ## Diseño de la página: botones e iconos
 
@@ -653,6 +665,7 @@ import { generarPDF } from './services/pdf.service.js';
 | pdf-to-img | Convertir el PDF en imagen PNG (comunicado y agradecimientos) |
 | dotenv    | Leer la configuración del archivo `.env`     |
 | @material-symbols/font-400 | Los iconos de la página (Material Symbols de Google) |
+| qrcode-generator | Calcular los cuadritos del código QR (herramienta "Generar código QR") |
 | supertest | Solo para las pruebas                        |
 
 

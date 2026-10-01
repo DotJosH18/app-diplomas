@@ -155,12 +155,24 @@
           <span class="opcion__campos"><span class="icono" aria-hidden="true">edit_note</span><span class="opcion__pide">Pide: una imagen PNG o JPG</span></span>
           <span class="opcion__abrir">Abrir <span class="icono" aria-hidden="true">arrow_forward</span></span>
         </button>
+
+        <button class="opcion opcion--herramienta" data-herramienta="qr" data-titulo="Generar código QR">
+          <span class="opcion__marco">
+            <img class="opcion__imagen" src="img/muestra-qr.png" alt="Ejemplo de código QR con logo" />
+            <span class="opcion__insignia"><span class="icono" aria-hidden="true">qr_code_2</span></span>
+            <span class="opcion__etiqueta">Herramienta</span>
+          </span>
+          <span class="opcion__titulo">Generar código QR</span>
+          <span class="opcion__texto">Crea un QR para cualquier link, con el logo que quieras en el centro.</span>
+          <span class="opcion__campos"><span class="icono" aria-hidden="true">edit_note</span><span class="opcion__pide">Pide: un link (y un logo, si quieres)</span></span>
+          <span class="opcion__abrir">Abrir <span class="icono" aria-hidden="true">arrow_forward</span></span>
+        </button>
       </div>
     </section>
 
     <!-- ==================== HERRAMIENTA: QUITAR FONDO DE LOGOS ====================
          Todo se hace en el navegador (js/quitar-fondo.js): la imagen no se envía al servidor. -->
-    <section id="herramienta-fondo" class="herramienta oculto">
+    <section id="herramienta-fondo" class="herramienta oculto" data-herramienta="quitar-fondo">
       <div class="herramienta__intro">
         <h2 class="herramienta__titulo"><span class="titulo-icono"><span class="icono" aria-hidden="true">wand_stars</span></span>Quitar el fondo de un logo</h2>
         <p class="nota">Sube una imagen PNG o JPG. El color del fondo se detecta solo; si algo no queda bien, ajusta la tolerancia o haz clic sobre el fondo de la imagen original. La imagen no sale de tu computadora.</p>
@@ -217,6 +229,85 @@
 
       <!-- Mensajes (fuera del editor, para que también se vean antes de elegir imagen) -->
       <p id="mensaje-fondo" class="mensaje"></p>
+    </section>
+
+    <!-- ==================== HERRAMIENTA: GENERAR CÓDIGO QR ====================
+         Todo se hace en el navegador (js/qr.js): el link y el logo no se envían al servidor.
+         El QR se arma como un dibujo SVG; el PNG se saca de ese mismo dibujo. -->
+    <section id="herramienta-qr" class="herramienta oculto" data-herramienta="qr">
+      <div class="herramienta__intro">
+        <h2 class="herramienta__titulo"><span class="titulo-icono"><span class="icono" aria-hidden="true">qr_code_2</span></span>Generar un código QR</h2>
+        <p class="nota">Escribe el link, elige el logo del centro y el color. El QR se actualiza al momento. Antes de imprimirlo, revísalo con la cámara de tu celular.</p>
+      </div>
+
+      <div class="editor-qr">
+        <!-- Vista previa -->
+        <figure class="editor-qr__vista tarjeta">
+          <div id="qr-dibujo" class="editor-qr__dibujo"></div>
+          <figcaption id="qr-estado" class="editor-qr__estado" aria-live="polite">Escribe un link para ver tu QR</figcaption>
+        </figure>
+
+        <!-- Opciones -->
+        <form id="form-qr" class="tarjeta editor-qr__controles" novalidate>
+          <label class="campo-qr">
+            <span class="personalizar__etiqueta">Link</span>
+            <span class="campo-qr__caja">
+              <span class="icono" aria-hidden="true">link</span>
+              <input id="qr-link" type="text" inputmode="url" autocomplete="off" maxlength="900"
+                placeholder="https://www.unicah.edu" />
+            </span>
+          </label>
+          <p class="nota">También sirve para un texto, un correo o WhatsApp (ej. https://wa.me/50499999999).</p>
+
+          <p class="personalizar__etiqueta">Logo del centro</p>
+          <div class="opciones-qr" role="radiogroup" aria-label="Logo del centro">
+            <label class="opcion-qr"><input type="radio" name="qr-logo" value="unicah" checked /><span><span class="icono" aria-hidden="true">image</span>UNICAH</span></label>
+            <label class="opcion-qr"><input type="radio" name="qr-logo" value="propio" /><span><span class="icono" aria-hidden="true">upload</span>Otro logo</span></label>
+            <label class="opcion-qr"><input type="radio" name="qr-logo" value="ninguno" /><span><span class="icono" aria-hidden="true">hide_image</span>Sin logo</span></label>
+          </div>
+          <input id="qr-archivo-logo" type="file" accept=".png,.jpg,.jpeg,.webp" hidden />
+          <div id="qr-logo-propio" class="logo-propio-qr oculto">
+            <span class="icono" aria-hidden="true">image</span>
+            <span id="qr-nombre-logo" class="logo-propio-qr__nombre"></span>
+            <button type="button" id="qr-cambiar-logo" class="boton boton--texto boton--chico"><span class="icono" aria-hidden="true">swap_horiz</span><span class="boton__texto">Cambiar</span></button>
+          </div>
+          <p class="nota">Consejo: un logo sin fondo (PNG) se ve mejor. Puedes quitárselo con la herramienta "Quitar fondo de logos".</p>
+
+          <div id="qr-opciones-logo">
+            <label class="control-deslizable">
+              <span>Tamaño del logo <strong id="qr-valor-tamano">22%</strong></span>
+              <input id="qr-tamano-logo" type="range" min="12" max="26" value="22" />
+            </label>
+            <label class="casilla"><input id="qr-fondo-logo" type="checkbox" checked /> Fondo blanco detrás del logo <small>(se lee mejor)</small></label>
+          </div>
+
+          <p class="personalizar__etiqueta">Color del QR</p>
+          <div class="colores" id="qr-colores">
+            <button type="button" class="color activo" data-color="#141B5B" title="Azul UNICAH" aria-label="Azul UNICAH"></button>
+            <button type="button" class="color" data-color="#000000" title="Negro" aria-label="Negro"></button>
+            <button type="button" class="color" data-color="#7A1428" title="Vino" aria-label="Vino"></button>
+            <button type="button" class="color" data-color="#1F5E3B" title="Verde" aria-label="Verde"></button>
+            <button type="button" class="color" data-color="#5B2A86" title="Morado" aria-label="Morado"></button>
+            <label class="color color--libre" title="Otro color"><input id="qr-color-libre" type="color" value="#141B5B" aria-label="Otro color" /></label>
+          </div>
+          <p id="qr-aviso-color" class="nota nota--aviso oculto">Ese color es muy claro: algunos celulares no podrán leer el QR. Usa uno más oscuro.</p>
+
+          <label class="campo-qr">
+            <span class="personalizar__etiqueta">Tamaño de la imagen (PNG)</span>
+            <select id="qr-tamano-png">
+              <option value="512">Pequeño · 512 px (redes, WhatsApp)</option>
+              <option value="1024" selected>Mediano · 1024 px (documentos)</option>
+              <option value="2048">Grande · 2048 px (impresión)</option>
+            </select>
+          </label>
+
+          <div class="acciones">
+            <button type="button" id="qr-descargar-svg" class="boton"><span class="icono" aria-hidden="true">download</span><span class="boton__texto">SVG (para imprimir)</span></button>
+            <button type="button" id="qr-descargar-png" class="boton boton--principal"><span class="icono" aria-hidden="true">download</span><span class="boton__texto">Descargar PNG</span></button>
+          </div>
+          <p id="mensaje-qr" class="mensaje"></p>
+        </form>
+      </div>
     </section>
 
     <!-- ==================== GENERADOR (se ve después de elegir el tipo) ==================== -->
@@ -384,13 +475,21 @@
           <!-- Encabezado: las 2 líneas de arriba del diploma -->
           <div data-modulos="reconocimientos lugares placas">
             <p class="personalizar__etiqueta">Encabezado</p>
+            <!-- Cada línea tiene su casilla "En blanco": si se marca, esa línea no
+                 aparece en el documento (personalizar.js envía encabezado1EnBlanco=si) -->
             <div class="campos-encabezado">
-              <input id="input-encabezado1" class="campo-personalizar" maxlength="45"
-                placeholder="UNIVERSIDAD CATÓLICA DE HONDURAS" aria-label="Línea 1 del encabezado" />
-              <input id="input-encabezado2" class="campo-personalizar" maxlength="45"
-                placeholder="NUESTRA SEÑORA REINA DE LA PAZ" aria-label="Línea 2 del encabezado" />
+              <div class="linea-encabezado">
+                <input id="input-encabezado1" class="campo-personalizar" maxlength="45"
+                  placeholder="UNIVERSIDAD CATÓLICA DE HONDURAS" aria-label="Línea 1 del encabezado" />
+                <label class="casilla-blanco"><input type="checkbox" id="blanco-encabezado1" /><span>En blanco</span></label>
+              </div>
+              <div class="linea-encabezado">
+                <input id="input-encabezado2" class="campo-personalizar" maxlength="45"
+                  placeholder="NUESTRA SEÑORA REINA DE LA PAZ" aria-label="Línea 2 del encabezado" />
+                <label class="casilla-blanco"><input type="checkbox" id="blanco-encabezado2" /><span>En blanco</span></label>
+              </div>
             </div>
-            <p class="nota">Si dejas una línea vacía, se usa el texto de siempre. Se escribe en mayúsculas.</p>
+            <p class="nota">Si dejas una línea vacía, se usa el texto de siempre. Marca <b>En blanco</b> para que esa línea no aparezca. Se escribe en mayúsculas.</p>
           </div>
 
           <!-- Título (solo el comunicado de duelo) -->
@@ -748,6 +847,17 @@
         <button type="button" class="boton boton--chico" data-recorrido="herramienta"><span class="icono" aria-hidden="true">visibility</span><span class="boton__texto">Muéstrame dónde</span></button>
       </details>
 
+      <details class="manual__seccion" name="manual">
+        <summary><span class="manual__numero">6</span> Crear un código QR<span class="icono flecha-desplegable" aria-hidden="true">keyboard_arrow_down</span></summary>
+        <ol>
+          <li>En el inicio, elige la tarjeta <b>Generar código QR</b>.</li>
+          <li>Escribe o pega el <b>link</b>: el QR aparece al momento.</li>
+          <li>Elige el <b>logo del centro</b> (el de UNICAH, otro que subas o ninguno), su tamaño y el <b>color</b>.</li>
+          <li>Pulsa <b>Descargar PNG</b> (redes y documentos) o <b>SVG</b> (para imprimir en grande).</li>
+          <li>Antes de imprimirlo, <b>pruébalo con la cámara de tu celular</b>.</li>
+        </ol>
+        <button type="button" class="boton boton--chico" data-recorrido="qr"><span class="icono" aria-hidden="true">visibility</span><span class="boton__texto">Muéstrame dónde</span></button>
+      </details>
       <details class="manual__seccion" name="manual">
         <summary><span class="manual__numero"><span class="icono" aria-hidden="true">lightbulb</span></span> Consejos<span class="icono flecha-desplegable" aria-hidden="true">keyboard_arrow_down</span></summary>
         <ul>

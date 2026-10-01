@@ -26,6 +26,8 @@ const app = express();
 const carpetaPublica = path.join(import.meta.dirname, '..', 'public');
 // Iconos de Google (Material Symbols), instalados con npm: se sirven en /iconos
 const carpetaIconos = path.join(import.meta.dirname, '..', 'node_modules', '@material-symbols', 'font-400');
+// Librería qrcode-generator (npm): arma los cuadritos del QR. Se sirve en /librerias/qrcode
+const carpetaQR = path.join(import.meta.dirname, '..', 'node_modules', 'qrcode-generator', 'dist');
 
 // 1. Middlewares que se aplican a TODAS las peticiones
 if (process.env.NODE_ENV !== 'test') {
@@ -43,6 +45,8 @@ app.use(express.static(carpetaPublica, {
 
 // Los iconos casi nunca cambian: el navegador los guarda por una semana
 app.use('/iconos', express.static(carpetaIconos, { maxAge: '7d' }));
+// Librería para dibujar códigos QR en el navegador (herramienta "Generar QR")
+app.use('/librerias/qrcode', express.static(carpetaQR, { maxAge: '7d' }));
 
 // 2. Rutas de la API: todo lo que empieza con /api
 app.use('/api', rutasApi);

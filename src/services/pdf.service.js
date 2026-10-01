@@ -23,6 +23,7 @@
 //  diseno                                config/diseno.config.js  medidas y colores comunes
 //  escribirCentrado, tamanoParaUnaLinea  utils/pdfTexto.js        escribir textos
 //  registrarFuentes                      utils/pdfFuentes.js      las fuentes
+//  lineasDelEncabezado                   utils/encabezado.js      las 2 líneas de arriba (o en blanco)
 //
 //  EXPORTA              LO IMPORTA                          PARA
 //  generarPDF           controllers/diplomas.controller.js  un documento
@@ -32,6 +33,7 @@ import PDFDocument from 'pdfkit';
 import diseno from '../config/diseno.config.js';
 import { escribirCentrado, tamanoParaUnaLinea } from '../utils/pdfTexto.js';
 import { registrarFuentes } from '../utils/pdfFuentes.js';
+import { lineasDelEncabezado } from '../utils/encabezado.js';
 
 /**
  * Crea un PDF con un solo diploma.
@@ -152,14 +154,8 @@ function dibujarEncabezado(doc, centro, diploma, personalizacion) {
   const y = diseno.posiciones;
   const hayCampus = diploma.campus !== '';
 
-  let linea1 = diseno.textosFijos.universidad;
-  if (personalizacion.encabezado1) {
-    linea1 = personalizacion.encabezado1.toUpperCase();
-  }
-  let linea2 = diseno.textosFijos.sede;
-  if (personalizacion.encabezado2) {
-    linea2 = personalizacion.encabezado2.toUpperCase();
-  }
+  // Cada línea: la de siempre, la que escribió el usuario, o '' (en blanco)
+  const { linea1, linea2 } = lineasDelEncabezado(personalizacion, diseno.textosFijos);
 
   // Sin campus queda un hueco; bajamos un poco los títulos para repartir el espacio
   let bajar = 0;
@@ -167,15 +163,19 @@ function dibujarEncabezado(doc, centro, diploma, personalizacion) {
     bajar = 18;
   }
 
-  // Si una línea es muy larga, su letra se achica para que quepa en una sola línea
-  const opciones1 = { tamano: 22, ancho: 700, espaciado: 0.3, espacioPalabras: 6 };
-  opciones1.tamano = tamanoParaUnaLinea(doc, linea1, opciones1, 12);
-  const opciones2 = { tamano: 20, ancho: 700 };
-  opciones2.tamano = tamanoParaUnaLinea(doc, linea2, opciones2, 12);
-
+  // Si una línea es muy larga, su letra se achica para que quepa en una sola línea.
+  // Una línea en blanco ('') simplemente no se dibuja.
   doc.fillColor(diseno.colores.texto);
-  escribirCentrado(doc, linea1, centro, y.universidad + bajar, opciones1);
-  escribirCentrado(doc, linea2, centro, y.sede + bajar, opciones2);
+  if (linea1 !== '') {
+    const opciones1 = { tamano: 22, ancho: 700, espaciado: 0.3, espacioPalabras: 6 };
+    opciones1.tamano = tamanoParaUnaLinea(doc, linea1, opciones1, 12);
+    escribirCentrado(doc, linea1, centro, y.universidad + bajar, opciones1);
+  }
+  if (linea2 !== '') {
+    const opciones2 = { tamano: 20, ancho: 700 };
+    opciones2.tamano = tamanoParaUnaLinea(doc, linea2, opciones2, 12);
+    escribirCentrado(doc, linea2, centro, y.sede + bajar, opciones2);
+  }
 
   // El campus es opcional: solo se dibuja si tiene texto
   if (hayCampus) {

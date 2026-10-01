@@ -25,6 +25,7 @@
 //  mostrar, ocultar                          utilidades.js  mostrar el recorrido y la bienvenida
 //  cambiarTextoDelBoton                      utilidades.js  "Siguiente" / "Terminar" sin borrar el icono
 //  pantallaActual                            navegacion.js  saber qué pantalla se ve
+//  herramientaAbierta                        navegacion.js  saber cuál herramienta se ve (quitar fondo o QR)
 //  abrirPorId                                navegacion.js  abrir el módulo o la herramienta del recorrido
 //  volverAlInicio                            navegacion.js  ir al menú para su recorrido
 //  mostrarPestana                            navegacion.js  abrir "Uno a la vez" o "Desde Excel"
@@ -39,7 +40,7 @@
 //  iniciarAyuda()  main.js     arrancar esta parte
 // =============================================================
 import { mostrar, ocultar, cambiarTextoDelBoton } from './utilidades.js';
-import { pantallaActual, abrirPorId, volverAlInicio, mostrarPestana } from './navegacion.js';
+import { pantallaActual, herramientaAbierta, abrirPorId, volverAlInicio, mostrarPestana } from './navegacion.js';
 import { obtenerModuloActual } from './estado.js';
 import {
   pasarEncima, presionar, escribirEjemplo, arrastrarArchivo, recorrerOpciones,
@@ -67,6 +68,7 @@ const CLAVE_BIENVENIDA = 'diplomas-ayuda-vista'; // se guarda en el navegador pa
 // =============================================================
 //  LOS RECORRIDOS (edita aquí los textos)
 //  pantalla: dónde debe estar el usuario ('menu', 'generador' o 'herramienta')
+//  herramienta: (solo con pantalla 'herramienta') cuál: 'quitar-fondo' o 'qr'
 //  pestana:  (opcional) qué pestaña abrir antes de empezar
 //  antes:    (opcional) algo que hacer antes de empezar
 // =============================================================
@@ -231,6 +233,7 @@ const RECORRIDOS = {
 
   herramienta: {
     pantalla: 'herramienta',
+    herramienta: 'quitar-fondo',
     pasos: [
       {
         elemento: '#zona-fondo',
@@ -257,11 +260,46 @@ const RECORRIDOS = {
       },
     ],
   },
+
+  qr: {
+    pantalla: 'herramienta',
+    herramienta: 'qr',
+    pasos: [
+      {
+        elemento: '#qr-link',
+        demostracion: escribirEjemplo,
+        titulo: 'Escribe el link',
+        texto: 'Pega aquí el link de tu página, formulario o video. ¡El QR aparece al momento!',
+        soloSi: noHayLinkEnElQR,
+      },
+      {
+        elemento: '.opciones-qr',
+        demostracion: recorrerOpciones,
+        titulo: 'El logo del centro',
+        texto: 'Usa el de UNICAH, sube otro o déjalo sin logo. Tranquilo: aunque el logo tape el centro, el QR se sigue leyendo.',
+      },
+      {
+        elemento: '#qr-colores',
+        demostracion: recorrerOpciones,
+        titulo: 'Dale color',
+        texto: 'Elige un color oscuro: si es muy claro, te aviso porque algunos celulares no lo leerían.',
+      },
+      {
+        elemento: '#qr-descargar-png',
+        demostracion: presionar,
+        titulo: 'Descárgalo',
+        texto: 'PNG para redes o documentos, o SVG para imprimir en grande sin que se vea borroso. ¡Pruébalo con tu celular antes de imprimir!',
+      },
+    ],
+  },
 };
 
 // Condiciones que usan algunos pasos (soloSi)
 function noHayExcelRevisado() {
   return document.getElementById('revision').classList.contains('oculto');
+}
+function noHayLinkEnElQR() {
+  return document.getElementById('qr-link').value.trim() === '';
 }
 function noHayLogoCargado() {
   return document.getElementById('editor-fondo').classList.contains('oculto');
@@ -352,6 +390,9 @@ function empezarRecorrido(nombre) {
 function recorridoDeEstaPantalla() {
   const pantalla = pantallaActual();
   if (pantalla === 'herramienta') {
+    if (herramientaAbierta() === 'qr') {
+      return 'qr';
+    }
     return 'herramienta';
   }
   if (pantalla === 'generador') {
@@ -374,8 +415,8 @@ function irALaPantalla(recorrido) {
   if (recorrido.pantalla === 'generador' && pantalla !== 'generador') {
     abrirPorId(obtenerModuloActual()); // el último módulo usado (o el primero)
   }
-  if (recorrido.pantalla === 'herramienta' && pantalla !== 'herramienta') {
-    abrirPorId('quitar-fondo');
+  if (recorrido.pantalla === 'herramienta' && herramientaAbierta() !== recorrido.herramienta) {
+    abrirPorId(recorrido.herramienta); // 'quitar-fondo' o 'qr'
   }
   if (recorrido.pestana) {
     mostrarPestana(recorrido.pestana);

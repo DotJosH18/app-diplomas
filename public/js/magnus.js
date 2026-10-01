@@ -83,6 +83,7 @@ const EJEMPLOS = {
   tituloDiploma: 'Agradecimiento',
   'input-encabezado1': 'FACULTAD DE DERECHO',
   'input-titulo': 'NOTA DE DUELO',
+  'qr-link': 'https://www.unicah.edu',
 };
 
 /** Espera unos milisegundos y luego hace algo (y lo recuerda para poder cancelarlo). */
@@ -157,7 +158,7 @@ export function arrastrarArchivo(elemento) {
 
 /** Resalta una por una las opciones de adentro (pestañas, colores…), y vuelve a empezar. */
 export function recorrerOpciones(elemento) {
-  const opciones = elemento.querySelectorAll('button, summary');
+  const opciones = elemento.querySelectorAll('button, summary, label');
   if (opciones.length === 0) {
     return;
   }
