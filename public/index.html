@@ -1,24 +1,87 @@
 <!DOCTYPE html>
+<!--
+  =============================================================
+  PÁGINA PRINCIPAL: el "esqueleto"
+  Cada parte de la página está en su propio archivo, en public/partes/.
+  Una línea como esta:
+      <!- - @incluir partes/menu.html - ->      (sin los espacios entre los guiones)
+  se reemplaza por ese archivo cuando alguien abre la página
+  (lo hace el servidor: src/utils/armarPagina.js). Así cada archivo
+  es corto y fácil de encontrar.
 
+  CAPAS DE LA PÁGINA            HTML (public/)                       ESTILOS (public/css/)
+    Encabezado                  partes/encabezado.html               3-pantallas/encabezado.css
+    Menú                        partes/menu.html                     3-pantallas/menu.css
+    Herramientas                partes/herramientas/quitar-fondo.html  4-herramientas/quitar-fondo.css
+                                partes/herramientas/qr.html          4-herramientas/qr.css
+                                  └ qr/vista, 1-contenido, 2-diseno, 3-logo, 4-marco
+    Generador (al elegir uno)   partes/generador/personalizar.html   3-pantallas/personalizar.css, elegir-color.css
+                                partes/generador/uno-a-la-vez.html   3-pantallas/formulario.css
+                                partes/generador/desde-excel.html    3-pantallas/desde-excel.css
+                                partes/generador/ventana-vista.html  2-componentes/ventanas.css
+    Ayuda                       partes/ayuda/manual.html             2-componentes/ventanas.css
+                                partes/ayuda/recorrido.html          5-ayuda/recorrido.css, magnus.css
+    Pie                         partes/pie.html                      3-pantallas/pie.css
+
+  ¿Una parte nueva? Crea el archivo en partes/ y pon su línea @incluir
+  donde debe aparecer. (Abre la página desde el servidor, con npm run dev:
+  si abres este archivo directo, el navegador no pega las partes.)
+  =============================================================
+-->
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Generador de Diplomas · UNICAH</title>
   <link rel="icon" type="image/png" href="img/logo-unicah.png" />
-
+  <!-- Iconos: Material Symbols de Google (paquete npm @material-symbols/font-400,
+       lo sirve app.js en /iconos, sin internet). Para usar uno:
+         <span class="icono" aria-hidden="true">download</span>
+       El texto es el NOMBRE del icono. Búscalos en https://fonts.google.com/icons -->
   <link rel="stylesheet" href="iconos/rounded.css" />
   <link rel="stylesheet" href="css/estilos.css" />
 </head>
 <body>
 
+  <!-- @incluir partes/encabezado.html -->
 
+  <!--
+    Campos que solo usan algunos módulos:
+      data-modulos="lugares"                  → solo se ve en Lugares
+      data-modulos="reconocimientos duelo"    → se ve en Reconocimientos y en el Comunicado de duelo
+    Los elementos SIN data-modulos se ven siempre.
+  -->
 
   <main class="contenedor">
 
-    <div id="generador" class="oculto"></div> 
+    <!-- @incluir partes/menu.html -->
+
+    <!-- @incluir partes/herramientas/quitar-fondo.html -->
+
+    <!-- @incluir partes/herramientas/qr.html -->
+
+    <!-- ==================== GENERADOR (se ve después de elegir el tipo) ==================== -->
+    <div id="generador" class="oculto">
+
+    <!-- @incluir partes/generador/personalizar.html -->
+
+    <!-- @incluir partes/generador/uno-a-la-vez.html -->
+
+    <!-- @incluir partes/generador/desde-excel.html -->
+
+    <!-- @incluir partes/generador/ventana-vista.html -->
+
+    </div> <!-- fin del generador -->
 
   </main>
+
+  <!-- @incluir partes/ayuda/manual.html -->
+
+  <!-- @incluir partes/ayuda/recorrido.html -->
+
+  <!-- @incluir partes/pie.html -->
+
+  <!-- Toda la lógica de la página empieza en js/main.js (ver ese archivo). -->
   <script type="module" src="js/main.js"></script>
 </body>
 </html>
