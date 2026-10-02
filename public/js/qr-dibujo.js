@@ -31,7 +31,7 @@ const MARGEN = 4; // cuadritos libres alrededor (lo pide el estándar para que s
 
 /**
  * Todo lo que se puede cambiar del diseño.
- * (Los nombres son los mismos que data-ajuste="…" en index.html.)
+ * (Los nombres son los mismos que data-ajuste="…" en public/partes/herramientas/qr/.)
  */
 export const DISENO_INICIAL = {
   puntos: 'redondeados',        // 'cuadrados' | 'redondeados' | 'suaves' | 'puntos'

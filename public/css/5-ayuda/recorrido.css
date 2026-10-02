@@ -1,0 +1,100 @@
+/* Capa: 5-ayuda  ·  HTML: partes/ayuda/recorrido.html  ·  se carga desde css/estilos.css */
+/* =========================================================
+   12. RECORRIDO GUIADO Y BIENVENIDA
+   JavaScript pone la posición del elemento que se explica en variables CSS:
+   --foco-x, --foco-y, --foco-ancho, --foco-alto (el "hueco") y
+   --globo-x, --globo-y (dónde va el globo con el texto).
+   ========================================================= */
+.recorrido { position: fixed; inset: 0; z-index: 100; }
+.recorrido__foco {
+  position: absolute; left: var(--foco-x); top: var(--foco-y);
+  width: var(--foco-ancho); height: var(--foco-alto);
+  border-radius: 14px; outline: 3px solid var(--dorado-claro);
+  box-shadow: 0 0 0 9999px #0b0f2fb3;   /* oscurece todo lo demás */
+  pointer-events: none;
+}
+/* El "globo" es Magnus + su burbuja de diálogo, uno al lado del otro.
+   Por defecto Magnus va a la IZQUIERDA y mira a la izquierda (volteado).
+   Con "mira-derecha" (lo pone magnus.js) va a la derecha y mira a la derecha. */
+.recorrido__globo {
+  position: absolute; left: var(--globo-x); top: var(--globo-y); width: min(460px, calc(100vw - 32px));
+  display: flex; align-items: flex-start; gap: 12px;
+}
+.recorrido__globo.mira-derecha { flex-direction: row-reverse; }
+.recorrido__magnus-caja { display: block; flex-shrink: 0; transform: scaleX(-1); }   /* espejo */
+.recorrido__globo.mira-derecha .recorrido__magnus-caja { transform: none; }
+
+/* Magnus en el recorrido: el círculo se queda quieto (Magnus se mueve adentro) */
+.recorrido__magnus { width: 72px; margin-top: 4px; }
+
+/* Mientras vuela, el globo se desliza hasta su nuevo lugar */
+.recorrido.cambiando-paso .recorrido__globo { transition: left .65s cubic-bezier(.4, 0, .2, 1), top .65s cubic-bezier(.4, 0, .2, 1); }
+
+/* La burbuja, con una "colita" que apunta a Magnus */
+.recorrido__burbuja {
+  position: relative; flex: 1; min-width: 0;
+  padding: 16px 18px 14px; background: var(--superficie); border-radius: 20px; box-shadow: var(--sombra-alta);
+}
+.recorrido__burbuja::before {
+  content: ''; position: absolute; left: -7px; top: 30px; width: 16px; height: 16px;
+  background: var(--superficie); transform: rotate(45deg); border-radius: 3px;
+}
+.recorrido__globo.mira-derecha .recorrido__burbuja::before { left: auto; right: -7px; }
+
+/* El círculo de "toque" cuando Magnus presiona algo */
+.recorrido__toque {
+  position: absolute; left: var(--toque-x); top: var(--toque-y); width: 18px; height: 18px; margin: -9px 0 0 -9px;
+  border-radius: 50%; background: #E3C766; opacity: 0; pointer-events: none;
+}
+.recorrido.tocando .recorrido__toque { animation: magnus-toque .6s ease-out; }
+@keyframes magnus-toque {
+  0% { opacity: .9; transform: scale(.4); }
+  100% { opacity: 0; transform: scale(4); }
+}
+/* El borde dorado del hueco "late" cuando Magnus toca */
+.recorrido.tocando .recorrido__foco { animation: foco-late .6s ease-out; }
+@keyframes foco-late { 40% { outline-offset: 5px; outline-color: #fff3c4; } }
+
+/* Lo que Magnus "hace" en la página (lo ponen las funciones de magnus.js).
+   Son solo efectos: no cambian los datos del usuario. */
+.opcion.magnus-encima { box-shadow: var(--sombra-alta); transform: translateY(-3px); border-color: #C9CDE6; }
+.opcion.magnus-encima .opcion__imagen { transform: scale(1.03); }
+.opcion.magnus-encima .opcion__abrir .icono { transform: translateX(4px); }
+.pestana.magnus-encima:not(.activa) { background: #ffffff33; }
+.paleta.magnus-encima { border-color: var(--azul); transform: translateY(-2px); box-shadow: var(--sombra-alta); }
+.selector-color__fila.magnus-encima { background: var(--azul-suave); }
+.color.magnus-encima { transform: scale(1.15); }
+.magnus-presiona { transform: scale(.94) !important; box-shadow: 0 0 0 5px #E3C76680 !important; }
+.magnus-escribe { border-color: var(--azul) !important; box-shadow: 0 0 0 3px #141B5B26 !important; }
+.magnus-escribe::placeholder { color: var(--azul); opacity: .75; }
+
+.recorrido__quien { color: var(--azul); }
+.por-decir { visibility: hidden; }   /* el texto que Magnus aún no "dice" */
+.recorrido__paso { margin: 0; font-size: .7rem; font-weight: 700; color: var(--dorado); text-transform: uppercase; letter-spacing: .08em; }
+.recorrido__titulo { margin: 4px 0 6px; font-size: 1.05rem; color: var(--azul); }
+.recorrido__texto { margin: 0; font-size: .88rem; line-height: 1.55; color: var(--texto-suave); }
+.recorrido__botones { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 16px; }
+.recorrido__espacio { flex: 1; }
+#recorrido-anterior { width: 32px; padding: 0; }   /* solo la flecha */
+/* Solo al cambiar de paso el hueco y el globo se deslizan (clase "cambiando-paso").
+   El resto del tiempo siguen al elemento sin animación, aunque se baje la página. */
+.recorrido.cambiando-paso .recorrido__foco { transition: left .25s, top .25s, width .25s, height .25s; }
+
+.bienvenida {
+  position: fixed; right: 20px; bottom: 20px; z-index: 90; width: min(400px, calc(100vw - 32px));
+  display: flex; align-items: flex-start; gap: 10px;
+  animation: aparecer .3s ease-out;
+}
+/* Magnus, al lado del mensaje: saluda moviendo la cabeza al aparecer */
+.bienvenida__magnus { width: 60px; flex-shrink: 0; margin-top: 6px; }
+.bienvenida__contenido {
+  position: relative; flex: 1; padding: 14px 16px 10px; background: var(--superficie); border-radius: 20px;
+  box-shadow: var(--sombra-alta), 0 0 0 1px var(--borde);
+}
+.bienvenida__contenido::before {   /* colita hacia Magnus */
+  content: ''; position: absolute; left: -7px; top: 28px; width: 14px; height: 14px;
+  background: var(--superficie); transform: rotate(45deg); box-shadow: -1px 1px 0 var(--borde);
+}
+.bienvenida p { margin: 0; font-size: .88rem; }
+.bienvenida strong { color: var(--azul); }
+.bienvenida__botones { display: flex; justify-content: flex-end; gap: 8px; margin-top: 12px; }

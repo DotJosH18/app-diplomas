@@ -1,0 +1,22 @@
+<!-- PARTE: GENERADOR · ventana con la vista previa de una fila del Excel
+     Se pega en la página desde index.html (busca "@incluir partes/generador/ventana-vista.html")
+     Estilos: css/2-componentes/ventanas.css
+     Lógica:  js/excel.js -->
+<!-- ==================== VENTANA: VISTA PREVIA DE UNA FILA DEL EXCEL ====================
+     <dialog> es una ventana del navegador que se abre encima de la página.
+     Se abre con el botón "Ver" de cada fila de la tabla. -->
+<dialog id="ventana-vista" class="ventana">
+  <div class="ventana__barra">
+    <strong id="ventana-titulo" class="ventana__titulo"></strong>
+    <div class="ventana__botones">
+      <button type="button" id="ventana-anterior" class="boton boton--chico"><span class="icono" aria-hidden="true">arrow_back</span><span class="boton__texto">Anterior</span></button>
+      <span id="ventana-contador" class="ventana__contador"></span>
+      <button type="button" id="ventana-siguiente" class="boton boton--chico"><span class="boton__texto">Siguiente</span><span class="icono" aria-hidden="true">arrow_forward</span></button>
+      <button type="button" id="ventana-cerrar" class="boton boton--chico boton--principal"><span class="icono" aria-hidden="true">close</span><span class="boton__texto">Cerrar</span></button>
+    </div>
+  </div>
+  <div class="ventana__documento">
+    <iframe id="ventana-pdf" title="Vista previa de la fila"></iframe>
+    <p id="ventana-cargando" class="ventana__cargando">Generando vista previa…</p>
+  </div>
+</dialog>

@@ -89,11 +89,14 @@ diplomas-app/
 │       ├── texto.js                      Quitar tildes, comparar textos, nombre del PDF
 │       ├── fecha.js                      La fecha de hoy en texto (28 de septiembre de 2026)
 │       ├── pdfFuentes.js                 Fuentes del PDF y el "medidor" de textos
-│       └── pdfTexto.js                   Escribir textos y párrafos (centrados, justificados, **negritas**)
+│       ├── pdfTexto.js                   Escribir textos y párrafos (centrados, justificados, **negritas**)
+│       └── armarPagina.js                Pega las partes del HTML (public/partes/) dentro de index.html
 │
 ├── public/                               ← FRONTEND (la página)
-│   ├── index.html                        Estructura: menú, generador y formularios (sin estilos ni lógica)
-│   ├── css/estilos.css                   Diseño
+│   ├── index.html                        El "esqueleto": solo dice qué partes van y en qué orden
+│   ├── partes/                           El HTML, una parte por archivo (ver "HTML y CSS por capas")
+│   ├── css/estilos.css                   Índice del diseño: carga las capas de css/ en orden
+│   ├── css/1-base … 6-ajustes/           El diseño, un archivo por parte de la página
 │   ├── js/                               Comportamiento, en archivos pequeños con import/export:
 │   │   ├── main.js                       ⭐ Punto de entrada: arranca todo (empieza a leer aquí)
 │   │   ├── estado.js                     El módulo elegido y la dirección de su API
@@ -186,6 +189,53 @@ Si algo falla → throw new HttpError(400, 'mensaje') → errores.middleware res
 
 ---
 
+## HTML y CSS por capas
+
+La página está dividida en **archivos pequeños**, uno por cada parte, para que encontrar y cambiar algo sea fácil. No usa nada nuevo: el HTML se pega con una línea de JavaScript del servidor y el CSS con `@import`, que ya viene en todos los navegadores.
+
+**HTML** (`public/partes/`). `index.html` es solo el esqueleto. Cada línea
+
+```html
+<!-- @incluir partes/menu.html -->
+```
+
+se reemplaza por ese archivo cuando alguien abre la página (`src/utils/armarPagina.js`, desde `app.js`). Una parte puede incluir otras: `herramientas/qr.html` incluye sus 4 pestañas. Cada parte empieza con un comentario que dice **qué CSS y qué JS** le corresponden.
+
+**CSS** (`public/css/`). `estilos.css` no tiene estilos: es el índice que carga cada archivo con `@import`, por capas:
+
+| Capa (carpeta)      | Qué tiene                                                     |
+|---------------------|---------------------------------------------------------------|
+| `1-base/`           | Fuentes e iconos, **variables** (colores y medidas) y lo básico |
+| `2-componentes/`    | Lo que se repite en muchas pantallas: botones, ventanas       |
+| `3-pantallas/`      | Encabezado, menú, formulario, personalizar, colores, Excel, pie |
+| `4-herramientas/`   | Quitar fondo y QR                                              |
+| `5-ayuda/`          | Recorrido guiado y Magnus                                     |
+| `6-ajustes/`        | Cambios por módulo y para celulares (al final, para que ganen) |
+
+**Mapa: dónde está cada parte**
+
+| Parte de la página       | HTML (`public/partes/`)                 | CSS (`public/css/`)                              | JS (`public/js/`)       |
+|--------------------------|-----------------------------------------|--------------------------------------------------|-------------------------|
+| Encabezado               | `encabezado.html`                       | `3-pantallas/encabezado.css`                     | `navegacion.js`         |
+| Menú (tarjetas)          | `menu.html`                             | `3-pantallas/menu.css`                           | `navegacion.js`         |
+| Quitar fondo             | `herramientas/quitar-fondo.html`        | `4-herramientas/quitar-fondo.css`                | `quitar-fondo.js`       |
+| Generar QR               | `herramientas/qr.html` + `qr/*.html`    | `4-herramientas/qr.css`                          | `qr.js`, `qr-dibujo.js` |
+| Personalizar diseño      | `generador/personalizar.html`           | `3-pantallas/personalizar.css`, `elegir-color.css` | `personalizar.js`     |
+| Uno a la vez             | `generador/uno-a-la-vez.html`           | `3-pantallas/formulario.css`                     | `individual.js`         |
+| Desde Excel              | `generador/desde-excel.html`, `ventana-vista.html` | `3-pantallas/desde-excel.css`, `2-componentes/ventanas.css` | `excel.js` |
+| Manual                   | `ayuda/manual.html`                     | `2-componentes/ventanas.css`                     | `ayuda.js`              |
+| Recorrido y bienvenida   | `ayuda/recorrido.html`                  | `5-ayuda/recorrido.css`, `magnus.css`            | `ayuda.js`, `magnus.js` |
+| Pie de página            | `pie.html`                              | `3-pantallas/pie.css`                            | `main.js` (el año)      |
+
+**Reglas para no romper nada:**
+- **El orden del CSS importa:** si dos archivos le dan estilo a lo mismo, gana el que se carga después en `estilos.css`. Por eso lo general va arriba y los ajustes (celular) al final.
+- **Abre la página desde el servidor** (`npm run dev`). Si abres `index.html` directo con doble clic, el navegador no pega las partes.
+- **¿Una parte nueva?** Crea el `.html` en `partes/` y pon su línea `@incluir` donde debe aparecer. **¿Un CSS nuevo?** Créalo en su capa y agrega su `@import` en `estilos.css`. Hay pruebas que avisan si un archivo quedó sin usar o si algún `id` se repite.
+
+Al dividirla se comprobó que **nada cambió**: la página armada es idéntica byte por byte a la anterior, y el estilo calculado de cada elemento (unos 22 000, en 18 pantallas de PC y celular) es el mismo.
+
+---
+
 ## Guía para hacer cambios
 
 ### 1. Cambios de diseño o textos (sin tocar código)
@@ -199,12 +249,12 @@ Si algo falla → throw new HttpError(400, 'mensaje') → errores.middleware res
 | Cambiar "Reconocimiento a:" u "Otorgado a:"         | `modulos/<módulo>/<módulo>.config.js` → `saludo`     |
 | Mover el evento o la descripción                    | `modulos/<módulo>/<módulo>.config.js` → `posiciones` |
 | Cambiar la línea bajo el nombre o el lugar          | `config/diseno.config.js` → `lineaPrincipal` (común), o `lineaPrincipal` en la config del módulo |
-| Cambiar el límite de la descripción                 | `modulos/<módulo>/<módulo>.config.js` → `limites`, y el `maxlength` en `index.html` |
+| Cambiar el límite de la descripción                 | `modulos/<módulo>/<módulo>.config.js` → `limites`, y el `maxlength` en `public/partes/generador/` |
 | Aceptar otro encabezado en el Excel                 | `modulos/<módulo>/<módulo>.config.js` → `columnasExcel` |
-| Agregar un lugar válido (ej. "Cuarto Lugar")        | `lugares.config.js` → `puestos`, y su `<option>` en las dos listas de `index.html` |
+| Agregar un lugar válido (ej. "Cuarto Lugar")        | `lugares.config.js` → `puestos`, y su `<option>` en las dos listas de `public/partes/generador/` |
 
 - **Logo:** reemplaza `assets/imagenes/logo.png`.
-- **Colores de la página:** están en `public/css/estilos.css`, al inicio, en `:root`.
+- **Colores de la página:** están en `public/css/1-base/variables.css`, en `:root`.
 
 ### 2. Cambiar una regla de validación
 
@@ -219,7 +269,7 @@ export const lugaresSchema = z.object({
 });
 ```
 
-- **Cambiar si un campo es obligatorio:** usa `textoObligatorio` o `textoOpcional`. Recuerda también el `required` en `index.html`.
+- **Cambiar si un campo es obligatorio:** usa `textoObligatorio` o `textoOpcional`. Recuerda también el `required` en `public/partes/generador/`.
 - **Campos comunes:** las reglas de campus, lugar, fecha y firmas están en `schemas/campos.schema.js`.
 - **El nombre no es común:** solo lo tiene Reconocimientos, en su propio esquema.
 
@@ -235,7 +285,7 @@ El script (`scripts/crear-modulo.js`, solo usa Node) hace todo esto:
 
 1. Copia la plantilla `src/modulos/_plantilla` en `src/modulos/certificados/`: los 4 archivos, con el id y el título ya puestos.
 2. Lo registra en `src/modulos/index.js`.
-3. Agrega su tarjeta al menú de `public/index.html`. También sale sola en la lista del encabezado.
+3. Agrega su tarjeta al menú (`public/partes/menu.html`). También sale sola en la lista del encabezado.
 4. Le activa los mismos campos que Reconocimientos (nombre, descripción, campus, lugar, fecha y firmas).
 5. Le pone una imagen provisional en `public/img/muestra-certificados.png`.
 
@@ -246,8 +296,8 @@ Reinicia el servidor: el módulo **ya genera PDF, imagen de vista previa y Excel
 | Textos, límites, columnas del Excel       | `src/modulos/certificados/certificados.config.js`              |
 | Qué datos pide                            | `src/modulos/certificados/certificados.schema.js`              |
 | Cómo se dibuja                            | `src/modulos/certificados/certificados.pdf.js`                 |
-| La tarjeta del menú                       | `public/index.html` (busca `data-modulo="certificados"`)       |
-| Qué campos ve                             | `public/index.html`: agrega o quita `certificados` en los `data-modulos` |
+| La tarjeta del menú                       | `public/partes/menu.html` (busca `data-modulo="certificados"`) |
+| Qué campos ve                             | `public/partes/generador/`: agrega o quita `certificados` en los `data-modulos` |
 | La imagen de la tarjeta                   | `public/img/muestra-certificados.png`                          |
 
 **Dos clases de módulo** (ver lo que debe tener cada uno en `src/modulos/index.js`):
@@ -259,7 +309,7 @@ Reinicia el servidor: el módulo **ya genera PDF, imagen de vista previa y Excel
 **Si lo haces a mano**, son los mismos 5 pasos de arriba:
 
 - **Importarlo:** agrégalo en `src/modulos/index.js`, arriba de las marcas `← NUEVOS MÓDULOS`.
-- **No borres las marcas** `← NUEVOS MÓDULOS` (en `index.js` y en `index.html`): el script las usa. Hay una prueba que avisa si faltan.
+- **No borres las marcas** `← NUEVOS MÓDULOS` (en `index.js` y en `public/partes/menu.html`): el script las usa. Hay una prueba que avisa si faltan.
 - **No hace falta tocar ningún archivo de `public/js/`:** la página muestra u oculta cada campo según su `data-modulos`, y la lista del encabezado se arma copiando las tarjetas del menú. Las rutas, el controlador y el Excel también funcionan solos para cualquier módulo de la lista.
 
 ### 4. Agregar un dato nuevo a un módulo (ejemplo: "Categoría" en Lugares)
@@ -267,7 +317,7 @@ Reinicia el servidor: el módulo **ya genera PDF, imagen de vista previa y Excel
 1. `lugares.config.js`: agrega `categoria: 40` en `limites` y `categoria: ['Categoría']` en `columnasExcel`.
 2. `lugares.schema.js`: agrega `categoria: textoOpcional('Categoría', config.limites.categoria),`.
 3. `lugares.pdf.js`: dibújalo dentro de `dibujarCuerpo`.
-4. `index.html`: agrega en los dos formularios `<label data-modulos="lugares">Categoría <input name="categoria" maxlength="40" /></label>`.
+4. `public/partes/generador/` (`uno-a-la-vez.html` y `desde-excel.html`): agrega en los dos formularios `<label data-modulos="lugares">Categoría <input name="categoria" maxlength="40" /></label>`.
 
 > Si no lo agregas al esquema, el dato se ignora aunque venga en el formulario o en el Excel. El esquema solo deja pasar los campos que conoce.
 
@@ -294,7 +344,7 @@ En el generador, **"Personalizar diseño"** permite elegir:
   - **Código:** también se puede escribir el código del color (ej. `#7A1428` o `7A1428`). Se aplica en cuanto está completo; si no es válido, el campo se marca en rojo.
   - **Color elegido:** una línea lo muestra en grande, con su nombre y su código.
   - **Colores muy claros:** aparece un aviso, porque el texto encima o junto a ellos podría no leerse.
-  - **Agregar un color rápido:** copia un botón `.color` en `index.html` (con su `data-color` y `data-nombre`); su círculo se pinta solo.
+  - **Agregar un color rápido:** copia un botón `.color` en `public/partes/generador/personalizar.html` (con su `data-color` y `data-nombre`); su círculo se pinta solo.
 - **Encabezado** (Reconocimientos y Lugares): las 2 líneas de arriba del diploma, "UNIVERSIDAD CATÓLICA DE HONDURAS" y "NUESTRA SEÑORA REINA DE LA PAZ".
   - Cada línea acepta máximo 45 caracteres y siempre sale en mayúsculas.
   - Si una línea es larga, su letra se achica para que quepa en una sola línea.
@@ -320,9 +370,9 @@ pdf.service            dibujarBarraLateral usa el color y el logo, y dibujarEnca
                        si vienen vacíos, se usan los de diseno.config.js
 ```
 
-- **Cambiar el encabezado por defecto:** en `textosFijos` de `src/config/diseno.config.js`, y también el `placeholder` de los dos campos en `index.html` (es lo que muestra la miniatura).
-- **Cambiar el límite de caracteres de los textos:** en `src/schemas/personalizacion.schema.js`, y el `maxlength` del campo en `index.html`.
-- **Cambiar los colores rápidos:** edita los botones `data-color` en `index.html`, y su color en `estilos.css`, en `.color[data-color="…"]`.
+- **Cambiar el encabezado por defecto:** en `textosFijos` de `src/config/diseno.config.js`, y también el `placeholder` de los dos campos en `public/partes/generador/personalizar.html` (es lo que muestra la miniatura).
+- **Cambiar el límite de caracteres de los textos:** en `src/schemas/personalizacion.schema.js`, y el `maxlength` del campo en `public/partes/generador/personalizar.html`.
+- **Cambiar los colores rápidos:** edita los botones `data-color` en `public/partes/generador/personalizar.html` (su `data-color` y `data-nombre`): su círculo se pinta solo con ese color.
 - **Cambiar el logo por defecto:** reemplaza `assets/imagenes/logo.png` (el del PDF) y `public/img/logo-unicah.png` (el de la vista en miniatura).
 
 ## Comunicado de duelo
@@ -344,7 +394,7 @@ pdf.service            dibujarBarraLateral usa el color y el logo, y dibujarEnca
 - **Descargar como imagen:** en "Uno a la vez" aparece el botón **Descargar imagen (PNG)**.
   - El servidor genera el mismo PDF y lo convierte en PNG (`src/services/imagen.service.js`), así la imagen queda idéntica.
   - Tamaño: 1836 × 2160 píxeles (escala 3). Se cambia con `IMAGEN_ESCALA` en el `.env` o en `src/config/app.config.js`.
-  - Para darle esta opción a otro módulo, pon `descargaImagen: true` en su config y agrega el módulo al `data-modulos` del botón `boton-imagen` en `index.html`.
+  - Para darle esta opción a otro módulo, pon `descargaImagen: true` en su config y agrega el módulo al `data-modulos` del botón `boton-imagen` en `public/partes/generador/uno-a-la-vez.html`.
 - **Dónde cambiar el título, la introducción, los textos, colores, posiciones y límites:** en `src/modulos/duelo/duelo.config.js`.
 
 ## Agradecimientos
@@ -368,7 +418,7 @@ pdf.service            dibujarBarraLateral usa el color y el logo, y dibujarEnca
 ## Menú: lengüetas "Documentos" y "Herramientas"
 
 El inicio tiene dos lengüetas **en el encabezado**, en la fila de abajo (cada una dice cuántas tarjetas tiene). Esa misma fila muestra "Uno a la vez / Desde Excel" dentro de un documento y queda vacía en una herramienta; siempre mide lo mismo, así el encabezado no cambia de alto:
-- **Documentos:** los módulos de diplomas, placas, agradecimientos y comunicados (`<div class="menu__opciones" data-grupo="documentos">` en `index.html`). `npm run crear-modulo` agrega aquí las tarjetas nuevas.
+- **Documentos:** los módulos de diplomas, placas, agradecimientos y comunicados (`<div class="menu__opciones" data-grupo="documentos">` en `public/partes/menu.html`). `npm run crear-modulo` agrega aquí las tarjetas nuevas.
 - **Herramientas:** quitar fondo de logos y generar QR (`data-grupo="herramientas"`).
 
 `navegacion.js` las conecta (`mostrarGrupoDelMenu`). Al volver de una herramienta, el inicio se abre en "Herramientas"; al volver de un documento, en "Documentos". La lista "Cambiar a…" del encabezado también separa los dos grupos.
@@ -415,7 +465,7 @@ Otra tarjeta del menú. Crea códigos QR con tu diseño, todo en el navegador (e
 
 ## Diseño de la página: botones e iconos
 
-La página sigue el estilo de **Material Design 3 de Google**: botones redondeados con icono + texto, tarjetas blancas con bordes suaves y un solo color principal (azul UNICAH) con acento dorado. Todo está en `public/css/estilos.css`, ordenado por secciones (hay un índice al inicio).
+La página sigue el estilo de **Material Design 3 de Google**: botones redondeados con icono + texto, tarjetas blancas con bordes suaves y un solo color principal (azul UNICAH) con acento dorado. Está en `public/css/`, un archivo por parte de la página (ver "HTML y CSS por capas").
 
 **Iconos.** Son los *Material Symbols* de Google, instalados con npm (`@material-symbols/font-400`). `app.js` los sirve en `/iconos`, así funcionan sin internet. Para poner uno, escribe su **nombre** dentro de un `<span class="icono">`:
 
@@ -443,13 +493,13 @@ Busca el nombre en <https://fonts.google.com/icons> (estilo *Rounded*), por ejem
 
 El texto va en `<span class="boton__texto">`: así `ponerBotonOcupado` y `cambiarTextoDelBoton` (en `utilidades.js`) cambian solo el texto sin borrar el icono. Mientras se genera algo, el icono se cambia por un círculo que gira.
 
-**Colores.** Al inicio de `estilos.css`, en `:root` (`--azul`, `--dorado`, `--fondo`…). Cambias uno y cambia en toda la página.
+**Colores.** En `css/1-base/variables.css`, en `:root` (`--azul`, `--dorado`, `--fondo`…). Cambias uno y cambia en toda la página.
 
 ## Manual de usuario y recorrido guiado
 
 El botón **"? Ayuda"** (arriba a la derecha) abre el manual. Está pensado para quien usa la app, no para programadores.
 
-- **Manual:** 5 secciones cortas (elegir el tipo, uno a la vez, desde Excel, personalizar, quitar fondo), consejos y preguntas frecuentes. Al abrir una sección se cierran las demás. Su texto está en `public/index.html`, dentro de `<dialog id="manual">`: se cambia como cualquier HTML.
+- **Manual:** 5 secciones cortas (elegir el tipo, uno a la vez, desde Excel, personalizar, quitar fondo), consejos y preguntas frecuentes. Al abrir una sección se cierran las demás. Su texto está en `public/partes/ayuda/manual.html`: se cambia como cualquier HTML.
 - **Recorrido guiado:** cada sección tiene el botón **"Muéstrame dónde"**. La página se oscurece, se resalta la parte real que se explica y un globo dice qué hacer, paso a paso (Siguiente / Anterior, flechas del teclado, Esc para salir). Si hace falta, lleva al usuario a la pantalla o pestaña correcta.
 - **"Recorrido de esta pantalla":** elige solo el recorrido de lo que se está viendo (menú, uno a la vez, Excel o la herramienta).
 - **Bienvenida:** la primera vez, abajo a la derecha aparece "¿Primera vez aquí?". Se recuerda en el navegador (`localStorage`) para no repetirla.
@@ -457,7 +507,7 @@ El botón **"? Ayuda"** (arriba a la derecha) abre el manual. Está pensado para
 
 **Magnus, el guía.** La mascota de UNICAH acompaña el recorrido, la bienvenida y el manual. No usa librerías: solo JavaScript y animaciones CSS.
 
-- **Aparece dentro de un círculo con aro dorado.** El círculo se queda quieto y **Magnus se mueve adentro**: mira alrededor, parpadea (con `cara-ojos-cerrados.png`), asiente mientras habla, se inclina hacia el elemento, salta de emoción al cambiar de paso y, en la bienvenida, se asoma y saluda. Su imagen (`public/img/magnus/cara.png`) es más grande que el círculo, así al moverse nunca se ve un borde vacío. `dibujarMagnus()` (en `magnus.js`) lo pone dentro de cada `<span class="magnus">`; las animaciones están en `estilos.css`, sección "MAGNUS ANIMADO".
+- **Aparece dentro de un círculo con aro dorado.** El círculo se queda quieto y **Magnus se mueve adentro**: mira alrededor, parpadea (con `cara-ojos-cerrados.png`), asiente mientras habla, se inclina hacia el elemento, salta de emoción al cambiar de paso y, en la bienvenida, se asoma y saluda. Su imagen (`public/img/magnus/cara.png`) es más grande que el círculo, así al moverse nunca se ve un borde vacío. `dibujarMagnus()` (en `magnus.js`) lo pone dentro de cada `<span class="magnus">`; las animaciones están en `css/5-ayuda/magnus.css`.
 - **Interactúa con la página** (`public/js/magnus.js`): en cada paso "vuela" hasta el elemento, se pone de su lado mirándolo y muestra cómo se usa. Cada paso elige qué hace con `demostracion` en la lista `RECORRIDOS`:
 
   | Demostración        | Qué hace Magnus                                                  |
@@ -469,7 +519,7 @@ El botón **"? Ayuda"** (arriba a la derecha) abre el manual. Está pensado para
   | `recorrerOpciones`  | resalta las opciones una por una (pestañas, colores)             |
 
   Son **solo efectos visuales**: Magnus no hace clic de verdad ni cambia los datos. Lo que "escribe" va en el texto gris (placeholder) y todo vuelve a como estaba al cambiar de paso o salir (`quitarDemostraciones`).
-- **Animaciones** (en `estilos.css`, busca `magnus-`): flota, vuela entre pasos, señala, se mueve mientras "habla" y saluda en la bienvenida. Su texto aparece letra por letra (`escribirPocoAPoco` en `ayuda.js`).
+- **Animaciones** (en `css/5-ayuda/`, busca `magnus-`): flota, vuela entre pasos, señala, se mueve mientras "habla" y saluda en la bienvenida. Su texto aparece letra por letra (`escribirPocoAPoco` en `ayuda.js`).
 - Si la computadora tiene activado "reducir movimiento", Magnus se queda quieto y el texto sale completo.
 
 Para usar otra imagen de Magnus, reemplaza `cara.png` (cuadrada, fondo transparente) y `cara-ojos-cerrados.png` (la misma, con los ojos cerrados).
@@ -517,7 +567,7 @@ En "Personalizar diseño", los colores se eligen en dos niveles, de lo más ráp
   - **Qué muestra:** abre una ventana grande con el PDF de esa fila, tal como quedará: con los datos comunes y la personalización.
   - **Moverse entre filas:** con **← Anterior** y **Siguiente →**, o con las flechas del teclado.
   - **Cerrar:** con **Cerrar** o con Esc.
-  - **Dónde está:** la ventana es un `<dialog>` en `index.html` (`ventana-vista`). Su código está en `public/js/excel.js`, en "3. Ventana de vista previa de las filas".
+  - **Dónde está:** la ventana es un `<dialog>` en `public/partes/generador/ventana-vista.html`. Su código está en `public/js/excel.js`, en "3. Ventana de vista previa de las filas".
 
 ## Encabezado y pie de la página
 
@@ -528,13 +578,13 @@ En "Personalizar diseño", los colores se eligen en dos niveles, de lo más ráp
   - Se arma sola copiando las tarjetas del menú (`armarListaDeModulos` en `navegacion.js`).
 - **Encabezado:** el logo de UNICAH va a la par de "Generador de Diplomas". También sale como icono en la pestaña del navegador.
   - El logo es `public/img/logo-unicah.png`; para cambiarlo, reemplaza ese archivo.
-  - El tamaño está en `.marca__logo` de `estilos.css`.
-- **Pie de página:** está en `public/index.html`, en el bloque `PIE DE PÁGINA`, al final. Tiene 3 partes:
+  - El tamaño está en `.marca__logo` de `css/3-pantallas/encabezado.css`.
+- **Pie de página:** está en `public/partes/pie.html`. Tiene 3 partes:
   - **Izquierda** (`pie__marca`): logo, nombre de la universidad y campus.
   - **Centro** (`pie__enlaces`): enlaces. Agrega más copiando la línea `<a href="…">…</a>`.
   - **Derecha** (`pie__derechos`): © año y "Desarrollado por". **Cambia "Tu nombre o departamento" por el tuyo.**
   - El año se actualiza solo (`anio-actual` en `main.js`).
-  - Los colores y espacios están en `estilos.css`, en la sección "Pie de página".
+  - Los colores y espacios están en `css/3-pantallas/pie.css`.
   - El pie siempre queda al fondo, aunque la página tenga poco contenido.
 
 ## Fecha por defecto
@@ -622,7 +672,7 @@ esquema (descripcionQueCabe)                    PDF (dibujarCuerpo / dibujarPagi
 - **Reconocimientos:** una fila por persona. Son obligatorias Nombre y Descripción.
 - **Lugares:** una fila por lugar (Primer, Segundo, Tercer…). Son obligatorias Lugar obtenido, Evento y Descripción, y no lleva nombre.
   - **Lugar obtenido** solo acepta del Primer al Séptimo Lugar, o Mención Honorífica. También entiende formas cortas como `1`, `2do`, `4to lugar` o `7mo`.
-  - Para agregar otro lugar: añádelo en `puestos` de `src/modulos/lugares/lugares.config.js` y como `<option>` en las dos listas de `index.html`.
+  - Para agregar otro lugar: añádelo en `puestos` de `src/modulos/lugares/lugares.config.js` y como `<option>` en las dos listas de `public/partes/generador/`.
   - También reconoce formas comunes, como "1er lugar", "2do", "3°" o "primero", y las escribe con su nombre correcto en el diploma.
   - Cualquier otro valor marca la fila con error.
   - Ojo: la columna **"Lugar"** es la ciudad y **"Lugar obtenido"** es el puesto.

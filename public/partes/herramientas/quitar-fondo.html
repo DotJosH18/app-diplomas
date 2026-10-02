@@ -1,0 +1,82 @@
+<!-- PARTE: HERRAMIENTA: quitar el fondo de un logo
+     Se pega en la página desde index.html (busca "@incluir partes/herramientas/quitar-fondo.html")
+     Estilos: css/4-herramientas/quitar-fondo.css
+     Lógica:  js/quitar-fondo.js -->
+<!-- ==================== HERRAMIENTA: QUITAR FONDO DE LOGOS ====================
+     Todo se hace en el navegador (js/quitar-fondo.js): la imagen no se envía al servidor. -->
+<section id="herramienta-fondo" class="herramienta oculto" data-herramienta="quitar-fondo">
+  <div class="herramienta__intro">
+    <h2 class="herramienta__titulo"><span class="titulo-icono"><span class="icono" aria-hidden="true">wand_stars</span></span>Quitar el fondo de un logo</h2>
+    <p class="nota">Sube una imagen PNG o JPG. El fondo se detecta solo y los bordes quedan suaves, sin halo. Si algo no queda bien, ajusta la tolerancia o haz clic sobre el resultado para borrar o recuperar una zona. La imagen no sale de tu computadora.</p>
+  </div>
+
+  <!-- Paso 1: elegir la imagen -->
+  <div id="zona-fondo" class="zona" tabindex="0">
+    <input id="input-fondo" type="file" accept=".png,.jpg,.jpeg,.webp" hidden />
+    <span class="zona__icono"><span class="icono" aria-hidden="true">image</span></span>
+    <p class="zona__titulo">Arrastra aquí la imagen del logo</p>
+    <p class="zona__texto">o <u>haz clic para buscarla</u> · PNG, JPG o WEBP</p>
+    <button type="button" id="boton-logo-unicah-fondo" class="boton boton--chico boton--suave">
+      <img class="boton__logo" src="img/logo-qr.png" alt="" /><span class="boton__texto">Probar con el logo de UNICAH</span>
+    </button>
+  </div>
+
+  <!-- Paso 2: ajustar y descargar -->
+  <div id="editor-fondo" class="editor-fondo oculto">
+    <div class="editor-fondo__imagenes">
+      <figure class="editor-fondo__cuadro">
+        <figcaption>Original <small>haz clic sobre el fondo para elegir su color</small></figcaption>
+        <canvas id="lienzo-original" class="editor-fondo__lienzo editor-fondo__lienzo--original"></canvas>
+      </figure>
+      <figure class="editor-fondo__cuadro">
+        <figcaption>Sin fondo <small>clic en una zona para borrarla o recuperarla</small></figcaption>
+        <!-- data-vista cambia el fondo de esta caja (cuadritos, blanco, negro, azul): ver estilos.css -->
+        <div id="caja-resultado" class="transparente vista-fondo" data-vista="cuadritos">
+          <canvas id="lienzo-resultado" class="editor-fondo__lienzo editor-fondo__lienzo--retocable"></canvas>
+        </div>
+        <div class="vistas-fondo" role="radiogroup" aria-label="Ver el resultado sobre">
+          <span class="vistas-fondo__texto">Ver sobre:</span>
+          <label class="vista-fondo-opcion" title="Cuadritos (transparente)"><input type="radio" name="vista-fondo" value="cuadritos" checked /><span class="vista-fondo-opcion__muestra vista-fondo-opcion__muestra--cuadritos"></span></label>
+          <label class="vista-fondo-opcion" title="Blanco"><input type="radio" name="vista-fondo" value="blanco" /><span class="vista-fondo-opcion__muestra vista-fondo-opcion__muestra--blanco"></span></label>
+          <label class="vista-fondo-opcion" title="Negro"><input type="radio" name="vista-fondo" value="negro" /><span class="vista-fondo-opcion__muestra vista-fondo-opcion__muestra--negro"></span></label>
+          <label class="vista-fondo-opcion" title="Azul UNICAH"><input type="radio" name="vista-fondo" value="azul" /><span class="vista-fondo-opcion__muestra vista-fondo-opcion__muestra--azul"></span></label>
+        </div>
+      </figure>
+    </div>
+
+    <div class="tarjeta editor-fondo__controles">
+      <p class="personalizar__etiqueta">Color del fondo</p>
+      <div class="fondo-detectado">
+        <span class="fondo-detectado__muestra" aria-hidden="true"></span>
+        <strong id="codigo-fondo">#FFFFFF</strong>
+        <small id="origen-fondo">detectado automáticamente</small>
+      </div>
+
+      <label class="control-deslizable">
+        <span>Tolerancia <strong id="valor-tolerancia">25</strong></span>
+        <input id="tolerancia-fondo" type="range" min="0" max="80" value="25" />
+      </label>
+      <p class="nota">Más alta = también quita colores parecidos al fondo (sombras, bordes difusos). Si se borra parte del logo, bájala.</p>
+
+      <label class="casilla"><input id="solo-exterior" type="checkbox" checked /><span>Quitar solo el fondo de afuera <small>(conserva los blancos dentro del logo)</small></span></label>
+      <label class="casilla"><input id="suavizar-bordes" type="checkbox" checked /> Suavizar los bordes</label>
+      <label class="casilla"><input id="recortar-sobrante" type="checkbox" checked /> Recortar el espacio vacío alrededor</label>
+
+      <p class="personalizar__etiqueta personalizar__etiqueta--separada">Retoques</p>
+      <p class="nota">¿Quedó blanco dentro de una letra o se borró algo de más? Haz clic sobre esa zona en <strong>Sin fondo</strong>: lo visible se borra y lo transparente se recupera.</p>
+      <div class="retoques-fondo">
+        <button type="button" id="boton-deshacer-retoque" class="boton boton--chico" disabled><span class="icono" aria-hidden="true">undo</span><span class="boton__texto">Deshacer clic</span></button>
+        <button type="button" id="boton-quitar-retoques" class="boton boton--chico"><span class="icono" aria-hidden="true">restart_alt</span><span class="boton__texto">Quitar retoques</span></button>
+      </div>
+
+      <div class="acciones">
+        <button type="button" id="boton-otra-imagen" class="boton"><span class="icono" aria-hidden="true">swap_horiz</span><span class="boton__texto">Otra imagen</span></button>
+        <button type="button" id="boton-usar-logo" class="boton"><span class="icono" aria-hidden="true">check_circle</span><span class="boton__texto">Usar como logo en los diplomas</span></button>
+        <button type="button" id="boton-descargar-png" class="boton boton--principal"><span class="icono" aria-hidden="true">download</span><span class="boton__texto">Descargar PNG</span></button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Mensajes (fuera del editor, para que también se vean antes de elegir imagen) -->
+  <p id="mensaje-fondo" class="mensaje"></p>
+</section>

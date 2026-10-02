@@ -1,0 +1,28 @@
+<!-- PARTE: QR · vista previa, aviso de lectura y descargas
+     Se pega en la página desde partes/herramientas/qr.html (busca "@incluir partes/herramientas/qr/vista.html")
+     Estilos: css/4-herramientas/qr.css
+     Lógica:  js/qr.js -->
+<!-- ===== Vista previa (se queda a la vista al bajar) ===== -->
+<aside class="estudio-qr__vista tarjeta" aria-label="Vista previa del QR">
+  <div id="qr-dibujo" class="estudio-qr__dibujo"></div>
+  <p id="qr-lectura" class="lectura-qr oculto"><span class="icono" aria-hidden="true">check_circle</span><span id="qr-lectura-texto"></span></p>
+  <p id="qr-estado" class="estudio-qr__estado" aria-live="polite">Escribe un link para ver tu QR</p>
+
+  <div class="descarga-qr">
+    <div class="segmentado" role="radiogroup" aria-label="Formato">
+      <label><input type="radio" name="qr-formato" value="png" checked /><span>PNG</span></label>
+      <label><input type="radio" name="qr-formato" value="svg" /><span>SVG</span></label>
+    </div>
+    <select id="qr-tamano-png" aria-label="Tamaño del PNG">
+      <option value="512">512 px · redes</option>
+      <option value="1024" selected>1024 px · documentos</option>
+      <option value="2048">2048 px · imprimir</option>
+    </select>
+  </div>
+  <p id="qr-ayuda-formato" class="nota estudio-qr__ayuda">PNG: una imagen para redes, WhatsApp o documentos.</p>
+  <div class="acciones estudio-qr__botones">
+    <button type="button" id="qr-copiar" class="boton"><span class="icono" aria-hidden="true">content_copy</span><span class="boton__texto">Copiar</span></button>
+    <button type="button" id="qr-descargar" class="boton boton--principal"><span class="icono" aria-hidden="true">download</span><span class="boton__texto">Descargar</span></button>
+  </div>
+  <p id="mensaje-qr" class="mensaje"></p>
+</aside>

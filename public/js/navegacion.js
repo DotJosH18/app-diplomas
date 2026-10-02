@@ -14,7 +14,7 @@
 //    - "Inicio" (o el logo) vuelve al menú.
 //    - "Placas ▾" abre una lista para cambiar a otro módulo directamente.
 //      La lista se arma copiando las tarjetas del menú: si agregas una
-//      tarjeta nueva en index.html, aparece aquí sola.
+//      tarjeta nueva en partes/menu.html, aparece aquí sola.
 //
 //  IMPORTA                                   DE               PARA
 //  mostrar, ocultar                          utilidades.js    cambiar de pantalla

@@ -1,0 +1,58 @@
+<!-- PARTE: QR · pestaña 1 "Contenido": qué guarda el QR
+     Se pega en la página desde partes/herramientas/qr.html (busca "@incluir partes/herramientas/qr/1-contenido.html")
+     Estilos: css/4-herramientas/qr.css
+     Lógica:  js/qr.js -->
+<!-- 1. CONTENIDO: qué guarda el QR -->
+<div class="panel-qr activo" data-panel-qr="contenido" role="tabpanel">
+  <p class="personalizar__etiqueta">¿Qué abrirá el QR?</p>
+  <div class="chips-qr tipos-qr" role="radiogroup" aria-label="Tipo de contenido">
+    <label class="chip-qr"><input type="radio" name="qr-tipo" value="link" checked /><span><span class="icono" aria-hidden="true">link</span>Link</span></label>
+    <label class="chip-qr"><input type="radio" name="qr-tipo" value="whatsapp" /><span><span class="icono" aria-hidden="true">chat</span>WhatsApp</span></label>
+    <label class="chip-qr"><input type="radio" name="qr-tipo" value="correo" /><span><span class="icono" aria-hidden="true">mail</span>Correo</span></label>
+    <label class="chip-qr"><input type="radio" name="qr-tipo" value="wifi" /><span><span class="icono" aria-hidden="true">wifi</span>Wi-Fi</span></label>
+    <label class="chip-qr"><input type="radio" name="qr-tipo" value="texto" /><span><span class="icono" aria-hidden="true">notes</span>Texto</span></label>
+  </div>
+
+  <div class="rejilla rejilla--una-columna campos-qr" data-tipo-qr="link">
+    <label>Link de la página
+      <span class="campo-icono"><span class="icono" aria-hidden="true">link</span>
+        <input id="qr-link" type="text" inputmode="url" autocomplete="off" maxlength="900" placeholder="https://www.unicah.edu" /></span>
+    </label>
+    <p class="nota">Si no escribes "https://", se agrega solo.</p>
+  </div>
+  <div class="rejilla rejilla--una-columna campos-qr oculto" data-tipo-qr="whatsapp">
+    <label>Número (con código de país)
+      <span class="campo-icono"><span class="icono" aria-hidden="true">call</span>
+        <input id="qr-wa-numero" type="tel" maxlength="20" placeholder="504 9999 9999" /></span>
+    </label>
+    <label>Mensaje (opcional)
+      <textarea id="qr-wa-mensaje" rows="3" maxlength="300" placeholder="Hola, quiero información sobre…"></textarea>
+    </label>
+  </div>
+  <div class="rejilla rejilla--una-columna campos-qr oculto" data-tipo-qr="correo">
+    <label>Correo
+      <span class="campo-icono"><span class="icono" aria-hidden="true">mail</span>
+        <input id="qr-correo" type="email" maxlength="120" placeholder="admisiones@unicah.edu" /></span>
+    </label>
+    <label>Asunto (opcional) <input id="qr-correo-asunto" maxlength="120" /></label>
+    <label>Mensaje (opcional) <textarea id="qr-correo-mensaje" rows="3" maxlength="300"></textarea></label>
+  </div>
+  <div class="rejilla rejilla--una-columna campos-qr oculto" data-tipo-qr="wifi">
+    <label>Nombre de la red
+      <span class="campo-icono"><span class="icono" aria-hidden="true">wifi</span>
+        <input id="qr-wifi-red" maxlength="60" placeholder="UNICAH-Estudiantes" /></span>
+    </label>
+    <label>Contraseña <input id="qr-wifi-clave" maxlength="60" /></label>
+    <label>Seguridad
+      <select id="qr-wifi-seguridad">
+        <option value="WPA" selected>WPA / WPA2 (la más común)</option>
+        <option value="WEP">WEP</option>
+        <option value="nopass">Sin contraseña</option>
+      </select>
+    </label>
+    <p class="nota">Al escanearlo, el celular se conecta a la red sin escribir la contraseña.</p>
+  </div>
+  <div class="rejilla rejilla--una-columna campos-qr oculto" data-tipo-qr="texto">
+    <label>Texto <textarea id="qr-texto" rows="4" maxlength="600" placeholder="Cualquier texto…"></textarea></label>
+  </div>
+</div>

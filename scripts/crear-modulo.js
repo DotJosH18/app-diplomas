@@ -8,7 +8,7 @@
 //    1. Copia src/modulos/_plantilla a src/modulos/<id>, cambiando
 //       __ID__ y __TITULO__ por los tuyos.
 //    2. Lo registra en src/modulos/index.js (import + lista).
-//    3. Agrega su tarjeta en el menú de public/index.html.
+//    3. Agrega su tarjeta en el menú (public/partes/menu.html).
 //    4. Le muestra los mismos campos que Reconocimientos (nombre,
 //       descripción, campus, lugar, fecha y firmas): agrega su id a
 //       cada data-modulos que tenga "reconocimientos".
@@ -23,7 +23,9 @@ import path from 'node:path';
 const raiz = path.join(import.meta.dirname, '..');
 const carpetaModulos = path.join(raiz, 'src', 'modulos');
 const archivoIndice = path.join(carpetaModulos, 'index.js');
-const archivoHTML = path.join(raiz, 'public', 'index.html');
+const archivoMenu = path.join(raiz, 'public', 'partes', 'menu.html');
+// Las partes del generador: aquí están los campos con data-modulos="…"
+const carpetaGenerador = path.join(raiz, 'public', 'partes', 'generador');
 
 // ---------- 0. Revisar lo que se escribió ----------
 const id = process.argv[2];
@@ -66,34 +68,41 @@ indice = insertarAntesDe(indice, '  // ← NUEVOS MÓDULOS: se agregan arriba de
 fs.writeFileSync(archivoIndice, indice);
 console.log('✔ Registrado en src/modulos/index.js');
 
-// ---------- 3 y 4. Tarjeta del menú y campos en public/index.html ----------
-let html = fs.readFileSync(archivoHTML, 'utf8');
+// ---------- 3. Tarjeta del menú (public/partes/menu.html) ----------
+let menu = fs.readFileSync(archivoMenu, 'utf8');
 const tarjeta =
-`        <button class="opcion" data-modulo="${id}" data-titulo="${titulo}">
-          <span class="opcion__marco">
-            <img class="opcion__imagen" src="img/muestra-${id}.png" alt="Ejemplo de ${titulo}" />
-            <span class="opcion__insignia"><span class="icono" aria-hidden="true">description</span></span>
-          </span>
-          <span class="opcion__titulo">${titulo}</span>
-          <span class="opcion__texto">Escribe aquí para qué sirve este documento.</span>
-          <span class="opcion__campos"><span class="icono" aria-hidden="true">edit_note</span><span class="opcion__pide">Pide: nombre y descripción</span></span>
-          <span class="opcion__abrir">Abrir <span class="icono" aria-hidden="true">arrow_forward</span></span>
-        </button>
+`    <button class="opcion" data-modulo="${id}" data-titulo="${titulo}">
+      <span class="opcion__marco">
+        <img class="opcion__imagen" src="img/muestra-${id}.png" alt="Ejemplo de ${titulo}" />
+        <span class="opcion__insignia"><span class="icono" aria-hidden="true">description</span></span>
+      </span>
+      <span class="opcion__titulo">${titulo}</span>
+      <span class="opcion__texto">Escribe aquí para qué sirve este documento.</span>
+      <span class="opcion__campos"><span class="icono" aria-hidden="true">edit_note</span><span class="opcion__pide">Pide: nombre y descripción</span></span>
+      <span class="opcion__abrir">Abrir <span class="icono" aria-hidden="true">arrow_forward</span></span>
+    </button>
 
 `;
-html = insertarAntesDe(html, '        <!-- ← NUEVOS MÓDULOS: las tarjetas nuevas van arriba de esta línea', tarjeta);
+menu = insertarAntesDe(menu, '    <!-- ← NUEVOS MÓDULOS: las tarjetas nuevas van arriba de esta línea', tarjeta);
+fs.writeFileSync(archivoMenu, menu);
+console.log('✔ Tarjeta agregada al menú (public/partes/menu.html)');
 
+// ---------- 4. Campos del formulario (public/partes/generador/*.html) ----------
+// Los mismos campos que Reconocimientos: donde dice data-modulos="… reconocimientos …" se agrega el id
 let camposAgregados = 0;
-html = html.replace(/data-modulos="([^"]*)"/g, function (atributo, lista) {
-  const modulos = lista.split(' ');
-  if (modulos.includes('reconocimientos') && !modulos.includes(id)) {
-    camposAgregados++;
-    return `data-modulos="${lista} ${id}"`;
-  }
-  return atributo;
-});
-fs.writeFileSync(archivoHTML, html);
-console.log(`✔ Tarjeta agregada al menú y ${camposAgregados} campos activados (los mismos de Reconocimientos)`);
+for (const nombre of fs.readdirSync(carpetaGenerador)) {
+  const archivo = path.join(carpetaGenerador, nombre);
+  const html = fs.readFileSync(archivo, 'utf8').replace(/data-modulos="([^"]*)"/g, function (atributo, lista) {
+    const modulos = lista.split(' ');
+    if (modulos.includes('reconocimientos') && !modulos.includes(id)) {
+      camposAgregados++;
+      return `data-modulos="${lista} ${id}"`;
+    }
+    return atributo;
+  });
+  fs.writeFileSync(archivo, html);
+}
+console.log(`✔ ${camposAgregados} campos activados (los mismos de Reconocimientos)`);
 
 // ---------- 5. Imagen provisional de la tarjeta ----------
 const imagenNueva = path.join(raiz, 'public', 'img', `muestra-${id}.png`);
@@ -107,8 +116,8 @@ Para personalizarlo:
   • Textos, límites, columnas del Excel ....... src/modulos/${id}/${id}.config.js
   • Qué datos pide ............................ src/modulos/${id}/${id}.schema.js
   • Cómo se dibuja ............................ src/modulos/${id}/${id}.pdf.js
-  • Descripción de la tarjeta del menú ........ public/index.html (busca data-modulo="${id}")
-  • Campos del formulario: agrega o quita "${id}" en los data-modulos de public/index.html
+  • Descripción de la tarjeta del menú ........ public/partes/menu.html (busca data-modulo="${id}")
+  • Campos del formulario: agrega o quita "${id}" en los data-modulos de public/partes/generador/
   • Icono de la tarjeta ....................... cambia "description" por otro de https://fonts.google.com/icons
   • Imagen de la tarjeta ...................... reemplaza public/img/muestra-${id}.png
 `);

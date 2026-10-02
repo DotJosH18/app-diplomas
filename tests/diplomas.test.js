@@ -13,6 +13,8 @@ import { fechaEnTexto, fechaDeHoy } from '../src/utils/fecha.js';
 import { rubricaDe } from '../src/modulos/placas/placas.pdf.js';
 import { lineasDelEncabezado } from '../src/utils/encabezado.js';
 import fs from 'node:fs';
+import path from 'node:path';
+import { armarPagina } from '../src/utils/armarPagina.js';
 
 // Se avisa que es una prueba ANTES de cargar la app (así no muestra
 // cada petición en la consola). Por eso app.js se importa aquí abajo.
@@ -593,7 +595,7 @@ test('placas acepta sus 3 colores y rechaza un color inválido', async () => {
 
 test('las marcas que usa "npm run crear-modulo" siguen en su lugar', () => {
   const indice = fs.readFileSync(new URL('../src/modulos/index.js', import.meta.url), 'utf8');
-  const html = fs.readFileSync(new URL('../public/index.html', import.meta.url), 'utf8');
+  const html = fs.readFileSync(new URL('../public/partes/menu.html', import.meta.url), 'utf8');
   assert.match(indice, /← NUEVOS MÓDULOS: sus import van arriba de esta línea/);
   assert.match(indice, /← NUEVOS MÓDULOS: se agregan arriba de esta línea/);
   assert.match(html, /← NUEVOS MÓDULOS: las tarjetas nuevas van arriba de esta línea/);
@@ -636,4 +638,68 @@ test('La librería del QR se sirve en /librerias/qrcode', async () => {
   const respuesta = await request(app).get('/librerias/qrcode/qrcode.mjs');
   assert.equal(respuesta.status, 200);
   assert.match(respuesta.headers['content-type'], /javascript/);
+});
+
+
+// ---------- Página armada por partes (public/partes/) ----------
+const carpetaPublica = path.join(import.meta.dirname, '..', 'public');
+
+test('"/" entrega la página completa: todas las partes pegadas, sin marcas @incluir', async () => {
+  const res = await request(app).get('/').expect(200).expect('Content-Type', /html/);
+  assert.doesNotMatch(res.text, /<!-- @incluir/); // ninguna marca quedó sin pegar
+  // Un elemento de cada parte
+  for (const id of ['navegacion', 'menu', 'herramienta-fondo', 'herramienta-qr', 'qr-dibujo', 'qr-link',
+    'qr-plantillas', 'qr-opciones-logo', 'qr-opciones-marco', 'personalizar', 'panel-individual', 'panel-excel',
+    'ventana-vista', 'manual', 'recorrido', 'bienvenida']) {
+    assert.match(res.text, new RegExp(`id="${id}"`), `falta id="${id}"`);
+  }
+  assert.match(res.text, /<footer class="pie">/);
+  const igual = await request(app).get('/index.html').expect(200);
+  assert.equal(igual.text, res.text);
+});
+
+test('la página armada no repite ningún id', async () => {
+  const html = await armarPagina(carpetaPublica, 'index.html');
+  const ids = [...html.matchAll(/\sid="([^"]+)"/g)].map((m) => m[1]);
+  const repetidos = ids.filter((id, i) => ids.indexOf(id) !== i);
+  assert.deepEqual(repetidos, []);
+});
+
+test('cada archivo de public/partes/ se usa una sola vez', async () => {
+  const usados = [];
+  function buscarMarcas(ruta) {
+    const texto = fs.readFileSync(path.join(carpetaPublica, ruta), 'utf8');
+    for (const marca of texto.matchAll(/<!-- @incluir (\S+) -->/g)) {
+      usados.push(marca[1]);
+      buscarMarcas(marca[1]);
+    }
+  }
+  buscarMarcas('index.html');
+  const archivos = fs.readdirSync(path.join(carpetaPublica, 'partes'), { recursive: true })
+    .filter((f) => f.endsWith('.html')).map((f) => 'partes/' + f.split(path.sep).join('/'));
+  assert.deepEqual([...usados].sort(), archivos.sort());
+});
+
+test('armarPagina pone la sangría de la marca y avisa si falta una parte', async () => {
+  const carpeta = fs.mkdtempSync(path.join(import.meta.dirname, 'tmp-'));
+  try {
+    fs.writeFileSync(path.join(carpeta, 'a.html'), '<main>\n  <!-- @incluir b.html -->\n</main>\n');
+    fs.writeFileSync(path.join(carpeta, 'b.html'), '<p>uno</p>\n\n<p>dos</p>\n');
+    assert.equal(await armarPagina(carpeta, 'a.html'), '<main>\n  <p>uno</p>\n\n  <p>dos</p>\n</main>\n');
+    fs.writeFileSync(path.join(carpeta, 'c.html'), '<!-- @incluir no-existe.html -->\n');
+    await assert.rejects(armarPagina(carpeta, 'c.html'));
+    fs.writeFileSync(path.join(carpeta, 'd.html'), '<!-- @incluir d.html -->\n');
+    await assert.rejects(armarPagina(carpeta, 'd.html'), /sí misma/);
+  } finally {
+    fs.rmSync(carpeta, { recursive: true, force: true });
+  }
+});
+
+test('estilos.css carga cada archivo de las capas, y todos existen', () => {
+  const carpetaCSS = path.join(carpetaPublica, 'css');
+  const indice = fs.readFileSync(path.join(carpetaCSS, 'estilos.css'), 'utf8');
+  const importados = [...indice.matchAll(/@import url\('([^']+)'\)/g)].map((m) => m[1]);
+  const archivos = fs.readdirSync(carpetaCSS, { recursive: true })
+    .filter((f) => f.endsWith('.css') && f !== 'estilos.css').map((f) => f.split(path.sep).join('/'));
+  assert.deepEqual([...importados].sort(), archivos.sort());
 });

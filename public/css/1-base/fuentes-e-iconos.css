@@ -1,0 +1,21 @@
+/* Capa: 1-base  ·  HTML: toda la página  ·  se carga desde css/estilos.css */
+/* =========================================================
+   1. FUENTES E ICONOS
+   ========================================================= */
+@font-face { font-family: Montserrat; font-weight: 400; src: url(../../fonts/Montserrat-Regular.woff) format('woff'); }
+@font-face { font-family: Montserrat; font-weight: 500 700; src: url(../../fonts/Montserrat-Bold.woff) format('woff'); }
+@font-face { font-family: Montserrat; font-weight: 800; src: url(../../fonts/Montserrat-ExtraBold.woff) format('woff'); }
+@font-face { font-family: 'Great Vibes'; src: url(../../fonts/GreatVibes-Regular.woff) format('woff'); }
+
+/* Iconos de Google (Material Symbols). La fuente se carga en index.html (iconos/rounded.css).
+   Uso:  <span class="icono" aria-hidden="true">download</span>
+   El texto es el nombre del icono: búscalos en https://fonts.google.com/icons */
+.icono {
+  font-family: 'Material Symbols Rounded';
+  font-weight: normal; font-style: normal; font-size: 20px; line-height: 1;
+  display: inline-block; width: 1em; height: 1em; overflow: hidden; flex-shrink: 0;
+  letter-spacing: normal; text-transform: none; white-space: nowrap; direction: ltr;
+  font-feature-settings: 'liga'; -webkit-font-smoothing: antialiased; user-select: none;
+}
+/* Icono dentro de un texto (por ejemplo, en el manual) */
+.icono--en-texto { font-size: 1.15em; vertical-align: -0.2em; }

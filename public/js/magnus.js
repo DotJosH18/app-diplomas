@@ -5,10 +5,9 @@
 //     Magnus aparece como un avatar redondo con su cara
 //     (img/magnus/cara.png). Encima va otra imagen con los ojos
 //     cerrados que se muestra un instante para parpadear.
-//     En index.html basta con poner  <span class="magnus"></span>
+//     En el HTML basta con poner  <span class="magnus"></span>
 //     y dibujarMagnus() lo llena. Las animaciones (parpadear, mover
-//     la cabeza, asentir al hablar…) están en estilos.css, en
-//     "MAGNUS ANIMADO". img/magnus/completo.png es la imagen original.
+//     la cabeza, asentir al hablar…) están en css/5-ayuda/magnus.css. img/magnus/completo.png es la imagen original.
 //
 //  2. INTERACTÚA CON LA PÁGINA
 //  Durante el recorrido guiado, Magnus (la mascota de UNICAH) no solo

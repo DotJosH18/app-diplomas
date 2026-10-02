@@ -1,0 +1,178 @@
+/* Capa: 4-herramientas  ·  HTML: partes/herramientas/qr.html, partes/herramientas/qr/vista.html, partes/herramientas/qr/1-contenido.html, partes/herramientas/qr/2-diseno.html, partes/herramientas/qr/3-logo.html, partes/herramientas/qr/4-marco.html  ·  se carga desde css/estilos.css */
+/* ---------- Herramienta: generar código QR ----------
+   A la izquierda la vista previa (fija al bajar) con las descargas;
+   a la derecha las opciones en 4 pestañas. */
+.estudio-qr { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr); gap: 20px; align-items: start; }
+.estudio-qr__vista {
+  position: sticky; top: 16px; display: flex; flex-direction: column; align-items: center; gap: 10px; padding: 24px;
+}
+.estudio-qr__dibujo {
+  display: grid; place-items: center; width: min(100%, 380px); aspect-ratio: 1; padding: 18px;
+  border-radius: 20px; background: var(--superficie-2);
+}
+.estudio-qr__dibujo.transparente { padding: 18px; }   /* cuadritos detrás: se ve lo transparente */
+.estudio-qr__dibujo:empty::before {   /* sin contenido todavía: un QR gris de adorno */
+  content: 'qr_code_2'; font-family: 'Material Symbols Rounded'; font-size: 140px; line-height: 1;
+  font-feature-settings: 'liga'; color: var(--borde-fuerte);
+}
+.estudio-qr__dibujo img {
+  display: block; max-width: 100%; max-height: 100%; border-radius: 10px;
+  box-shadow: 0 8px 24px #1418501f; animation: aparecer .2s ease-out;
+}
+.estudio-qr__estado { margin: 0; max-width: 100%; font-size: .82rem; color: var(--gris); text-align: center; overflow-wrap: anywhere; }
+
+/* "Fácil de leer" (verde) o un aviso (amarillo) */
+.lectura-qr {
+  display: inline-flex; align-items: flex-start; gap: 6px; margin: 0; padding: 6px 12px; border-radius: 12px;
+  background: var(--verde-suave); color: var(--verde); font-size: .8rem; font-weight: 600; max-width: 100%;
+}
+.lectura-qr .icono { font-size: 18px; }
+.lectura-qr--cuidado { background: #FFF4DB; color: var(--naranja); }
+
+/* Formato y tamaño + botones */
+.descarga-qr { display: flex; gap: 10px; width: 100%; margin-top: 6px; }
+.descarga-qr select {
+  flex: 1; min-width: 0; height: 40px; padding: 0 36px 0 12px; border: 1px solid var(--borde-fuerte); border-radius: 999px;
+  font: inherit; font-size: .85rem; background: var(--superficie); cursor: pointer; appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='%236B6F85' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat; background-position: right 10px center;
+}
+.descarga-qr select:disabled { opacity: .45; cursor: not-allowed; }
+.estudio-qr__ayuda { margin: 0; width: 100%; }
+.estudio-qr__botones { display: grid; grid-template-columns: 1fr 1.6fr; width: 100%; margin-top: 4px; }
+.estudio-qr__vista .mensaje { width: 100%; margin-top: 0; }
+
+/* Control segmentado (PNG | SVG) */
+.segmentado { display: inline-flex; flex-shrink: 0; border: 1px solid var(--borde-fuerte); border-radius: 999px; overflow: hidden; }
+.segmentado label { cursor: pointer; }
+.segmentado label + label { border-left: 1px solid var(--borde-fuerte); }
+.segmentado input { position: absolute; opacity: 0; pointer-events: none; }
+.segmentado span { display: grid; place-items: center; height: 38px; padding: 0 16px; font-size: .82rem; font-weight: 700; color: var(--texto-suave); }
+.segmentado input:checked + span { background: var(--azul); color: var(--blanco); }
+.segmentado input:focus-visible + span { box-shadow: inset var(--foco); }
+
+/* Las 4 pestañas del panel de opciones */
+.estudio-qr__panel { padding: 0; overflow: hidden; }
+.pestanas-qr { display: flex; border-bottom: 1px solid var(--borde); background: #FAFBFD; }
+.pestana-qr {
+  flex: 1; display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 12px 6px 10px;
+  border: 0; border-bottom: 3px solid transparent; background: none; cursor: pointer;
+  font: 600 .8rem Montserrat, sans-serif; color: var(--gris); transition: color .15s, background .15s;
+}
+.pestana-qr .icono { font-size: 22px; }
+.pestana-qr:hover { background: #F2F3FA; color: var(--texto-suave); }
+.pestana-qr.activa { color: var(--azul); border-bottom-color: var(--azul); background: var(--superficie); }
+.pestana-qr:focus-visible { outline: none; box-shadow: inset var(--foco); }
+.panel-qr { display: none; padding: 8px 20px 22px; }
+.panel-qr.activo { display: block; animation: aparecer .2s ease-out; }
+
+/* Chips para elegir una opción (tipo de contenido, logo, marco…) */
+.chips-qr { display: flex; flex-wrap: wrap; gap: 8px; }
+.chip-qr { cursor: pointer; }
+.chip-qr input { position: absolute; opacity: 0; pointer-events: none; }
+.chip-qr > span {
+  display: inline-flex; align-items: center; gap: 6px; height: 36px; padding: 0 14px 0 10px;
+  border: 1px solid var(--borde-fuerte); border-radius: 999px; font-size: .82rem; font-weight: 600; color: var(--texto-suave);
+  transition: background .15s, border-color .15s, color .15s;
+}
+.chip-qr > span .icono { font-size: 18px; }
+.chip-qr__logo { width: 22px; height: 22px; object-fit: contain; }
+.chip-qr:hover > span { background: #F2F3FA; }
+.chip-qr input:checked + span { background: var(--azul-suave); border-color: var(--azul-suave); color: var(--azul); }
+.chip-qr input:focus-visible + span { box-shadow: var(--foco); }
+.chip-qr.magnus-encima > span { background: var(--azul-suave); color: var(--azul); }
+.campos-qr { margin-top: 16px; }
+.campos-qr .nota { margin: -6px 0 0; }
+
+/* Campo con un icono adentro (link, número, correo…) */
+.campo-icono {
+  display: flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 14px;
+  border: 1px solid var(--borde-fuerte); border-radius: var(--radio-chico); background: var(--superficie);
+  transition: border-color .15s, box-shadow .15s;
+}
+.campo-icono:focus-within { border-color: var(--azul); box-shadow: 0 0 0 3px #141B5B26; }
+.campo-icono .icono { color: var(--gris); font-size: 20px; }
+.rejilla .campo-icono input { flex: 1; min-width: 0; min-height: 42px; padding: 0; border: 0; box-shadow: none; background: none; }
+.rejilla .campo-icono input:focus { box-shadow: none; }
+
+/* Plantillas: una mini vista de cada diseño */
+.plantillas-qr { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; }
+.plantilla-qr {
+  display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 8px 6px; cursor: pointer;
+  border: 1px solid var(--borde); border-radius: 14px; background: var(--superficie); font: 600 .72rem Montserrat, sans-serif; color: var(--texto-suave);
+  transition: border-color .15s, box-shadow .15s, transform .15s;
+}
+.plantilla-qr img { width: 100%; max-width: 64px; aspect-ratio: 1; object-fit: contain; }
+.plantilla-qr:hover { transform: translateY(-2px); box-shadow: var(--sombra); }
+.plantilla-qr.activo { border-color: var(--azul); box-shadow: 0 0 0 1px var(--azul); color: var(--azul); }
+.plantilla-qr:focus-visible { outline: none; box-shadow: var(--foco); }
+.plantilla-qr.magnus-encima { border-color: var(--azul); transform: translateY(-2px); }
+
+/* Formas (puntos y esquinas): todas las tarjetitas miden lo mismo, con el
+   dibujo centrado (en el color actual) y su nombre debajo.
+   Al pasar el mouse se iluminan (y el QR grande muestra cómo quedaría);
+   la elegida lleva fondo azul suave, borde azul y una ✓ adentro. */
+.formas-qr { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; }
+.formas-qr--fila { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.forma-qr { position: relative; display: block; cursor: pointer; }
+.forma-qr input { position: absolute; opacity: 0; pointer-events: none; }
+.forma-qr > span {
+  position: relative; display: grid; grid-template-rows: 1fr auto; justify-items: center; align-items: center;
+  gap: 6px; height: 84px; padding: 12px 6px 9px;
+  border: 1px solid var(--borde); border-radius: 14px; background: var(--superficie);
+  font-size: .72rem; font-weight: 600; color: var(--texto-suave); text-align: center; line-height: 1.1;
+  transition: border-color .15s, background .15s, box-shadow .15s;
+}
+.forma-qr__dibujo { display: block; width: 32px; height: 32px; transition: transform .2s ease; }
+.forma-qr__dibujo[data-dibujo="recuadro"] { width: 46px; height: 46px; border-radius: 6px; overflow: hidden; }
+.forma-qr__dibujo svg { display: block; width: 100%; height: 100%; }
+.forma-qr:hover > span { border-color: var(--borde-fuerte); background: #F8F9FD; }
+.forma-qr:hover .forma-qr__dibujo { transform: scale(1.1); }
+.forma-qr input:checked + span {
+  border-color: var(--azul); background: var(--azul-suave); color: var(--azul); box-shadow: inset 0 0 0 1px var(--azul);
+}
+.forma-qr input:checked + span .forma-qr__dibujo { animation: forma-elegida .3s ease-out; }
+.forma-qr input:checked + span::after {   /* la ✓ de la opción elegida, dentro de la tarjeta */
+  content: 'check'; position: absolute; top: 6px; right: 6px; display: grid; place-items: center;
+  width: 16px; height: 16px; border-radius: 50%; background: var(--azul); color: var(--blanco);
+  font-family: 'Material Symbols Rounded'; font-size: 12px; line-height: 1; font-feature-settings: 'liga';
+}
+.forma-qr input:focus-visible + span { box-shadow: var(--foco); }
+@keyframes forma-elegida { 50% { transform: scale(1.18); } }
+
+/* Esquinas: dos filas alineadas (Marco y Centro), con el nombre a la izquierda */
+.esquinas-qr { display: grid; grid-template-columns: 64px minmax(0, 1fr); gap: 8px 12px; align-items: center; }
+.esquinas-qr__nombre { font-size: .8rem; font-weight: 700; color: var(--texto-suave); }
+.etiqueta-ayuda { font-size: .7rem; font-weight: 500; letter-spacing: 0; text-transform: none; color: var(--gris); }
+
+/* El QR grande mientras se "prueba" una opción (mouse encima): borde dorado */
+.estudio-qr__dibujo.probando { box-shadow: inset 0 0 0 2px var(--dorado-claro); }
+
+/* Colores: un círculo (el selector de color) + nombre + código */
+.colores-qr { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.fila-color-qr {
+  display: flex; align-items: center; gap: 10px; padding: 8px 10px; cursor: pointer;
+  border: 1px solid var(--borde); border-radius: 12px; transition: border-color .15s, opacity .15s;
+}
+.fila-color-qr:hover { border-color: var(--borde-fuerte); }
+.muestra-color-qr {
+  position: relative; width: 32px; height: 32px; flex-shrink: 0; border-radius: 50%;
+  background: var(--color-elegido); box-shadow: inset 0 0 0 1px #00000026, 0 0 0 2px var(--superficie), 0 0 0 3px var(--borde);
+}
+.muestra-color-qr input { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; }
+.fila-color-qr__texto { display: flex; flex-direction: column; line-height: 1.25; min-width: 0; }
+.fila-color-qr__texto strong { font-size: .82rem; }
+.fila-color-qr__texto small { font: 600 .72rem ui-monospace, monospace; color: var(--gris); }
+.casilla--fila { margin: 0; padding: 8px 10px; border: 1px dashed var(--borde-fuerte); border-radius: 12px; align-items: center; }
+#qr-restablecer { margin-top: 14px; margin-left: -10px; }
+/* Opciones que no aplican ahora (ej. el 2º color sin degradado): apagadas */
+.apagado { opacity: .4; pointer-events: none; }
+
+.logo-propio-qr {
+  display: flex; align-items: center; gap: 8px; margin-top: 10px; padding: 6px 6px 6px 12px;
+  border-radius: 12px; background: var(--superficie-2); font-size: .85rem;
+}
+.logo-propio-qr > .icono { color: var(--azul); }
+.logo-propio-qr__nombre { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+#qr-opciones-marco { margin-top: 16px; }
+.rejilla .fila-color-qr { flex-direction: row; font-weight: 400; }

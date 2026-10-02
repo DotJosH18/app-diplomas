@@ -2,7 +2,7 @@
 //  ayuda.js — MANUAL DE USUARIO Y RECORRIDO GUIADO
 //
 //  1. Manual: la ventana que abre el botón "? Ayuda" (su texto está
-//     en index.html, en <dialog id="manual">).
+//     en public/partes/ayuda/manual.html).
 //  2. Recorrido guiado: oscurece la página, resalta un elemento real
 //     y Magnus (la mascota de UNICAH) lo explica en un globo, paso a paso.
 //     Magnus aparece como un avatar con su cara (img/magnus/, ver magnus.js).
@@ -464,7 +464,7 @@ function mostrarPaso() {
     elemento.scrollIntoView({ block: 'center', behavior: 'instant' });
   }
 
-  // Al cambiar de paso, Magnus "vuela" hasta el elemento (ver estilos.css)…
+  // Al cambiar de paso, Magnus "vuela" hasta el elemento (ver css/5-ayuda/recorrido.css)…
   quitarDemostraciones(); // (deja como estaba lo que mostró en el paso anterior)
   capaRecorrido.classList.add('cambiando-paso');
   clearTimeout(temporizadorAnimacion);
@@ -481,7 +481,7 @@ function mostrarPaso() {
   }
 }
 
-const DURACION_DEL_VUELO = 650; // milisegundos (igual que en estilos.css)
+const DURACION_DEL_VUELO = 650; // milisegundos (igual que en css/5-ayuda/recorrido.css)
 let temporizadorDemostracion = null;
 
 // ---------- Magnus "habla": el texto aparece poco a poco ----------

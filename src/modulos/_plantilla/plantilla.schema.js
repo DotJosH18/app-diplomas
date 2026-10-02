@@ -3,8 +3,8 @@
 //  Qué datos pide este módulo y cómo se revisan.
 //
 //  Para pedir otro dato: agrégalo aquí (con su límite en la config),
-//  dibújalo en __ID__.pdf.js y agrega su campo en index.html con
-//  data-modulos="… __ID__" (en "Uno a la vez" y en "Datos comunes").
+//  dibújalo en __ID__.pdf.js y agrega su campo con data-modulos="… __ID__"
+//  en public/partes/generador/: uno-a-la-vez.html y desde-excel.html ("Datos comunes").
 //
 //  IMPORTA                                  DE                              PARA
 //  camposComunes, textoObligatorio, …       ../../schemas/campos.schema.js  piezas de validación compartidas

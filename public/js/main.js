@@ -31,7 +31,7 @@
 //    main ──► qr ──► qr-dibujo, utilidades
 //
 //  La regla de la página: JavaScript solo agrega o quita clases y pone
-//  variables CSS (--color-elegido…). Los estilos están en css/estilos.css.
+//  variables CSS (--color-elegido…). Los estilos están en css/ (índice: css/estilos.css).
 // =============================================================
 import { iniciarNavegacion } from './navegacion.js';
 import { iniciarPersonalizar } from './personalizar.js';

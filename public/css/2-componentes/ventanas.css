@@ -1,0 +1,74 @@
+/* Capa: 2-componentes  ·  HTML: partes/generador/ventana-vista.html, partes/ayuda/manual.html  ·  se carga desde css/estilos.css */
+/* =========================================================
+   11. VENTANAS (vista previa de las filas y manual de usuario)
+   <dialog> es una ventana del navegador que se abre encima de la página.
+   ========================================================= */
+.ventana, .manual {
+  padding: 0; border: 0; border-radius: 24px; color: var(--texto);
+  box-shadow: 0 24px 64px #0b0f2f59;
+}
+.ventana::backdrop, .manual::backdrop { background: #0b0f2f8c; backdrop-filter: blur(2px); }
+
+/* Vista previa de una fila del Excel */
+.ventana { width: min(1100px, 94vw); height: 92vh; overflow: hidden; }
+.ventana[open] { display: flex; flex-direction: column; }   /* solo cuando está abierta */
+.ventana__barra {
+  display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap;
+  padding: 12px 16px 12px 22px; background: var(--superficie); border-bottom: 1px solid var(--borde);
+}
+.ventana__titulo { font-size: .95rem; color: var(--azul); }
+.ventana__botones { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.ventana__contador { font-size: .8rem; color: var(--gris); min-width: 56px; text-align: center; }
+.ventana__documento { position: relative; flex: 1; background: var(--superficie-2); }
+.ventana__documento iframe { position: relative; z-index: 1; width: 100%; height: 100%; border: 0; }
+.ventana__cargando { position: absolute; inset: 0; z-index: 0; display: grid; place-items: center; margin: 0; color: var(--gris); }
+
+/* Manual de usuario */
+.manual { width: min(760px, 94vw); max-height: 88vh; }
+.manual[open] { display: flex; flex-direction: column; }
+.manual__barra {
+  display: flex; justify-content: space-between; align-items: center; gap: 12px;
+  padding: 16px 16px 16px 24px; border-bottom: 1px solid var(--borde);
+}
+.manual__titulo { display: flex; align-items: center; gap: 10px; margin: 0; font-size: 1.15rem; color: var(--azul); }
+.manual__titulo .icono { color: var(--dorado); font-size: 24px; }
+/* Botón de solo icono (la X para cerrar) */
+.manual__cerrar {
+  display: grid; place-items: center; width: 40px; height: 40px; border-radius: 50%; border: 0; cursor: pointer;
+  background: none; color: var(--texto-suave); transition: background .15s;
+}
+.manual__cerrar:hover { background: var(--superficie-2); }
+.manual__cerrar:focus-visible { outline: none; box-shadow: var(--foco); }
+.manual__contenido { overflow-y: auto; padding: 20px 24px 24px; }
+.manual__inicio {
+  display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap;
+  padding: 16px 18px; border-radius: 16px;
+  background: linear-gradient(120deg, var(--azul-suave), var(--dorado-suave));
+}
+.manual__inicio strong { color: var(--azul); }
+.manual__magnus { width: 52px; flex-shrink: 0; }
+.manual__inicio-texto { flex: 1; min-width: 200px; }
+.manual__inicio p { margin: 2px 0 0; font-size: .85rem; color: var(--texto-suave); }
+.manual__resumen { margin: 18px 0 12px; font-size: .9rem; }
+.manual__seccion { border: 1px solid var(--borde); border-radius: 16px; background: var(--superficie); transition: box-shadow .15s; }
+.manual__seccion[open] { box-shadow: var(--sombra); }
+.manual__seccion + .manual__seccion { margin-top: 8px; }
+.manual__seccion summary {
+  display: flex; align-items: center; gap: 12px; padding: 12px 14px; cursor: pointer;
+  font-weight: 700; color: var(--azul); list-style: none; border-radius: 16px;
+}
+.manual__seccion summary::-webkit-details-marker { display: none; }
+.manual__seccion summary:hover { background: #F8F9FC; }
+.manual__seccion summary .flecha-desplegable { margin-left: auto; }
+.manual__numero {
+  display: grid; place-items: center; width: 30px; height: 30px; flex-shrink: 0; border-radius: 50%;
+  background: var(--azul-suave); color: var(--azul); font-size: .8rem;
+}
+.manual__numero .icono { font-size: 18px; }
+.manual__seccion ol, .manual__seccion ul { margin: 0; padding: 0 16px 6px 58px; font-size: .88rem; line-height: 1.6; }
+.manual__seccion li + li { margin-top: 4px; }
+.manual__seccion > .boton { margin: 8px 0 16px 56px; }
+.manual__seccion code { background: var(--superficie-2); padding: 1px 6px; border-radius: 6px; }
+.manual__preguntas { margin: 0; padding: 0 16px 14px 58px; font-size: .88rem; }
+.manual__preguntas dt { font-weight: 700; margin-top: 10px; }
+.manual__preguntas dd { margin: 2px 0 0; color: var(--gris); }

@@ -265,7 +265,7 @@ function agregarBotonVer(tr, posicion) {
   const boton = document.createElement('button');
   boton.type = 'button';
   boton.classList.add('boton', 'boton--chico', 'boton--suave');
-  // Icono de ojo + "Ver" (igual que los botones escritos en index.html)
+  // Icono de ojo + "Ver" (igual que los botones escritos en el HTML)
   const icono = document.createElement('span');
   icono.classList.add('icono');
   icono.setAttribute('aria-hidden', 'true');

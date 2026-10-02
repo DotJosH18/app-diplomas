@@ -1,0 +1,20 @@
+<!-- PARTE: QR · pestaña 4 "Marco": marco con texto
+     Se pega en la página desde partes/herramientas/qr.html (busca "@incluir partes/herramientas/qr/4-marco.html")
+     Estilos: css/4-herramientas/qr.css
+     Lógica:  js/qr.js, js/qr-dibujo.js -->
+<!-- 4. MARCO con texto -->
+<div class="panel-qr" data-panel-qr="marco" role="tabpanel">
+  <p class="personalizar__etiqueta">Marco</p>
+  <div class="chips-qr" role="radiogroup" aria-label="Marco">
+    <label class="chip-qr"><input type="radio" name="qr-marco" value="ninguno" data-ajuste="marco" /><span><span class="icono" aria-hidden="true">block</span>Sin marco</span></label>
+    <label class="chip-qr"><input type="radio" name="qr-marco" value="abajo" data-ajuste="marco" /><span><span class="icono" aria-hidden="true">call_to_action</span>Con texto abajo</span></label>
+  </div>
+  <div id="qr-opciones-marco" class="rejilla rejilla--una-columna">
+    <label>Texto del marco <input type="text" maxlength="18" data-ajuste="textoMarco" /></label>
+    <label class="fila-color-qr">
+      <span class="muestra-color-qr"><input type="color" data-ajuste="colorMarco" aria-label="Color del marco" /></span>
+      <span class="fila-color-qr__texto"><strong>Color del marco</strong><small data-codigo="colorMarco"></small></span>
+    </label>
+  </div>
+  <p class="nota">El marco con un texto como "ESCANÉAME" ayuda a que la gente sepa que puede escanearlo.</p>
+</div>

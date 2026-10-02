@@ -1,0 +1,79 @@
+/* Capa: 6-ajustes  ·  HTML: todas las partes (celulares y tablets)  ·  se carga desde css/estilos.css */
+/* =========================================================
+   15. PANTALLAS PEQUEÑAS
+   ========================================================= */
+@media (max-width: 1000px) {
+  .menu__opciones { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 800px) {
+  .personalizar__contenido { grid-template-columns: 1fr; }
+  .estudio-qr { grid-template-columns: minmax(0, 1fr); }
+  .estudio-qr__vista { position: relative; top: 0; padding: 18px; }
+  /* La miniatura sigue a la vista al bajar (sticky), pero más pequeña y
+     POR ENCIMA de los controles (z-index), para que los círculos de color
+     no se dibujen sobre ella. */
+  .mini-vista {
+    top: 8px; z-index: 5; height: 210px; margin-top: 4px;
+    box-shadow: 0 0 0 8px var(--superficie), 0 8px 18px #14185026;
+  }
+  .mini-vista__estado {
+    bottom: 6px; left: 12px; right: 12px; padding: 4px 10px; border-radius: 999px;
+    background: #ffffffe6; width: fit-content; margin: auto;
+  }
+  .mini-vista__estado:empty { display: none; }
+  .editor-fondo, .editor-fondo__imagenes { grid-template-columns: 1fr; }
+  .individual { grid-template-columns: 1fr; }
+  .vista { position: relative; top: 0; }
+}
+@media (max-width: 560px) {
+  .plantillas-qr { grid-template-columns: repeat(3, 1fr); }
+  .formas-qr { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .formas-qr--fila { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .forma-qr > span { height: 76px; font-size: .68rem; }
+  .estudio-qr__dibujo { width: min(100%, 260px); padding: 12px; }
+  .colores-qr { grid-template-columns: 1fr; }
+  .esquinas-qr { grid-template-columns: 1fr; gap: 6px; }
+  .esquinas-qr__nombre:not(:first-child) { margin-top: 8px; }
+  .pestana-qr { font-size: .72rem; }
+  .panel-qr { padding: 8px 14px 18px; }
+  .recorrido__magnus { width: 52px; }
+  .recorrido__burbuja { padding: 14px 14px 12px; }
+  .recorrido__burbuja::before { top: 20px; }
+  .recorrido__globo { gap: 8px; }
+  .bienvenida__magnus { width: 48px; }
+  .contenedor { padding-top: 20px; }
+  .menu__titulo { font-size: 1.6rem; }
+  .paletas { grid-template-columns: repeat(2, 1fr); }
+  .menu__opciones { grid-template-columns: 1fr; }
+  /* En celular el tipo elegido va en una sola línea (así el encabezado no cambia de alto) */
+  .encabezado__acciones { width: 100%; }
+  .navegacion { flex: 1; min-width: 0; }
+  .boton-ayuda { width: 44px; padding: 0; justify-content: center; }
+  .boton-ayuda__texto { display: none; }   /* en celular, solo el icono */
+  .encabezado__fila { padding-top: 8px; min-height: 64px; }
+  .pestanas { width: 100%; }
+  .pestana { flex: 1; justify-content: center; padding: 0 8px; gap: 6px; font-size: .8rem; }
+  .manual__contenido { padding: 16px; }
+  .manual__seccion ol, .manual__seccion ul, .manual__preguntas { padding-left: 24px; }
+  .manual__seccion > .boton { margin-left: 20px; }
+  .herramienta__intro .nota { margin-left: 0; }
+  .selector-modulo { flex: 1; min-width: 0; }
+  .selector-modulo__actual { justify-content: space-between; }
+  .selector-modulo__lista { width: calc(100vw - 32px); right: -52px; }
+  .marca__logo { width: 52px; height: 52px; }
+  .encabezado__titulo { font-size: 2.3rem; }
+  .pie__derechos { text-align: left; }
+  #nombre-modulo-actual { min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .rejilla { grid-template-columns: 1fr; }
+  .resumen { gap: 8px; }
+  .dato { flex-direction: column; align-items: flex-start; gap: 8px; padding: 12px; }
+  .dato__icono { width: 36px; height: 36px; }
+  .dato div span { font-size: 1.35rem; }
+  .ventana__barra { padding: 10px 12px; }
+}
+
+/* Si la persona pidió menos animaciones en su sistema, Magnus se queda quieto */
+@media (prefers-reduced-motion: reduce) {
+  .recorrido.tocando .recorrido__toque, .recorrido.tocando .recorrido__foco,
+  .magnus__cara, .magnus__ojos-cerrados { animation: none !important; }
+}

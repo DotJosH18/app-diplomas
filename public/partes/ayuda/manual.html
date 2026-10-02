@@ -1,0 +1,120 @@
+<!-- PARTE: AYUDA · manual de usuario (ventana)
+     Se pega en la página desde index.html (busca "@incluir partes/ayuda/manual.html")
+     Estilos: css/2-componentes/ventanas.css
+     Lógica:  js/ayuda.js -->
+<!-- ==================== MANUAL DE USUARIO ====================
+     Se abre con el botón "? Ayuda" del encabezado (ayuda.js).
+     Cada sección es un <details> (se abre al hacer clic en su título).
+     Los botones data-recorrido="…" inician el recorrido guiado de esa parte:
+     sus pasos están en ayuda.js, en la lista RECORRIDOS. -->
+<dialog id="manual" class="manual" aria-labelledby="manual-titulo">
+  <div class="manual__barra">
+    <h2 id="manual-titulo" class="manual__titulo"><span class="icono" aria-hidden="true">menu_book</span>Manual de usuario</h2>
+    <button type="button" id="manual-cerrar" class="manual__cerrar" aria-label="Cerrar"><span class="icono" aria-hidden="true">close</span></button>
+  </div>
+
+  <div class="manual__contenido">
+    <!-- Lo más rápido: el recorrido de la pantalla en la que estás -->
+    <div class="manual__inicio">
+      <span class="magnus manual__magnus" aria-hidden="true"></span>
+      <div class="manual__inicio-texto">
+        <strong>¿Primera vez? Magnus te guía</strong>
+        <p>Te muestra, paso a paso y sobre la misma página, dónde está cada cosa. Toma 1 minuto.</p>
+      </div>
+      <button type="button" class="boton boton--principal" data-recorrido="automatico"><span class="icono" aria-hidden="true">play_arrow</span><span class="boton__texto">Recorrido de esta pantalla</span></button>
+    </div>
+
+    <p class="manual__resumen">Con esta aplicación generas <b>diplomas, placas, agradecimientos y comunicados en PDF</b>: uno a la vez, o muchos de una sola vez desde un Excel.</p>
+
+    <details class="manual__seccion" name="manual" open>
+      <summary><span class="manual__numero">1</span> Elegir qué vas a generar<span class="icono flecha-desplegable" aria-hidden="true">keyboard_arrow_down</span></summary>
+      <ol>
+        <li>En el inicio hay dos lengüetas: <b>Documentos</b> (una tarjeta por cada tipo, con los datos que pide) y <b>Herramientas</b> (quitar fondo de logos y generar QR).</li>
+        <li>Haz clic en la que necesites.</li>
+        <li>Para cambiar de tipo después, usa el nombre que aparece arriba a la derecha (por ejemplo <b>Placas</b> <span class="icono icono--en-texto" aria-hidden="true">keyboard_arrow_down</span>), o <b>Inicio</b> <span class="icono icono--en-texto" aria-hidden="true">home</span> para volver a las tarjetas.</li>
+      </ol>
+      <button type="button" class="boton boton--chico" data-recorrido="menu"><span class="icono" aria-hidden="true">visibility</span><span class="boton__texto">Muéstrame dónde</span></button>
+    </details>
+
+    <details class="manual__seccion" name="manual">
+      <summary><span class="manual__numero">2</span> Hacer uno a la vez<span class="icono flecha-desplegable" aria-hidden="true">keyboard_arrow_down</span></summary>
+      <ol>
+        <li>Abre la pestaña <b>Uno a la vez</b> (es la que aparece primero).</li>
+        <li>Llena los datos. Los que tienen <b>*</b> son obligatorios. Si dejas un campo vacío, se usa lo que se ve en gris (por ejemplo, la <b>fecha de hoy</b>).</li>
+        <li>Pulsa <b>Vista previa</b> para ver cómo queda.</li>
+        <li>Pulsa <b>Descargar PDF</b>. En algunos tipos también puedes <b>Descargar imagen (PNG)</b>, útil para redes sociales o WhatsApp.</li>
+      </ol>
+      <button type="button" class="boton boton--chico" data-recorrido="individual"><span class="icono" aria-hidden="true">visibility</span><span class="boton__texto">Muéstrame dónde</span></button>
+    </details>
+
+    <details class="manual__seccion" name="manual">
+      <summary><span class="manual__numero">3</span> Hacer muchos desde Excel<span class="icono flecha-desplegable" aria-hidden="true">keyboard_arrow_down</span></summary>
+      <ol>
+        <li>Abre la pestaña <b>Desde Excel</b>.</li>
+        <li>Si no tienes un Excel listo, pulsa <b>Descargar Excel modelo</b>: ya trae las columnas correctas.</li>
+        <li>Llena una fila por persona y <b>arrastra el archivo</b> a la página (o haz clic para buscarlo).</li>
+        <li>Revisa la tabla: las filas <b>Listas</b> se van a generar; las que tienen errores dicen qué falta. Con <b>Ver</b> miras cada una antes.</li>
+        <li>En <b>Datos comunes</b> puedes poner lo que se repite (lugar, fecha, firmas) para no escribirlo en cada fila.</li>
+        <li>Pulsa <b>Generar PDF</b>: se descarga un solo archivo con una página por fila.</li>
+      </ol>
+      <button type="button" class="boton boton--chico" data-recorrido="excel"><span class="icono" aria-hidden="true">visibility</span><span class="boton__texto">Muéstrame dónde</span></button>
+    </details>
+
+    <details class="manual__seccion" name="manual">
+      <summary><span class="manual__numero">4</span> Cambiar colores, textos y logo<span class="icono flecha-desplegable" aria-hidden="true">keyboard_arrow_down</span></summary>
+      <ol>
+        <li>Abre <b>Personalizar diseño</b> (arriba del formulario). Todo es opcional.</li>
+        <li>A la izquierda ves una <b>miniatura</b> que cambia mientras eliges.</li>
+        <li>Elige una <b>combinación lista</b> de colores, o ajusta cada color por separado.</li>
+        <li>Puedes cambiar el <b>encabezado</b> (las líneas de arriba), el <b>título</b> y subir otro <b>logo</b>.</li>
+        <li>Lo que elijas sirve para "Uno a la vez" y para el Excel. <b>Restablecer</b> vuelve a lo original.</li>
+      </ol>
+      <button type="button" class="boton boton--chico" data-recorrido="personalizar"><span class="icono" aria-hidden="true">visibility</span><span class="boton__texto">Muéstrame dónde</span></button>
+    </details>
+
+    <details class="manual__seccion" name="manual">
+      <summary><span class="manual__numero">5</span> Quitar el fondo de un logo<span class="icono flecha-desplegable" aria-hidden="true">keyboard_arrow_down</span></summary>
+      <ol>
+        <li>En el inicio, abre la lengüeta <b>Herramientas</b> y elige <b>Quitar fondo de logos</b>.</li>
+        <li>Sube la imagen: el fondo se quita solo y los bordes quedan sin halo. Si se borró de más o de menos, mueve la <b>tolerancia</b>.</li>
+        <li>¿Quedó blanco dentro de una letra? Haz clic sobre esa zona en <b>Sin fondo</b> para borrarla (o sobre lo transparente para recuperarlo). Con <b>Ver sobre</b> revisas el resultado en negro o azul.</li>
+        <li>Pulsa <b>Usar como logo en los diplomas</b>, o <b>Descargar PNG</b> para guardarlo.</li>
+      </ol>
+      <button type="button" class="boton boton--chico" data-recorrido="herramienta"><span class="icono" aria-hidden="true">visibility</span><span class="boton__texto">Muéstrame dónde</span></button>
+    </details>
+
+    <details class="manual__seccion" name="manual">
+      <summary><span class="manual__numero">6</span> Crear un código QR<span class="icono flecha-desplegable" aria-hidden="true">keyboard_arrow_down</span></summary>
+      <ol>
+        <li>En el inicio, abre la lengüeta <b>Herramientas</b> y elige <b>Generar código QR</b>.</li>
+        <li>En <b>Contenido</b> elige qué abrirá: un link, WhatsApp, un correo, la clave del Wi-Fi o un texto. El QR aparece al momento.</li>
+        <li>En <b>Diseño</b> elige una plantilla o cambia la forma de los puntos, las esquinas y los colores. En <b>Logo</b>, el del centro y su recuadro; en <b>Marco</b>, un texto como "ESCANÉAME".</li>
+        <li>Fíjate en el aviso debajo del QR: <b>verde</b> = se leerá fácil; <b>amarillo</b> = te dice qué mejorar.</li>
+        <li>Elige <b>PNG</b> (redes, documentos) o <b>SVG</b> (imprenta) y pulsa <b>Descargar</b>, o <b>Copiar</b> para pegarlo directo.</li>
+        <li>Antes de imprimirlo, <b>pruébalo con la cámara de tu celular</b>.</li>
+      </ol>
+      <button type="button" class="boton boton--chico" data-recorrido="qr"><span class="icono" aria-hidden="true">visibility</span><span class="boton__texto">Muéstrame dónde</span></button>
+    </details>
+    <details class="manual__seccion" name="manual">
+      <summary><span class="manual__numero"><span class="icono" aria-hidden="true">lightbulb</span></span> Consejos<span class="icono flecha-desplegable" aria-hidden="true">keyboard_arrow_down</span></summary>
+      <ul>
+        <li>Escribe <code>**así**</code> para poner un texto en <b>negrita</b>.</li>
+        <li>Pulsa <b>Enter</b> para empezar otro párrafo (en el Excel: <b>Alt + Enter</b> dentro de la celda).</li>
+        <li>Si un texto no cabe en el documento, la página te avisa: acórtalo o usa menos párrafos.</li>
+        <li>El contador debajo de cada texto largo te dice cuántas letras te quedan.</li>
+      </ul>
+    </details>
+
+    <details class="manual__seccion" name="manual">
+      <summary><span class="manual__numero">?</span> Preguntas frecuentes<span class="icono flecha-desplegable" aria-hidden="true">keyboard_arrow_down</span></summary>
+      <dl class="manual__preguntas">
+        <dt>La página tarda en abrir la primera vez.</dt>
+        <dd>Es normal: si nadie la usa por un rato, el servidor gratuito se "duerme" y tarda cerca de un minuto en despertar.</dd>
+        <dt>Una fila del Excel sale con error.</dt>
+        <dd>La tabla dice qué falta en esa fila. Corrige el Excel y vuelve a subirlo, o completa el dato en "Datos comunes". Las demás filas se generan igual.</dd>
+        <dt>¿Se guardan mis datos o mi logo?</dt>
+        <dd>No. Los documentos se generan y se descargan al momento; no quedan guardados en el servidor.</dd>
+      </dl>
+    </details>
+  </div>
+</dialog>

@@ -1,0 +1,38 @@
+<!-- PARTE: HERRAMIENTA: generar código QR (la pantalla; cada pestaña está en partes/herramientas/qr/)
+     Se pega en la página desde index.html (busca "@incluir partes/herramientas/qr.html")
+     Estilos: css/4-herramientas/qr.css
+     Lógica:  js/qr.js, js/qr-dibujo.js -->
+<!-- ==================== HERRAMIENTA: GENERAR CÓDIGO QR ====================
+     Todo se hace en el navegador: el contenido y el logo no se envían al servidor.
+       js/qr.js         los controles de esta pantalla
+       js/qr-dibujo.js  arma el dibujo del QR (SVG) según el diseño elegido
+     Los controles con data-ajuste="…" cambian esa parte del diseño
+     (el nombre es el mismo que en DISENO_INICIAL de qr-dibujo.js). -->
+<section id="herramienta-qr" class="herramienta oculto" data-herramienta="qr">
+  <div class="herramienta__intro">
+    <h2 class="herramienta__titulo"><span class="titulo-icono"><span class="icono" aria-hidden="true">qr_code_2</span></span>Generar un código QR</h2>
+    <p class="nota">Elige qué guardará el QR, dale tu estilo y descárgalo. Todo se ve al momento.</p>
+  </div>
+
+  <div class="estudio-qr">
+    <!-- @incluir partes/herramientas/qr/vista.html -->
+
+    <!-- ===== Opciones, en 4 pestañas ===== -->
+    <div class="estudio-qr__panel tarjeta">
+      <div id="qr-pestanas" class="pestanas-qr" role="tablist">
+        <button type="button" class="pestana-qr activa" data-panel-qr="contenido" role="tab"><span class="icono" aria-hidden="true">link</span><span>Contenido</span></button>
+        <button type="button" class="pestana-qr" data-panel-qr="diseno" role="tab"><span class="icono" aria-hidden="true">palette</span><span>Diseño</span></button>
+        <button type="button" class="pestana-qr" data-panel-qr="logo" role="tab"><span class="icono" aria-hidden="true">image</span><span>Logo</span></button>
+        <button type="button" class="pestana-qr" data-panel-qr="marco" role="tab"><span class="icono" aria-hidden="true">crop_free</span><span>Marco</span></button>
+      </div>
+
+      <!-- @incluir partes/herramientas/qr/1-contenido.html -->
+
+      <!-- @incluir partes/herramientas/qr/2-diseno.html -->
+
+      <!-- @incluir partes/herramientas/qr/3-logo.html -->
+
+      <!-- @incluir partes/herramientas/qr/4-marco.html -->
+    </div>
+  </div>
+</section>

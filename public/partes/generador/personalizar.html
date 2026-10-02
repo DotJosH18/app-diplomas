@@ -1,0 +1,205 @@
+<!-- PARTE: GENERADOR · Personalizar diseño (colores, encabezado y logo)
+     Se pega en la página desde index.html (busca "@incluir partes/generador/personalizar.html")
+     Estilos: css/3-pantallas/personalizar.css, css/3-pantallas/elegir-color.css
+     Lógica:  js/personalizar.js -->
+<!-- ==================== PERSONALIZAR (opcional) ====================
+     Sirve para las dos pestañas. Si no se toca, se usa el diseño por defecto. -->
+<details id="personalizar" class="personalizar">
+  <summary class="personalizar__resumen">
+    <span class="titulo-icono"><span class="icono" aria-hidden="true">palette</span></span>
+    <span class="personalizar__textos">
+      <strong>Personalizar diseño</strong>
+      <small data-modulos="reconocimientos lugares">Opcional · color de la banda, encabezado y logo</small>
+      <small data-modulos="placas">Opcional · colores, encabezado y logo de fondo</small>
+      <small data-modulos="duelo">Opcional · título y logo</small>
+      <small data-modulos="agradecimientos">Opcional · logo</small>
+    </span>
+    <span class="muestra-mini" aria-hidden="true" data-modulos="reconocimientos lugares placas"></span>
+    <span class="icono flecha-desplegable" aria-hidden="true">keyboard_arrow_down</span>
+  </summary>
+
+  <div class="personalizar__contenido">
+    <!-- Vista previa en miniatura: la dibuja el servidor (el documento real,
+         con datos de ejemplo o lo que ya escribiste en "Uno a la vez").
+         Se actualiza sola al cambiar el color, los textos o el logo. -->
+    <figure class="mini-vista">
+      <img id="mini-vista-imagen" class="mini-vista__imagen" alt="Vista previa del diseño" />
+      <figcaption id="mini-vista-estado" class="mini-vista__estado">Generando vista previa…</figcaption>
+    </figure>
+
+    <div class="personalizar__controles">
+      <!-- ===== Colores =====
+           1. Combinaciones listas (solo Placas): un clic cambia los 3 colores.
+              data-color-banda / data-color-secundario / data-color-nombre son los colores
+              de cada combinación (se llaman igual que los selectores de abajo).
+           2. Un selector por cada color (<details>: se abre al hacer clic en su fila;
+              name="colores" hace que solo haya uno abierto a la vez).
+              data-campo = nombre con que se envía al servidor, data-por-defecto = el color
+              de siempre, data-aviso-claro="si" = avisar si es muy claro (donde pinta texto).
+              Para agregar un color rápido, copia un botón: su círculo se pinta solo. -->
+      <div class="colores-panel" data-modulos="reconocimientos lugares placas">
+        <div data-modulos="placas">
+          <p class="personalizar__etiqueta">Combinaciones listas</p>
+          <div class="paletas">
+          <button type="button" class="paleta" data-nombre="Clásico UNICAH" data-color-banda="#141B5B" data-color-secundario="#E9B82F" data-color-nombre="#9A7A16">
+            <span class="paleta__franjas" aria-hidden="true"><span></span><span></span><span></span></span>
+            <span class="paleta__nombre">Clásico UNICAH</span>
+          </button>
+          <button type="button" class="paleta" data-nombre="Vino y oro" data-color-banda="#7A1428" data-color-secundario="#C9A227" data-color-nombre="#7A1428">
+            <span class="paleta__franjas" aria-hidden="true"><span></span><span></span><span></span></span>
+            <span class="paleta__nombre">Vino y oro</span>
+          </button>
+          <button type="button" class="paleta" data-nombre="Verde y plata" data-color-banda="#1F5E3B" data-color-secundario="#B8BCC6" data-color-nombre="#1F5E3B">
+            <span class="paleta__franjas" aria-hidden="true"><span></span><span></span><span></span></span>
+            <span class="paleta__nombre">Verde y plata</span>
+          </button>
+          <button type="button" class="paleta" data-nombre="Azul y plata" data-color-banda="#0F4C81" data-color-secundario="#B8BCC6" data-color-nombre="#0F4C81">
+            <span class="paleta__franjas" aria-hidden="true"><span></span><span></span><span></span></span>
+            <span class="paleta__nombre">Azul y plata</span>
+          </button>
+          <button type="button" class="paleta" data-nombre="Negro y oro" data-color-banda="#222222" data-color-secundario="#C9A227" data-color-nombre="#9A7A16">
+            <span class="paleta__franjas" aria-hidden="true"><span></span><span></span><span></span></span>
+            <span class="paleta__nombre">Negro y oro</span>
+          </button>
+          <button type="button" class="paleta" data-nombre="Morado y oro" data-color-banda="#5B2A86" data-color-secundario="#E9B82F" data-color-nombre="#5B2A86">
+            <span class="paleta__franjas" aria-hidden="true"><span></span><span></span><span></span></span>
+            <span class="paleta__nombre">Morado y oro</span>
+          </button>
+          </div>
+          <p class="personalizar__etiqueta">O ajusta cada color</p>
+        </div>
+        <p class="personalizar__etiqueta" data-modulos="reconocimientos lugares">Color</p>
+
+        <details class="selector-color" name="colores" data-modulos="reconocimientos lugares placas" data-campo="colorBanda" data-por-defecto="#141B5B" data-aviso-claro="si">
+          <summary class="selector-color__fila">
+            <span class="selector-color__muestra" aria-hidden="true"></span>
+            <span class="selector-color__textos">
+              <small class="selector-color__para" data-modulos="reconocimientos lugares">Color de la banda</small>
+              <small class="selector-color__para" data-modulos="placas">Cinta principal y campus</small>
+              <span><strong class="color-elegido__nombre"></strong> <small class="color-elegido__detalle"></small></span>
+            </span>
+            <span class="selector-color__codigo"></span>
+            <span class="icono flecha-desplegable" aria-hidden="true">keyboard_arrow_down</span>
+          </summary>
+          <div class="selector-color__cuerpo">
+            <div class="colores">
+            <button type="button" class="color" data-color="#141B5B" data-nombre="Azul UNICAH" title="Azul UNICAH" aria-label="Azul UNICAH"></button>
+            <button type="button" class="color" data-color="#7A1428" data-nombre="Vino" title="Vino" aria-label="Vino"></button>
+            <button type="button" class="color" data-color="#0F4C81" data-nombre="Azul rey" title="Azul rey" aria-label="Azul rey"></button>
+            <button type="button" class="color" data-color="#1F5E3B" data-nombre="Verde" title="Verde" aria-label="Verde"></button>
+            <button type="button" class="color" data-color="#5B2A86" data-nombre="Morado" title="Morado" aria-label="Morado"></button>
+            <button type="button" class="color" data-color="#8C7418" data-nombre="Dorado" title="Dorado" aria-label="Dorado"></button>
+            <button type="button" class="color" data-color="#222222" data-nombre="Negro" title="Negro" aria-label="Negro"></button>
+              <label class="color color--libre" title="Otro color">
+                <input type="color" class="selector-color__libre" aria-label="Elegir otro color" />
+              </label>
+            </div>
+            <label class="color-codigo">Código
+              <input class="color-elegido__input" maxlength="7" spellcheck="false" />
+            </label>
+            <p class="nota nota--aviso color-elegido__aviso oculto">Este color es muy claro: el texto podría no leerse bien.</p>
+          </div>
+        </details>
+        <details class="selector-color" name="colores" data-modulos="placas" data-campo="colorSecundario" data-por-defecto="#E9B82F">
+          <summary class="selector-color__fila">
+            <span class="selector-color__muestra" aria-hidden="true"></span>
+            <span class="selector-color__textos">
+              <small class="selector-color__para">Cinta secundaria, marco y adornos</small>
+              <span><strong class="color-elegido__nombre"></strong> <small class="color-elegido__detalle"></small></span>
+            </span>
+            <span class="selector-color__codigo"></span>
+            <span class="icono flecha-desplegable" aria-hidden="true">keyboard_arrow_down</span>
+          </summary>
+          <div class="selector-color__cuerpo">
+            <div class="colores">
+            <button type="button" class="color" data-color="#E9B82F" data-nombre="Dorado" title="Dorado" aria-label="Dorado"></button>
+            <button type="button" class="color" data-color="#C9A227" data-nombre="Oro viejo" title="Oro viejo" aria-label="Oro viejo"></button>
+            <button type="button" class="color" data-color="#B8BCC6" data-nombre="Plata" title="Plata" aria-label="Plata"></button>
+            <button type="button" class="color" data-color="#B87333" data-nombre="Bronce" title="Bronce" aria-label="Bronce"></button>
+            <button type="button" class="color" data-color="#C0392B" data-nombre="Rojo" title="Rojo" aria-label="Rojo"></button>
+            <button type="button" class="color" data-color="#5DADE2" data-nombre="Celeste" title="Celeste" aria-label="Celeste"></button>
+            <button type="button" class="color" data-color="#141B5B" data-nombre="Azul UNICAH" title="Azul UNICAH" aria-label="Azul UNICAH"></button>
+              <label class="color color--libre" title="Otro color">
+                <input type="color" class="selector-color__libre" aria-label="Elegir otro color" />
+              </label>
+            </div>
+            <label class="color-codigo">Código
+              <input class="color-elegido__input" maxlength="7" spellcheck="false" />
+            </label>
+            <p class="nota nota--aviso color-elegido__aviso oculto">Este color es muy claro: el texto podría no leerse bien.</p>
+          </div>
+        </details>
+        <details class="selector-color" name="colores" data-modulos="placas" data-campo="colorNombre" data-por-defecto="#9A7A16" data-aviso-claro="si">
+          <summary class="selector-color__fila">
+            <span class="selector-color__muestra" aria-hidden="true"></span>
+            <span class="selector-color__textos">
+              <small class="selector-color__para">Nombre y firmas</small>
+              <span><strong class="color-elegido__nombre"></strong> <small class="color-elegido__detalle"></small></span>
+            </span>
+            <span class="selector-color__codigo"></span>
+            <span class="icono flecha-desplegable" aria-hidden="true">keyboard_arrow_down</span>
+          </summary>
+          <div class="selector-color__cuerpo">
+            <div class="colores">
+            <button type="button" class="color" data-color="#9A7A16" data-nombre="Dorado oscuro" title="Dorado oscuro" aria-label="Dorado oscuro"></button>
+            <button type="button" class="color" data-color="#141B5B" data-nombre="Azul UNICAH" title="Azul UNICAH" aria-label="Azul UNICAH"></button>
+            <button type="button" class="color" data-color="#1B1D2A" data-nombre="Negro" title="Negro" aria-label="Negro"></button>
+            <button type="button" class="color" data-color="#7A1428" data-nombre="Vino" title="Vino" aria-label="Vino"></button>
+            <button type="button" class="color" data-color="#1F5E3B" data-nombre="Verde" title="Verde" aria-label="Verde"></button>
+            <button type="button" class="color" data-color="#0F4C81" data-nombre="Azul rey" title="Azul rey" aria-label="Azul rey"></button>
+            <button type="button" class="color" data-color="#5B2A86" data-nombre="Morado" title="Morado" aria-label="Morado"></button>
+            <button type="button" class="color" data-color="#6B4E16" data-nombre="Bronce oscuro" title="Bronce oscuro" aria-label="Bronce oscuro"></button>
+              <label class="color color--libre" title="Otro color">
+                <input type="color" class="selector-color__libre" aria-label="Elegir otro color" />
+              </label>
+            </div>
+            <label class="color-codigo">Código
+              <input class="color-elegido__input" maxlength="7" spellcheck="false" />
+            </label>
+            <p class="nota nota--aviso color-elegido__aviso oculto">Este color es muy claro: el texto podría no leerse bien.</p>
+          </div>
+        </details>
+      </div>
+
+      <!-- Encabezado: las 2 líneas de arriba del diploma -->
+      <div data-modulos="reconocimientos lugares placas">
+        <p class="personalizar__etiqueta">Encabezado</p>
+        <!-- Cada línea tiene su casilla "En blanco": si se marca, esa línea no
+             aparece en el documento (personalizar.js envía encabezado1EnBlanco=si) -->
+        <div class="campos-encabezado">
+          <div class="linea-encabezado">
+            <input id="input-encabezado1" class="campo-personalizar" maxlength="45"
+              placeholder="UNIVERSIDAD CATÓLICA DE HONDURAS" aria-label="Línea 1 del encabezado" />
+            <label class="casilla-blanco"><input type="checkbox" id="blanco-encabezado1" /><span>En blanco</span></label>
+          </div>
+          <div class="linea-encabezado">
+            <input id="input-encabezado2" class="campo-personalizar" maxlength="45"
+              placeholder="NUESTRA SEÑORA REINA DE LA PAZ" aria-label="Línea 2 del encabezado" />
+            <label class="casilla-blanco"><input type="checkbox" id="blanco-encabezado2" /><span>En blanco</span></label>
+          </div>
+        </div>
+        <p class="nota">Si dejas una línea vacía, se usa el texto de siempre. Marca <b>En blanco</b> para que esa línea no aparezca. Se escribe en mayúsculas.</p>
+      </div>
+
+      <!-- Título (solo el comunicado de duelo) -->
+      <div data-modulos="duelo">
+        <p class="personalizar__etiqueta">Título</p>
+        <input id="input-titulo" class="campo-personalizar" maxlength="24" placeholder="COMUNICADO" />
+        <p class="nota">Ej. NOTA DE DUELO. Se escribe en mayúsculas; si es largo, se achica para caber.</p>
+      </div>
+
+      <!-- Logo -->
+      <p class="personalizar__etiqueta">Logo</p>
+      <div class="carga-logo">
+        <input id="input-logo" type="file" accept=".png,.jpg,.jpeg" hidden />
+        <button type="button" id="boton-logo" class="boton boton--chico"><span class="icono" aria-hidden="true">upload</span><span class="boton__texto">Subir logo</span></button>
+        <span id="nombre-logo" class="carga-logo__nombre">Logo de UNICAH (por defecto)</span>
+        <button type="button" id="boton-quitar-logo" class="boton boton--texto oculto"><span class="icono" aria-hidden="true">delete</span><span class="boton__texto">Quitar</span></button>
+      </div>
+      <p class="nota">PNG o JPG, máximo 2 MB. Un PNG con fondo transparente se ve mejor.</p>
+
+      <button type="button" id="boton-restablecer" class="boton boton--texto"><span class="icono" aria-hidden="true">restart_alt</span><span class="boton__texto">Restablecer diseño por defecto</span></button>
+      <p id="mensaje-personalizar" class="mensaje"></p>
+    </div>
+  </div>
+</details>

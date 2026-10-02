@@ -11,6 +11,7 @@
 //  rutasApi                          routes/index.js                     todas las rutas /api
 //  registrarPeticiones               middlewares/registro.middleware.js  mostrar cada petición en la consola
 //  rutaNoEncontrada, manejarErrores  middlewares/errores.middleware.js   responder 404 y los errores
+//  armarPagina                       utils/armarPagina.js                index.html con sus partes pegadas
 //
 //  EXPORTA        LO IMPORTAN             PARA
 //  app (default)  server.js               encender el servidor
@@ -21,6 +22,7 @@ import express from 'express';
 import registrarPeticiones from './middlewares/registro.middleware.js';
 import { rutaNoEncontrada, manejarErrores } from './middlewares/errores.middleware.js';
 import rutasApi from './routes/index.js';
+import { armarPagina } from './utils/armarPagina.js';
 
 const app = express();
 const carpetaPublica = path.join(import.meta.dirname, '..', 'public');
@@ -34,10 +36,23 @@ if (process.env.NODE_ENV !== 'test') {
   app.use(registrarPeticiones);          // muestra cada petición en la consola
 }
 app.use(express.json());                 // convierte el cuerpo JSON en req.body
+
+// La página principal: public/index.html con sus partes (public/partes/) ya pegadas.
+// Va ANTES de express.static para que "/" no entregue el index.html sin armar.
+app.get(['/', '/index.html'], async function (req, res, next) {
+  try {
+    const pagina = await armarPagina(carpetaPublica, 'index.html');
+    res.set('Cache-Control', 'no-cache');
+    res.type('html').send(pagina);
+  } catch (error) {
+    next(error);
+  }
+});
 // Sirve la página (carpeta public).
 // "no-cache": el navegador siempre pregunta si hay una versión nueva de los
 // archivos, así los cambios en HTML, CSS y JS se ven sin borrar la caché.
 app.use(express.static(carpetaPublica, {
+  index: false,                          // "/" lo responde la ruta de arriba
   setHeaders: function (res) {
     res.set('Cache-Control', 'no-cache');
   },

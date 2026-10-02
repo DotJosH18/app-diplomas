@@ -1,0 +1,101 @@
+<!-- PARTE: MENÚ: tarjetas de Documentos y Herramientas
+     Se pega en la página desde index.html (busca "@incluir partes/menu.html")
+     Estilos: css/3-pantallas/menu.css
+     Lógica:  js/navegacion.js -->
+<!-- ==================== MENÚ: ELEGIR EL TIPO DE DIPLOMA ==================== -->
+<!-- data-modulo es el id del módulo en el servidor; data-titulo es lo que se muestra arriba -->
+<section id="menu" class="menu">
+  <div class="menu__encabezado">
+    <p class="chip"><span class="icono" aria-hidden="true">auto_awesome</span>PDF e imagen · uno a la vez o desde Excel</p>
+    <h2 class="menu__titulo">¿Qué quieres crear hoy?</h2>
+    <p class="menu__subtitulo">Elige una tarjeta para empezar. Arriba cambias entre <b>Documentos</b> y <b>Herramientas</b>.</p>
+  </div>
+
+  <!-- Grupo 1: los documentos (cada tarjeta es un módulo del servidor) -->
+  <div class="menu__opciones" data-grupo="documentos" role="tabpanel" aria-labelledby="lengueta-documentos">
+    <button class="opcion" data-modulo="reconocimientos" data-titulo="Reconocimientos">
+      <span class="opcion__marco">
+        <img class="opcion__imagen" src="img/muestra-reconocimientos.png" alt="Ejemplo de reconocimiento" />
+        <span class="opcion__insignia"><span class="icono" aria-hidden="true">workspace_premium</span></span>
+      </span>
+      <span class="opcion__titulo">Reconocimientos</span>
+      <span class="opcion__texto">Reconocimiento académico a una persona, con su nombre y una descripción.</span>
+      <span class="opcion__campos"><span class="icono" aria-hidden="true">edit_note</span><span class="opcion__pide">Pide: nombre y descripción</span></span>
+      <span class="opcion__abrir">Abrir <span class="icono" aria-hidden="true">arrow_forward</span></span>
+    </button>
+
+    <button class="opcion" data-modulo="lugares" data-titulo="Lugares (1º al 7º)">
+      <span class="opcion__marco">
+        <img class="opcion__imagen" src="img/muestra-lugares.png" alt="Ejemplo de diploma de lugar" />
+        <span class="opcion__insignia"><span class="icono" aria-hidden="true">trophy</span></span>
+      </span>
+      <span class="opcion__titulo">Lugares (1º al 7º)</span>
+      <span class="opcion__texto">Diplomas del primer al séptimo lugar (o mención honorífica) de un concurso o evento. No llevan nombre.</span>
+      <span class="opcion__campos"><span class="icono" aria-hidden="true">edit_note</span><span class="opcion__pide">Pide: lugar obtenido, evento y descripción</span></span>
+      <span class="opcion__abrir">Abrir <span class="icono" aria-hidden="true">arrow_forward</span></span>
+    </button>
+
+    <button class="opcion" data-modulo="duelo" data-titulo="Comunicado de duelo">
+      <span class="opcion__marco">
+        <img class="opcion__imagen" src="img/muestra-duelo.png" alt="Ejemplo de comunicado de duelo" />
+        <span class="opcion__insignia"><span class="icono" aria-hidden="true">local_florist</span></span>
+      </span>
+      <span class="opcion__titulo">Comunicado de duelo</span>
+      <span class="opcion__texto">Comunicado vertical en blanco y negro para informar el fallecimiento de una persona.</span>
+      <span class="opcion__campos"><span class="icono" aria-hidden="true">edit_note</span><span class="opcion__pide">Pide: nombre (los tres puntos y el cierre ya vienen escritos)</span></span>
+      <span class="opcion__abrir">Abrir <span class="icono" aria-hidden="true">arrow_forward</span></span>
+    </button>
+
+    <button class="opcion" data-modulo="agradecimientos" data-titulo="Agradecimientos">
+      <span class="opcion__marco">
+        <img class="opcion__imagen" src="img/muestra-agradecimientos.png" alt="Ejemplo de diploma de agradecimiento" />
+        <span class="opcion__insignia"><span class="icono" aria-hidden="true">volunteer_activism</span></span>
+      </span>
+      <span class="opcion__titulo">Agradecimientos</span>
+      <span class="opcion__texto">Diploma vertical tamaño oficio, con fondo de pergamino y marco café.</span>
+      <span class="opcion__campos"><span class="icono" aria-hidden="true">edit_note</span><span class="opcion__pide">Pide: nombre y descripción</span></span>
+      <span class="opcion__abrir">Abrir <span class="icono" aria-hidden="true">arrow_forward</span></span>
+    </button>
+
+    <button class="opcion" data-modulo="placas" data-titulo="Placas">
+      <span class="opcion__marco">
+        <img class="opcion__imagen" src="img/muestra-placas.png" alt="Ejemplo de placa" />
+        <span class="opcion__insignia"><span class="icono" aria-hidden="true">military_tech</span></span>
+      </span>
+      <span class="opcion__titulo">Placas</span>
+      <span class="opcion__texto">Reconocimiento con cintas azul y dorada, marco dorado y el logo de fondo.</span>
+      <span class="opcion__campos"><span class="icono" aria-hidden="true">edit_note</span><span class="opcion__pide">Pide: nombre y descripción</span></span>
+      <span class="opcion__abrir">Abrir <span class="icono" aria-hidden="true">arrow_forward</span></span>
+    </button>
+
+    <!-- ← NUEVOS MÓDULOS: las tarjetas nuevas van arriba de esta línea
+         (npm run crear-modulo las agrega aquí; no borres esta marca) -->
+  </div>
+
+  <!-- Grupo 2: las herramientas (no son diplomas): data-herramienta en lugar de data-modulo -->
+  <div class="menu__opciones oculto" data-grupo="herramientas" role="tabpanel" aria-labelledby="lengueta-herramientas">
+    <button class="opcion opcion--herramienta" data-herramienta="quitar-fondo" data-titulo="Quitar fondo de logos">
+      <span class="opcion__marco">
+        <img class="opcion__imagen" src="img/muestra-quitar-fondo.png" alt="Ejemplo de logo sin fondo" />
+        <span class="opcion__insignia"><span class="icono" aria-hidden="true">wand_stars</span></span>
+        <span class="opcion__etiqueta">Herramienta</span>
+      </span>
+      <span class="opcion__titulo">Quitar fondo de logos</span>
+      <span class="opcion__texto">Deja un logo con fondo transparente (PNG) para usarlo en los diplomas.</span>
+      <span class="opcion__campos"><span class="icono" aria-hidden="true">edit_note</span><span class="opcion__pide">Pide: una imagen PNG o JPG</span></span>
+      <span class="opcion__abrir">Abrir <span class="icono" aria-hidden="true">arrow_forward</span></span>
+    </button>
+
+    <button class="opcion opcion--herramienta" data-herramienta="qr" data-titulo="Generar código QR">
+      <span class="opcion__marco">
+        <img class="opcion__imagen" src="img/muestra-qr.png" alt="Ejemplo de código QR con logo" />
+        <span class="opcion__insignia"><span class="icono" aria-hidden="true">qr_code_2</span></span>
+        <span class="opcion__etiqueta">Herramienta</span>
+      </span>
+      <span class="opcion__titulo">Generar código QR</span>
+      <span class="opcion__texto">Crea un QR para cualquier link, con el logo que quieras en el centro.</span>
+      <span class="opcion__campos"><span class="icono" aria-hidden="true">edit_note</span><span class="opcion__pide">Pide: un link (y un logo, si quieres)</span></span>
+      <span class="opcion__abrir">Abrir <span class="icono" aria-hidden="true">arrow_forward</span></span>
+    </button>
+  </div>
+</section>

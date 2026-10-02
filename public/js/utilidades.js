@@ -143,7 +143,7 @@ export function cambiarTextoDelBoton(boton, texto) {
 
 /**
  * Desactiva un botón mientras se genera algo: cambia su texto (ej. "Generando…")
- * y la clase "ocupado" cambia el icono por un círculo que gira (ver estilos.css).
+ * y la clase "ocupado" cambia el icono por un círculo que gira (ver css/2-componentes/botones.css).
  */
 export function ponerBotonOcupado(boton, texto) {
   const span = parteDeTexto(boton);

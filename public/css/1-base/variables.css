@@ -1,0 +1,43 @@
+/* Capa: 1-base  ·  HTML: toda la página  ·  se carga desde css/estilos.css */
+/* =========================================================
+   2. COLORES Y MEDIDAS
+   Cambia aquí un color y cambia en toda la página.
+   ========================================================= */
+:root {
+  /* Colores de la marca */
+  --azul: #141B5B;              /* principal: botones llenos, títulos */
+  --azul-hover: #252F86;
+  --azul-suave: #E6E8F8;        /* fondo de botones "suaves", iconos y selecciones */
+  --azul-suave-hover: #D7DBF3;
+  --dorado: #8C7418;            /* acento */
+  --dorado-claro: #E3C766;
+  --dorado-suave: #FBF3D9;
+
+  /* Superficies y textos */
+  --fondo: #F5F6FA;             /* fondo de la página */
+  --superficie: #FFFFFF;        /* tarjetas */
+  --superficie-2: #EEF0F6;      /* zonas dentro de una tarjeta */
+  --texto: #1A1C2B;
+  --texto-suave: #4A4E63;
+  --gris: #6B6F85;
+  --borde: #E1E3EC;
+  --borde-fuerte: #C4C7D6;
+
+  /* Estados */
+  --verde: #18794E;
+  --verde-suave: #E2F5EA;
+  --rojo: #B3261E;
+  --rojo-suave: #FCE8E6;
+  --naranja: #9A5B00;
+
+  /* Blanco puro (texto sobre azul) */
+  --blanco: #FFFFFF;
+
+  /* Medidas */
+  --radio: 20px;                /* tarjetas */
+  --radio-chico: 12px;          /* campos de texto */
+  --ancho-pagina: 1280px;       /* ancho máximo de toda la página */
+  --sombra: 0 1px 2px #1418500d, 0 1px 3px #1418500a;
+  --sombra-alta: 0 4px 8px #1418500f, 0 12px 32px #14185021;
+  --foco: 0 0 0 3px #141B5B40;  /* el anillo que se ve al navegar con el teclado */
+}

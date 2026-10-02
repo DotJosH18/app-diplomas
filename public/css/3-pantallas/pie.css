@@ -1,0 +1,18 @@
+/* Capa: 3-pantallas  ·  HTML: partes/pie.html  ·  se carga desde css/estilos.css */
+/* =========================================================
+   14. PIE DE PÁGINA
+   ========================================================= */
+.pie { background: #10164A; color: #C3C6E6; margin-top: 40px; font-size: .8rem; border-top: 1px solid #E3C76655; }
+.pie__contenido {
+  max-width: var(--ancho-pagina); margin: auto; padding: 24px 16px;
+  display: flex; justify-content: space-between; align-items: center; gap: 20px 32px; flex-wrap: wrap;
+}
+.pie p { margin: 0; }
+.pie__marca { display: flex; align-items: center; gap: 12px; }
+.pie__logo { width: 42px; height: 42px; object-fit: contain; }
+.pie__titulo { color: var(--blanco); font-weight: 700; }
+.pie__enlaces { display: flex; gap: 16px; flex-wrap: wrap; }
+.pie a { color: var(--dorado-claro); text-decoration: none; font-weight: 600; }
+.pie a:hover { text-decoration: underline; }
+.pie__derechos { text-align: right; }
+.pie strong { color: var(--blanco); }

@@ -1,0 +1,30 @@
+<!-- PARTE: PIE DE PÁGINA
+     Se pega en la página desde index.html (busca "@incluir partes/pie.html")
+     Estilos: css/3-pantallas/pie.css
+     Lógica:  js/main.js (pone el año) -->
+<!-- ==================== PIE DE PÁGINA ====================
+     Cambia aquí los textos y enlaces del pie. Puedes agregar o quitar
+     líneas <p> y enlaces <a> libremente; los estilos están en
+     estilos.css, en "Pie de página".
+     El año se pone solo (ver "anio-actual" en app.js). -->
+<footer class="pie">
+  <div class="pie__contenido">
+    <div class="pie__marca">
+      <img class="pie__logo" src="img/logo-unicah.png" alt="" />
+      <div>
+        <p class="pie__titulo">Universidad Católica de Honduras</p>
+        <p>"Nuestra Señora Reina de la Paz"</p>
+        <p>Campus Santa Clara · Juticalpa, Olancho</p>
+      </div>
+    </div>
+
+    <div class="pie__enlaces">
+      <a href="https://www.unicah.edu" target="_blank" rel="noopener">Sitio web de UNICAH</a>
+    </div>
+
+    <div class="pie__derechos">
+      <p>© <span id="anio-actual">2026</span> UNICAH · Generador de Diplomas</p>
+      <p>Desarrollado por: <strong>Tu nombre o departamento</strong></p>
+    </div>
+  </div>
+</footer>

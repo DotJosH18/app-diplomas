@@ -1,0 +1,40 @@
+<!-- PARTE: QR · pestaña 3 "Logo": logo del centro, recuadro y tamaño
+     Se pega en la página desde partes/herramientas/qr.html (busca "@incluir partes/herramientas/qr/3-logo.html")
+     Estilos: css/4-herramientas/qr.css
+     Lógica:  js/qr.js, js/qr-dibujo.js -->
+<!-- 3. LOGO del centro -->
+<div class="panel-qr" data-panel-qr="logo" role="tabpanel">
+  <p class="personalizar__etiqueta">Logo del centro</p>
+  <div class="chips-qr opciones-qr" role="radiogroup" aria-label="Logo del centro">
+    <label class="chip-qr"><input type="radio" name="qr-logo" value="unicah" checked /><span><img class="chip-qr__logo" src="img/logo-qr.png" alt="" />UNICAH</span></label>
+    <label class="chip-qr"><input type="radio" name="qr-logo" value="propio" /><span><span class="icono" aria-hidden="true">upload</span>Otro logo</span></label>
+    <label class="chip-qr"><input type="radio" name="qr-logo" value="ninguno" /><span><span class="icono" aria-hidden="true">hide_image</span>Sin logo</span></label>
+  </div>
+  <input id="qr-archivo-logo" type="file" accept=".png,.jpg,.jpeg,.webp" hidden />
+  <div id="qr-logo-propio" class="logo-propio-qr oculto">
+    <span class="icono" aria-hidden="true">image</span>
+    <span id="qr-nombre-logo" class="logo-propio-qr__nombre"></span>
+    <button type="button" id="qr-cambiar-logo" class="boton boton--texto boton--chico"><span class="icono" aria-hidden="true">swap_horiz</span><span class="boton__texto">Cambiar</span></button>
+  </div>
+
+  <div id="qr-opciones-logo">
+    <p class="personalizar__etiqueta">Recuadro del logo</p>
+    <!-- Cada opción se dibuja con el logo y los colores actuales (qr.js) -->
+    <div class="formas-qr formas-qr--fila" role="radiogroup" aria-label="Recuadro del logo">
+      <label class="forma-qr"><input type="radio" name="qr-recuadro-logo" value="ninguno" />
+        <span><span class="forma-qr__dibujo" data-dibujo="recuadro"></span>Sin recuadro</span></label>
+      <label class="forma-qr"><input type="radio" name="qr-recuadro-logo" value="cuadrado" />
+        <span><span class="forma-qr__dibujo" data-dibujo="recuadro"></span>Cuadrado</span></label>
+      <label class="forma-qr"><input type="radio" name="qr-recuadro-logo" value="circulo" />
+        <span><span class="forma-qr__dibujo" data-dibujo="recuadro"></span>Círculo</span></label>
+    </div>
+    <p class="nota nota-qr">El recuadro separa el logo de los puntos y tiene un borde del color de las esquinas.</p>
+
+    <label class="control-deslizable control-tamano-logo">
+      <span>Tamaño del logo <strong data-codigo="tamanoLogo"></strong></span>
+      <input type="range" min="12" max="26" data-ajuste="tamanoLogo" aria-label="Tamaño del logo" />
+      <span class="control-tamano-logo__extremos" aria-hidden="true"><small>Más pequeño</small><small>Más grande</small></span>
+    </label>
+  </div>
+  <p class="nota">Consejo: un logo sin fondo (PNG) se ve mejor. Puedes quitárselo con la herramienta "Quitar fondo de logos".</p>
+</div>

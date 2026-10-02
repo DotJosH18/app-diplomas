@@ -1,0 +1,113 @@
+/* Capa: 3-pantallas  ·  HTML: partes/encabezado.html  ·  se carga desde css/estilos.css */
+/* =========================================================
+   5. ENCABEZADO
+   Logo y título a la izquierda; a la derecha:  Inicio › Placas ▾   Ayuda
+   Abajo, las pestañas "Uno a la vez / Desde Excel" (solo en el generador).
+   ========================================================= */
+.encabezado {
+  color: var(--blanco);
+  background:
+    radial-gradient(900px 260px at 85% -40%, #E3C76633, transparent 70%),
+    linear-gradient(120deg, #10164A 0%, #141B5B 45%, #222C86 100%);
+  box-shadow: 0 1px 0 #E3C76655;
+  /* El encabezado va por ENCIMA del resto de la página: así la lista
+     "Cambiar a…" que se abre hacia abajo no queda tapada por la vista
+     previa ni por otras partes que también tienen posición propia. */
+  position: relative; z-index: 30;
+}
+.encabezado__contenido {
+  max-width: var(--ancho-pagina); margin: auto; padding: 18px 16px 6px;
+  display: flex; justify-content: space-between; align-items: center; gap: 16px; flex-wrap: wrap;
+}
+.marca { display: flex; align-items: center; gap: 14px; color: inherit; text-decoration: none; border-radius: 14px; }
+.marca:focus-visible { outline: 2px solid var(--dorado-claro); outline-offset: 4px; }
+.marca__logo { width: 64px; height: 64px; object-fit: contain; flex-shrink: 0; filter: drop-shadow(0 2px 6px #0000004d); }
+.encabezado__sub {
+  margin: 0; font-size: .7rem; font-weight: 600; letter-spacing: .28em;
+  text-transform: uppercase; color: var(--dorado-claro);
+}
+.encabezado__titulo { margin: 2px 0 0; font: 400 2.6rem/1.05 'Great Vibes', cursive; }
+
+.encabezado__acciones { display: flex; align-items: center; gap: 10px; }
+
+/* Barra "Inicio › Placas ▾": una píldora translúcida */
+.navegacion {
+  display: flex; align-items: center; gap: 2px; padding: 4px;
+  background: #ffffff14; border: 1px solid #ffffff24; border-radius: 999px;
+  backdrop-filter: blur(6px);
+}
+.navegacion__inicio, .selector-modulo__actual {
+  display: flex; align-items: center; gap: 6px; height: 36px; padding: 0 14px; border-radius: 999px;
+  font: 600 .85rem Montserrat, sans-serif; color: var(--blanco); cursor: pointer;
+  background: none; border: 0; transition: background .15s;
+}
+.navegacion__inicio { padding-left: 10px; }
+.navegacion__inicio:hover, .selector-modulo__actual:hover { background: #ffffff1f; }
+.navegacion__inicio:focus-visible, .selector-modulo__actual:focus-visible { outline: 2px solid var(--dorado-claro); outline-offset: 1px; }
+.navegacion__separador { color: #ffffff59; font-size: 18px; }
+
+/* El módulo actual (en dorado) con una flecha: se ve que se puede abrir */
+.selector-modulo { position: relative; }
+.selector-modulo__actual { list-style: none; color: var(--dorado-claro); padding-right: 8px; }
+.selector-modulo__actual::-webkit-details-marker { display: none; }
+.selector-modulo__actual .flecha-desplegable { color: var(--blanco); }
+.selector-modulo[open] .selector-modulo__actual { background: #ffffff26; }
+
+/* La lista que se abre debajo (como un menú de Google) */
+.selector-modulo__lista {
+  position: absolute; right: 0; top: calc(100% + 10px); z-index: 20; width: 360px;
+  padding: 8px; background: var(--superficie); color: var(--texto);
+  border-radius: 16px; box-shadow: var(--sombra-alta), 0 0 0 1px var(--borde);
+  animation: aparecer .15s ease-out;
+}
+@keyframes aparecer { from { opacity: 0; transform: translateY(-4px); } }
+.selector-modulo__titulo { margin: 6px 10px 6px; font-size: .7rem; font-weight: 700; color: var(--gris); text-transform: uppercase; letter-spacing: .08em; }
+.selector-modulo__grupo { margin: 8px 10px 2px; font-size: .72rem; font-weight: 700; color: var(--dorado); }
+.selector-modulo__grupo:not(:first-child) { margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--borde); }
+.opcion-rapida {
+  display: flex; align-items: center; gap: 12px; width: 100%; padding: 8px 10px; text-align: left;
+  background: none; border: 0; border-radius: 12px; cursor: pointer; font: inherit; color: inherit;
+}
+.opcion-rapida:hover, .opcion-rapida:focus-visible { background: var(--fondo); outline: none; }
+.opcion-rapida img {
+  width: 56px; height: 40px; object-fit: contain; flex-shrink: 0;
+  background: var(--superficie-2); border-radius: 8px;
+}
+.opcion-rapida__textos { display: flex; flex-direction: column; min-width: 0; }
+.opcion-rapida__textos strong { font-size: .88rem; color: var(--azul); }
+.opcion-rapida__textos small { font-size: .72rem; color: var(--gris); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+/* El módulo en el que estás: resaltado y con "Actual" */
+.opcion-rapida.actual { background: var(--azul-suave); }
+.opcion-rapida.actual strong::after { content: ' · Actual'; color: var(--dorado); font-weight: 600; font-size: .72rem; }
+
+/* Botón "Ayuda" */
+.boton-ayuda {
+  display: flex; align-items: center; gap: 6px; height: 44px; padding: 0 16px 0 12px; cursor: pointer;
+  font: 600 .85rem Montserrat, sans-serif; color: var(--blanco);
+  background: #ffffff14; border: 1px solid #ffffff24; border-radius: 999px; transition: background .15s;
+}
+.boton-ayuda .icono { font-size: 22px; color: var(--dorado-claro); }
+.boton-ayuda:hover { background: #ffffff26; }
+.boton-ayuda:focus-visible { outline: 2px solid var(--dorado-claro); outline-offset: 2px; }
+
+/* Fila de abajo del encabezado: lengüetas del menú o pestañas del documento.
+   Siempre mide lo mismo (aunque esté vacía), así el encabezado no cambia de alto. */
+.encabezado__fila { max-width: var(--ancho-pagina); margin: auto; padding: 10px 16px 16px; min-height: 66px; }
+
+/* Pestañas "Uno a la vez / Desde Excel" y lengüetas "Documentos / Herramientas":
+   botones segmentados (como en Google) */
+.pestanas { display: flex; }
+.pestana {
+  display: inline-flex; align-items: center; gap: 8px; height: 40px; padding: 0 20px 0 16px;
+  background: #ffffff0f; border: 1px solid #ffffff33; color: #E4E6F7; cursor: pointer;
+  font: 600 .85rem Montserrat, sans-serif; transition: background .15s, color .15s;
+}
+.pestana:first-child { border-radius: 999px 0 0 999px; }
+.pestana:last-child { border-radius: 0 999px 999px 0; border-left: 0; }
+.pestana:hover { background: #ffffff1f; }
+.pestana:focus-visible { outline: 2px solid var(--dorado-claro); outline-offset: 2px; }
+.pestana.activa { background: var(--blanco); border-color: var(--blanco); color: var(--azul); }
+.pestana .icono { font-size: 18px; }
+
+.panel { display: none; }
+.panel.activo { display: block; animation: aparecer .2s ease-out; }

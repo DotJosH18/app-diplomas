@@ -1,0 +1,79 @@
+/* Capa: 5-ayuda  ·  HTML: partes/ayuda/recorrido.html  ·  se carga desde css/estilos.css */
+/* =========================================================
+   MAGNUS ANIMADO
+   El círculo (con su aro dorado) se queda QUIETO; lo que se mueve
+   es Magnus adentro:
+     <span class="magnus">                          ← el círculo (quieto)
+       <span class="magnus__cara">                  ← Magnus (se mueve)
+         cara.png + cara-ojos-cerrados.png
+   La imagen de Magnus es más grande que el círculo (sobra un 26 % por
+   cada lado), así al moverse nunca se ve un borde vacío.
+   Cada movimiento tiene su propio ritmo, así no se ve repetido.
+   ========================================================= */
+.magnus {
+  position: relative; display: block; aspect-ratio: 1; border-radius: 50%; overflow: hidden;
+  background: radial-gradient(circle at 50% 35%, #ffffff 0%, var(--azul-suave) 70%);
+  box-shadow: 0 0 0 3px var(--dorado-claro), 0 6px 16px #14185040;
+}
+.magnus__cara {
+  position: absolute; inset: -25.75%; display: block;
+  transform-origin: 52% 65%;   /* el cuello: desde ahí gira la cabeza */
+  animation: magnus-mira 5s ease-in-out infinite;
+}
+.magnus__cara img {
+  position: absolute; inset: 0; display: block; width: 100%; height: 100%;
+  user-select: none; pointer-events: none;
+}
+
+/* Al aparecer (en la bienvenida), Magnus se asoma desde abajo */
+@keyframes magnus-asoma {
+  0% { transform: translateY(45%); }
+  70% { transform: translateY(-4%); }
+  100% { transform: translateY(0); }
+}
+
+/* Mira alrededor: inclina la cabeza y se mueve un poquito */
+@keyframes magnus-mira {
+  0%, 100% { transform: rotate(0deg) translate(0, 0); }
+  25% { transform: rotate(-6deg) translate(-2%, -1%); }
+  55% { transform: rotate(5deg) translate(2%, 0); }
+  80% { transform: rotate(-2deg) translate(0, -2%); }
+}
+
+/* Parpadea de vez en cuando: los "ojos cerrados" aparecen un instante */
+.magnus__ojos-cerrados { opacity: 0; animation: magnus-parpadea 4.3s steps(1) infinite; }
+@keyframes magnus-parpadea {
+  0% { opacity: 0; }
+  93% { opacity: 1; }
+  96% { opacity: 0; }
+}
+
+/* Mientras "habla", asiente con la cabeza */
+.recorrido.hablando .magnus__cara { animation: magnus-habla .42s ease-in-out infinite; }
+@keyframes magnus-habla {
+  0%, 100% { transform: rotate(0deg) translateY(0); }
+  50% { transform: rotate(-4deg) translateY(3%); }
+}
+
+/* Al cambiar de paso, da un saltito de emoción */
+.recorrido.cambiando-paso .magnus__cara { animation: magnus-salta .65s ease-out; }
+@keyframes magnus-salta {
+  35% { transform: translateY(-10%) rotate(-5deg); }
+  65% { transform: translateY(3%) rotate(3deg); }
+}
+
+/* Mira hacia el elemento: se inclina hacia él (la caja está en espejo,
+   así que "hacia la izquierda" es siempre "hacia el elemento") */
+.recorrido.senalando .magnus__cara { animation: magnus-senala 1.1s ease-out; }
+@keyframes magnus-senala {
+  30%, 70% { transform: rotate(-12deg) translate(-7%, 2%); }
+}
+
+/* En la bienvenida, saluda moviendo la cabeza */
+.bienvenida__magnus .magnus__cara { animation: magnus-asoma .7s ease-out .2s backwards, magnus-hola 1.6s ease-in-out .9s 2, magnus-mira 5s ease-in-out 4.1s infinite; }
+@keyframes magnus-hola {
+  20% { transform: rotate(-9deg) translateY(-4%); }
+  40% { transform: rotate(7deg); }
+  60% { transform: rotate(-5deg) translateY(-2%); }
+  80% { transform: rotate(2deg); }
+}

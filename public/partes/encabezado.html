@@ -1,0 +1,67 @@
+<!-- PARTE: ENCABEZADO: logo, "Inicio › …", Ayuda y la fila de lengüetas/pestañas
+     Se pega en la página desde index.html (busca "@incluir partes/encabezado.html")
+     Estilos: css/3-pantallas/encabezado.css
+     Lógica:  js/navegacion.js, js/ayuda.js (botón Ayuda) -->
+<!-- ==================== ENCABEZADO ==================== -->
+<header class="encabezado">
+  <div class="encabezado__contenido">
+    <!-- Logo + título: también llevan al inicio (como en casi todas las páginas) -->
+    <a href="./" id="enlace-marca" class="marca" title="Ir al inicio">
+      <img class="marca__logo" src="img/logo-unicah.png" alt="Logo de UNICAH" />
+      <div>
+        <p class="encabezado__sub">Generador de</p>
+        <h1 class="encabezado__titulo">Diplomas</h1>
+      </div>
+    </a>
+
+    <!-- Navegación (se ve dentro de un módulo):   ⌂ Inicio  ›  Placas ▾
+         - "Inicio" vuelve al menú.
+         - El nombre del módulo abre una lista para cambiar a otro directamente.
+           Esa lista la arma navegacion.js copiando las tarjetas del menú, así
+           un módulo nuevo aparece aquí solo con agregar su tarjeta. -->
+    <div class="encabezado__acciones">
+    <nav id="navegacion" class="navegacion invisible" aria-label="Navegación">
+      <button type="button" id="boton-inicio" class="navegacion__inicio">
+        <span class="icono" aria-hidden="true">home</span><span>Inicio</span>
+      </button>
+      <span class="icono navegacion__separador" aria-hidden="true">chevron_right</span>
+      <details id="selector-modulo" class="selector-modulo">
+        <summary class="selector-modulo__actual" title="Cambiar a otro tipo">
+          <span id="nombre-modulo-actual"></span>
+          <span class="icono flecha-desplegable" aria-hidden="true">keyboard_arrow_down</span>
+        </summary>
+        <div class="selector-modulo__lista">
+          <p class="selector-modulo__titulo">Cambiar a…</p>
+          <div id="lista-modulos"></div>
+        </div>
+      </details>
+    </nav>
+
+    <!-- Ayuda: siempre visible. Abre el manual de usuario (ver ayuda.js) -->
+    <button type="button" id="boton-ayuda" class="boton-ayuda" title="Manual de usuario">
+      <span class="icono" aria-hidden="true">help</span><span class="boton-ayuda__texto">Ayuda</span>
+    </button>
+    </div>
+  </div>
+
+  <!-- Fila de abajo del encabezado (siempre mide lo mismo):
+         - en el inicio: las lengüetas "Documentos" / "Herramientas"
+         - dentro de un documento: las pestañas "Uno a la vez" / "Desde Excel"
+         - en una herramienta: vacía
+       navegacion.js muestra una u otra. -->
+  <div class="encabezado__fila">
+    <!-- Cada lengüeta muestra su grupo de tarjetas del menú (data-grupo). El número lo pone navegacion.js. -->
+    <nav id="lenguetas-menu" class="pestanas lenguetas-menu" role="tablist" aria-label="Qué quieres ver">
+      <button type="button" id="lengueta-documentos" class="pestana lengueta-menu activa" role="tab" aria-selected="true" data-grupo="documentos" data-nombre="Documentos">
+        <span class="icono" aria-hidden="true">workspace_premium</span><span>Documentos</span><span class="lengueta-menu__cantidad" data-cantidad="documentos"></span>
+      </button>
+      <button type="button" id="lengueta-herramientas" class="pestana lengueta-menu" role="tab" aria-selected="false" data-grupo="herramientas" data-nombre="Herramientas">
+        <span class="icono" aria-hidden="true">handyman</span><span>Herramientas</span><span class="lengueta-menu__cantidad" data-cantidad="herramientas"></span>
+      </button>
+    </nav>
+    <nav id="pestanas" class="pestanas oculto">
+      <button class="pestana activa" data-panel="panel-individual"><span class="icono" aria-hidden="true">person</span><span>Uno a la vez</span></button>
+      <button class="pestana" data-panel="panel-excel"><span class="icono" aria-hidden="true">table_chart</span><span>Desde Excel</span></button>
+    </nav>
+  </div>
+</header>

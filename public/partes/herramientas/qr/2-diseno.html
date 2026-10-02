@@ -1,0 +1,70 @@
+<!-- PARTE: QR · pestaña 2 "Diseño": plantillas, puntos, esquinas y colores
+     Se pega en la página desde partes/herramientas/qr.html (busca "@incluir partes/herramientas/qr/2-diseno.html")
+     Estilos: css/4-herramientas/qr.css
+     Lógica:  js/qr.js, js/qr-dibujo.js -->
+<!-- 2. DISEÑO: plantillas, puntos, esquinas y colores -->
+<div class="panel-qr" data-panel-qr="diseno" role="tabpanel">
+  <p class="personalizar__etiqueta">Plantillas</p>
+  <div id="qr-plantillas" class="plantillas-qr"></div>
+
+  <!-- Los dibujos de cada opción los pone qr.js con el color y el diseño actuales.
+       Al pasar el mouse por una opción, el QR de la izquierda la muestra (sin elegirla). -->
+  <p class="personalizar__etiqueta">Puntos</p>
+  <div class="formas-qr" role="radiogroup" aria-label="Estilo de los puntos">
+    <label class="forma-qr"><input type="radio" name="qr-puntos" value="cuadrados" data-ajuste="puntos" />
+      <span><span class="forma-qr__dibujo" data-dibujo="puntos"></span>Cuadrados</span></label>
+    <label class="forma-qr"><input type="radio" name="qr-puntos" value="redondeados" data-ajuste="puntos" />
+      <span><span class="forma-qr__dibujo" data-dibujo="puntos"></span>Redondeados</span></label>
+    <label class="forma-qr"><input type="radio" name="qr-puntos" value="suaves" data-ajuste="puntos" />
+      <span><span class="forma-qr__dibujo" data-dibujo="puntos"></span>Suaves</span></label>
+    <label class="forma-qr"><input type="radio" name="qr-puntos" value="puntos" data-ajuste="puntos" />
+      <span><span class="forma-qr__dibujo" data-dibujo="puntos"></span>Puntos</span></label>
+  </div>
+  <p class="nota nota-qr">Todos se leen con la cámara del celular. Los <b>cuadrados</b> son los más seguros con lectores antiguos.</p>
+
+  <p class="personalizar__etiqueta">Esquinas <small class="etiqueta-ayuda">· los 3 cuadros grandes</small></p>
+  <!-- Una fila por parte de la esquina: el nombre a la izquierda y sus 3 opciones -->
+  <div class="esquinas-qr">
+    <span class="esquinas-qr__nombre" id="qr-nombre-marco">Marco</span>
+    <div class="formas-qr formas-qr--fila" role="radiogroup" aria-labelledby="qr-nombre-marco">
+      <label class="forma-qr"><input type="radio" name="qr-esquina-marco" value="cuadrada" data-ajuste="esquinaMarco" />
+        <span><span class="forma-qr__dibujo" data-dibujo="esquina"></span>Cuadrado</span></label>
+      <label class="forma-qr"><input type="radio" name="qr-esquina-marco" value="redondeada" data-ajuste="esquinaMarco" />
+        <span><span class="forma-qr__dibujo" data-dibujo="esquina"></span>Redondeado</span></label>
+      <label class="forma-qr"><input type="radio" name="qr-esquina-marco" value="circulo" data-ajuste="esquinaMarco" />
+        <span><span class="forma-qr__dibujo" data-dibujo="esquina"></span>Círculo</span></label>
+    </div>
+    <span class="esquinas-qr__nombre" id="qr-nombre-centro">Centro</span>
+    <div class="formas-qr formas-qr--fila" role="radiogroup" aria-labelledby="qr-nombre-centro">
+      <label class="forma-qr"><input type="radio" name="qr-esquina-centro" value="cuadrado" data-ajuste="esquinaCentro" />
+        <span><span class="forma-qr__dibujo" data-dibujo="esquina"></span>Cuadrado</span></label>
+      <label class="forma-qr"><input type="radio" name="qr-esquina-centro" value="redondeado" data-ajuste="esquinaCentro" />
+        <span><span class="forma-qr__dibujo" data-dibujo="esquina"></span>Redondeado</span></label>
+      <label class="forma-qr"><input type="radio" name="qr-esquina-centro" value="punto" data-ajuste="esquinaCentro" />
+        <span><span class="forma-qr__dibujo" data-dibujo="esquina"></span>Punto</span></label>
+    </div>
+  </div>
+
+  <p class="personalizar__etiqueta">Colores</p>
+  <div class="colores-qr">
+    <label class="fila-color-qr">
+      <span class="muestra-color-qr"><input type="color" data-ajuste="colorPuntos" aria-label="Color de los puntos" /></span>
+      <span class="fila-color-qr__texto"><strong>Puntos</strong><small data-codigo="colorPuntos"></small></span>
+    </label>
+    <label class="casilla casilla--fila"><input type="checkbox" data-ajuste="degradado" /> Degradado</label>
+    <label class="fila-color-qr" id="qr-fila-degradado">
+      <span class="muestra-color-qr"><input type="color" data-ajuste="colorDegradado" aria-label="Segundo color del degradado" /></span>
+      <span class="fila-color-qr__texto"><strong>Hasta</strong><small data-codigo="colorDegradado"></small></span>
+    </label>
+    <label class="fila-color-qr">
+      <span class="muestra-color-qr"><input type="color" data-ajuste="colorEsquinas" aria-label="Color de las esquinas" /></span>
+      <span class="fila-color-qr__texto"><strong>Esquinas</strong><small data-codigo="colorEsquinas"></small></span>
+    </label>
+    <label class="fila-color-qr">
+      <span class="muestra-color-qr"><input type="color" data-ajuste="colorFondo" aria-label="Color del fondo" /></span>
+      <span class="fila-color-qr__texto"><strong>Fondo</strong><small data-codigo="colorFondo"></small></span>
+    </label>
+    <label class="casilla casilla--fila"><input type="checkbox" data-ajuste="fondoTransparente" /> Fondo transparente</label>
+  </div>
+  <button type="button" id="qr-restablecer" class="boton boton--texto boton--chico"><span class="icono" aria-hidden="true">restart_alt</span><span class="boton__texto">Volver al diseño inicial</span></button>
+</div>

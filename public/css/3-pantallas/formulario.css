@@ -1,0 +1,74 @@
+/* Capa: 3-pantallas  ·  HTML: partes/generador/uno-a-la-vez.html  ·  se carga desde css/estilos.css */
+/* =========================================================
+   7. FORMULARIO ("Uno a la vez") Y VISTA PREVIA
+   ========================================================= */
+.individual { display: grid; grid-template-columns: 360px 1fr; gap: 20px; align-items: start; }
+.tarjeta { background: var(--superficie); border: 1px solid var(--borde); border-radius: var(--radio); padding: 20px; box-shadow: var(--sombra); }
+.tarjeta__titulo { display: flex; align-items: center; gap: 12px; margin: 0 0 12px; font-size: 1.05rem; color: var(--azul); }
+
+.rejilla { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.rejilla--una-columna { grid-template-columns: 1fr; }
+.rejilla label { display: flex; flex-direction: column; gap: 6px; font-size: .8rem; font-weight: 600; color: var(--texto-suave); }
+.ancho-completo { grid-column: 1 / -1; }
+
+/* Campos de texto (bordes redondeados y un anillo de color al escribir) */
+.rejilla input, .rejilla textarea, .rejilla select, .campo-personalizar {
+  font: inherit; font-weight: 400; font-size: .95rem; color: var(--texto);
+  min-height: 44px; padding: 10px 14px; border: 1px solid var(--borde-fuerte); border-radius: var(--radio-chico);
+  background: var(--superficie); transition: border-color .15s, box-shadow .15s;
+}
+.rejilla textarea { resize: vertical; line-height: 1.5; }
+.rejilla input:hover, .rejilla textarea:hover, .rejilla select:hover, .campo-personalizar:hover { border-color: #8F94AE; }
+.rejilla input:focus, .rejilla textarea:focus, .rejilla select:focus, .campo-personalizar:focus {
+  outline: none; border-color: var(--azul); box-shadow: 0 0 0 3px #141B5B26;
+}
+.rejilla ::placeholder, .campo-personalizar::placeholder { color: #9A9DB0; }
+/* Lista desplegable con una flecha propia */
+.rejilla select {
+  appearance: none; cursor: pointer; padding-right: 40px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='%236B6F85' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat; background-position: right 12px center;
+}
+
+/* Subtítulos dentro del formulario: "Lugar y fecha", "Firmas" */
+.grupo {
+  display: flex; align-items: center; gap: 8px; margin: 8px 0 -2px; padding-top: 14px;
+  border-top: 1px solid var(--borde);
+  font-size: .72rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--gris);
+}
+.grupo .icono { font-size: 18px; color: var(--dorado); }
+
+/* Contador de caracteres y tercera firma (opcional) */
+.contador { align-self: flex-end; font-weight: 400; font-size: .72rem; color: var(--gris); }
+.contador--limite { color: var(--rojo); font-weight: 600; }
+.opcional { display: grid; gap: 12px; padding: 4px 0 0; }
+.opcional summary {
+  display: inline-flex; align-items: center; gap: 6px; width: fit-content; height: 32px; padding: 0 14px 0 10px;
+  border-radius: 999px; cursor: pointer; list-style: none;
+  font-size: .8rem; font-weight: 600; color: var(--azul); background: var(--azul-suave);
+}
+.opcional summary::-webkit-details-marker { display: none; }
+.opcional summary:hover { background: var(--azul-suave-hover); }
+.opcional summary .icono { font-size: 18px; transition: transform .2s; }
+.opcional[open] summary .icono { transform: rotate(45deg); }
+.opcional .nota { margin: 0; }
+
+/* Vista previa del documento */
+.vista {
+  position: sticky; top: 16px; aspect-ratio: 1.414;
+  background: var(--superficie-2); border: 1px solid var(--borde); border-radius: var(--radio); overflow: hidden;
+}
+/* El iframe queda encima (z-index 1) del aviso "La vista previa aparecerá aquí" (z-index 0).
+   Vacío es transparente y se ve el aviso; con el PDF cargado, lo tapa. */
+.vista iframe { position: relative; z-index: 1; width: 100%; height: 100%; border: 0; }
+.vista__vacia {
+  position: absolute; inset: 0; z-index: 0; margin: 0; padding: 24px; text-align: center;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; color: var(--gris);
+}
+.vista__vacia strong { color: var(--texto-suave); font-size: 1rem; }
+.vista__vacia small { font-size: .82rem; }
+.vista__icono {
+  display: grid; place-items: center; width: 64px; height: 64px; margin-bottom: 6px;
+  border-radius: 50%; background: var(--superficie); color: var(--azul); box-shadow: var(--sombra);
+}
+.vista__icono .icono { font-size: 30px; }

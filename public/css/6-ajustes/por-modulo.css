@@ -1,0 +1,15 @@
+/* Capa: 6-ajustes  ·  HTML: partes/generador/ (según el módulo elegido)  ·  se carga desde css/estilos.css */
+/* =========================================================
+   AJUSTES POR MÓDULO (body data-modulo="…", lo pone navegacion.js)
+   ========================================================= */
+/* Comunicado de duelo: la hoja es vertical */
+[data-modulo="duelo"] .vista { aspect-ratio: 612 / 720; max-width: 620px; }
+/* Agradecimientos: hoja oficio vertical (612 x 1008) */
+[data-modulo="agradecimientos"] .vista { aspect-ratio: 612 / 1008; max-width: 500px; }
+/* Botones del formulario: los 2 (vista previa y PDF) uno al lado del otro */
+#form-individual .acciones { display: grid; grid-template-columns: 1fr 1fr; }
+#form-individual .acciones .boton { padding: 0 12px; }
+/* Con 3 botones (vista previa, imagen y PDF): uno debajo del otro, a todo lo ancho */
+[data-modulo="duelo"] #form-individual .acciones,
+[data-modulo="agradecimientos"] #form-individual .acciones,
+[data-modulo="placas"] #form-individual .acciones { display: grid; grid-template-columns: 1fr; }

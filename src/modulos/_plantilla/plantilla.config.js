@@ -21,7 +21,7 @@ const config = {
   archivoLote: '__TITULO_ARCHIVO__.pdf',    // el PDF con todos, desde Excel
 
   // true = en "Uno a la vez" aparece "Descargar imagen (PNG)"
-  // (también hay que agregar el id al data-modulos del botón "boton-imagen" en index.html)
+  // (también hay que agregar el id al data-modulos del botón "boton-imagen" en public/partes/generador/uno-a-la-vez.html)
   descargaImagen: false,
 
   // Límites de caracteres de los campos propios
