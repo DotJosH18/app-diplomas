@@ -382,9 +382,12 @@ Es la última tarjeta del menú. No genera diplomas: deja un logo con **fondo tr
   1. Detecta el color del fondo: el más repetido en el borde de la imagen. También puedes hacer clic sobre el fondo, en la imagen original, para elegirlo.
   2. Marca como fondo los píxeles parecidos a ese color, según la **tolerancia**.
      - Con **"Quitar solo el fondo de afuera"** (activado por defecto) empieza en los bordes y avanza a los vecinos parecidos, como el balde de pintura de Paint. Así los blancos DENTRO del logo (por ejemplo, la paloma) se conservan.
+     - Mientras avanza, lleva un **"fondo de por aquí"** que cambia poco a poco: así también quita fondos con **degradado** o sombra suave. Tiene un límite (1.5 × la tolerancia) para que no "trepe" por un borde difuso hasta el logo.
      - Si lo desactivas, quita ese color en toda la imagen.
-  3. **Suavizar los bordes:** los píxeles del borde quedan semitransparentes, para que no se vea serruchado.
-  4. **Recortar el espacio vacío:** quita el espacio transparente de alrededor.
+  3. **Retoques:** clic sobre el resultado. Si el punto es visible, se borra esa zona (ej. el blanco dentro de una letra "O"); si es transparente, se recupera. Hay **Deshacer clic** y **Quitar retoques**. Los retoques se guardan como una lista de clics, así que siguen funcionando si cambias la tolerancia.
+  4. **Suavizar los bordes (sin halo):** en el borde, un píxel es una mezcla del logo y del fondo (por eso queda una "rayita" blanca al poner el logo sobre algo oscuro). Para cada píxel de la orilla se busca con qué color del logo está mezclado, se calcula qué tan visible debe ser (alfa) y se le quita el color del fondo: `color = fondo + (color − fondo) / alfa`.
+  5. **Recortar el espacio vacío:** quita el espacio transparente de alrededor.
+- **Ver sobre:** cuadritos, blanco, negro o azul UNICAH, para revisar que los bordes queden limpios.
 - **Descargar PNG:** baja el resultado.
 - **Usar como logo en los diplomas:** lo deja como el logo de "Personalizar diseño", igual que "Subir logo". Luego eliges un diploma y ya sale con ese logo.
 
@@ -398,7 +401,7 @@ Otra tarjeta del menú. Crea códigos QR con tu diseño, todo en el navegador (e
 |-----------|-----------|
 | Contenido | Qué abrirá el QR: **link** (agrega `https://` solo), **WhatsApp** (número + mensaje), **correo** (asunto y mensaje), **Wi-Fi** (se conecta sin escribir la clave) o **texto**. |
 | Diseño    | **Plantillas** (Clásico, UNICAH, Moderno, Suave, Con marco), forma de los **puntos** (cuadrados, redondeados, suaves, puntos), forma de las **esquinas** (marco y centro), **colores** (puntos, degradado, esquinas, fondo o transparente). |
-| Logo      | UNICAH (`img/logo-qr.png`), otro logo o ninguno; tamaño (12–26 %), fondo detrás y su forma (cuadrado o círculo). |
+| Logo      | UNICAH (`img/logo-qr.png`), otro logo o ninguno; **recuadro** (sin recuadro, cuadrado o círculo: una placa del color del fondo con borde del color de las esquinas, cada opción con su dibujito) y tamaño (12–26 %). |
 | Marco     | Sin marco o un marco de color con un texto abajo ("ESCANÉAME"). |
 
 **Archivos:**

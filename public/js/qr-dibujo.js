@@ -20,6 +20,7 @@
 //  armarSVG(texto, d) qr.js       el dibujo del QR como texto SVG
 //  svgDeEsquina(d)    qr.js       una sola esquina (para elegir su forma)
 //  svgDePuntos(d)     qr.js       unos cuantos puntos (para elegir su estilo)
+//  svgDeRecuadroLogo(d) qr.js     el centro del QR con el logo (para elegir su recuadro)
 // =============================================================
 import qrcode from '/librerias/qrcode/qrcode.mjs';
 import { stringToBytes } from '/librerias/qrcode/qrcode_UTF8.mjs';
@@ -265,26 +266,35 @@ function dibujarLogo(d, x, ladoLogo) {
   if (!d.logo) {
     return '';
   }
+  return dibujarRecuadroYLogo(d, x, x, ladoLogo);
+}
+
+/**
+ * El logo y, si se eligió, su recuadro: una placa del color del fondo
+ * con un borde fino del color de las esquinas, cuadrada o redonda.
+ * (Sin recuadro, el logo queda directo sobre el fondo del QR.)
+ */
+function dibujarRecuadroYLogo(d, x, y, lado) {
   let dibujo = '';
-  const espacio = 0.6; // separación entre el logo y su fondo
+  const grosorBorde = Math.max(0.25, lado * 0.04);
+  let colorPlaca = d.colorFondo;
+  if (d.fondoTransparente) {
+    colorPlaca = '#FFFFFF';
+  }
+  let margenLogo = 0.5; // separación entre el logo y lo de alrededor
   if (d.fondoLogo) {
-    let colorFondoLogo = d.colorFondo;
-    if (d.fondoTransparente) {
-      colorFondoLogo = '#FFFFFF';
-    }
+    const borde = `stroke="${d.colorEsquinas}" stroke-width="${grosorBorde}"`;
+    const m = grosorBorde / 2; // el borde se dibuja hacia adentro
     if (d.formaFondoLogo === 'circulo') {
-      dibujo += `<circle cx="${x + ladoLogo / 2}" cy="${x + ladoLogo / 2}" r="${ladoLogo / 2 + 0.3}" fill="${colorFondoLogo}"/>`;
+      dibujo += `<circle cx="${x + lado / 2}" cy="${y + lado / 2}" r="${lado / 2 - m}" fill="${colorPlaca}" ${borde}/>`;
+      margenLogo = lado * 0.18; // en un círculo, el logo va más chico para no salirse
     } else {
-      dibujo += `<rect x="${x}" y="${x}" width="${ladoLogo}" height="${ladoLogo}" rx="${ladoLogo * 0.2}" fill="${colorFondoLogo}"/>`;
+      dibujo += `<rect x="${x + m}" y="${y + m}" width="${lado - m * 2}" height="${lado - m * 2}" rx="${lado * 0.22}" fill="${colorPlaca}" ${borde}/>`;
+      margenLogo = lado * 0.12;
     }
   }
-  // En un círculo, el logo va un poco más chico para no salirse
-  let margenLogo = espacio;
-  if (d.fondoLogo && d.formaFondoLogo === 'circulo') {
-    margenLogo = ladoLogo * 0.15;
-  }
-  dibujo += `<image href="${escaparAtributo(d.logo)}" x="${x + margenLogo}" y="${x + margenLogo}" `
-    + `width="${ladoLogo - margenLogo * 2}" height="${ladoLogo - margenLogo * 2}" preserveAspectRatio="xMidYMid meet"/>`;
+  dibujo += `<image href="${escaparAtributo(d.logo)}" x="${x + margenLogo}" y="${y + margenLogo}" `
+    + `width="${lado - margenLogo * 2}" height="${lado - margenLogo * 2}" preserveAspectRatio="xMidYMid meet"/>`;
   return dibujo;
 }
 
@@ -380,4 +390,35 @@ export function svgDePuntos(d) {
   }
   return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="-0.3 -0.3 5.6 5.6" aria-hidden="true">`
     + `<path d="${puntos}" fill="${d.colorPuntos}"/></svg>`;
+}
+
+/** El centro de un QR con el logo y su recuadro (sin recuadro, cuadrado o círculo). */
+export function svgDeRecuadroLogo(d) {
+  // Un pedacito de QR de 9 x 9 ("#" = punto). El centro (5 x 5) queda libre para el logo.
+  const MUESTRA = [
+    '#.##.#..#',
+    '.#.#..##.',
+    '##.....#.',
+    '.#.....##',
+    '#......#.',
+    '##.....##',
+    '.#.....#.',
+    '#..##.#.#',
+    '.##.#.##.',
+  ];
+  let puntos = '';
+  MUESTRA.forEach(function (filaDeMuestra, fila) {
+    for (let columna = 0; columna < 9; columna++) {
+      if (filaDeMuestra[columna] === '#') {
+        puntos += `M${columna} ${fila}h1v1h-1z`;
+      }
+    }
+  });
+  let logo = '';
+  if (d.logo) {
+    logo = dibujarRecuadroYLogo(d, 2, 2, 5);
+  }
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 9 9" aria-hidden="true">`
+    + `<rect width="9" height="9" fill="${d.fondoTransparente ? '#FFFFFF' : d.colorFondo}"/>`
+    + `<path d="${puntos}" fill="${d.colorPuntos}"/>${logo}</svg>`;
 }

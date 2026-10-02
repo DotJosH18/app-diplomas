@@ -916,6 +916,36 @@ details[open] > summary .flecha-desplegable { transform: rotate(180deg); }
   background-size: 16px 16px;
   background-position: 0 0, 8px 8px;
 }
+/* El resultado se puede ver sobre otros fondos (data-vista lo cambia JavaScript) */
+.vista-fondo { transition: background-color .2s; }
+.vista-fondo[data-vista="blanco"] { background-image: none; background-color: #ffffff; box-shadow: inset 0 0 0 1px var(--borde); }
+.vista-fondo[data-vista="negro"]  { background-image: none; background-color: #16171d; }
+.vista-fondo[data-vista="azul"]   { background-image: none; background-color: var(--azul); }
+.editor-fondo__lienzo--retocable { cursor: cell; }
+
+.vistas-fondo { display: flex; align-items: center; gap: 8px; font-size: .75rem; color: var(--gris); }
+.vista-fondo-opcion { position: relative; cursor: pointer; }
+.vista-fondo-opcion input { position: absolute; opacity: 0; pointer-events: none; }
+.vista-fondo-opcion__muestra {
+  display: block; width: 24px; height: 24px; border-radius: 50%;
+  box-shadow: inset 0 0 0 1px #00000026; transition: transform .15s, box-shadow .15s;
+}
+.vista-fondo-opcion:hover .vista-fondo-opcion__muestra { transform: scale(1.12); }
+.vista-fondo-opcion input:checked + .vista-fondo-opcion__muestra { box-shadow: 0 0 0 2px var(--superficie), 0 0 0 4px var(--azul); }
+.vista-fondo-opcion input:focus-visible + .vista-fondo-opcion__muestra { box-shadow: var(--foco); }
+.vista-fondo-opcion__muestra--cuadritos {
+  background-color: #ffffff;
+  background-image: linear-gradient(45deg, #c9ccd8 25%, transparent 25%, transparent 75%, #c9ccd8 75%),
+    linear-gradient(45deg, #c9ccd8 25%, transparent 25%, transparent 75%, #c9ccd8 75%);
+  background-size: 8px 8px; background-position: 0 0, 4px 4px;
+}
+.vista-fondo-opcion__muestra--blanco { background: #ffffff; }
+.vista-fondo-opcion__muestra--negro  { background: #16171d; }
+.vista-fondo-opcion__muestra--azul   { background: var(--azul); }
+
+.personalizar__etiqueta--separada { margin-top: 22px; padding-top: 16px; border-top: 1px solid var(--borde); }
+.retoques-fondo { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px; }
+.retoques-fondo .boton { flex: 1 1 auto; justify-content: center; }
 
 .fondo-detectado { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
 .fondo-detectado__muestra {
@@ -928,6 +958,8 @@ details[open] > summary .flecha-desplegable { transform: rotate(180deg); }
 .control-deslizable { display: flex; flex-direction: column; gap: 8px; margin-top: 18px; font-size: .85rem; font-weight: 600; }
 .control-deslizable strong { display: inline-block; min-width: 32px; margin-left: 4px; padding: 1px 8px; border-radius: 999px; background: var(--azul-suave); color: var(--azul); text-align: center; }
 .control-deslizable input { width: 100%; accent-color: var(--azul); }
+.control-tamano-logo__extremos { display: flex; justify-content: space-between; margin-top: -4px; font-weight: 400; color: var(--gris); }
+.control-tamano-logo__extremos small { font-size: .75rem; }
 .casilla { display: flex; gap: 10px; align-items: flex-start; margin-top: 12px; font-size: .85rem; cursor: pointer; }
 .casilla input { width: 18px; height: 18px; margin: 1px 0 0; accent-color: var(--azul); flex-shrink: 0; }
 .casilla small { color: var(--gris); }
@@ -1060,6 +1092,7 @@ details[open] > summary .flecha-desplegable { transform: rotate(180deg); }
   transition: border-color .15s, background .15s, box-shadow .15s;
 }
 .forma-qr__dibujo { display: block; width: 32px; height: 32px; transition: transform .2s ease; }
+.forma-qr__dibujo[data-dibujo="recuadro"] { width: 46px; height: 46px; border-radius: 6px; overflow: hidden; }
 .forma-qr__dibujo svg { display: block; width: 100%; height: 100%; }
 .forma-qr:hover > span { border-color: var(--borde-fuerte); background: #F8F9FD; }
 .forma-qr:hover .forma-qr__dibujo { transform: scale(1.1); }

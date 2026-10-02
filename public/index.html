@@ -192,7 +192,7 @@
     <section id="herramienta-fondo" class="herramienta oculto" data-herramienta="quitar-fondo">
       <div class="herramienta__intro">
         <h2 class="herramienta__titulo"><span class="titulo-icono"><span class="icono" aria-hidden="true">wand_stars</span></span>Quitar el fondo de un logo</h2>
-        <p class="nota">Sube una imagen PNG o JPG. El color del fondo se detecta solo; si algo no queda bien, ajusta la tolerancia o haz clic sobre el fondo de la imagen original. La imagen no sale de tu computadora.</p>
+        <p class="nota">Sube una imagen PNG o JPG. El fondo se detecta solo y los bordes quedan suaves, sin halo. Si algo no queda bien, ajusta la tolerancia o haz clic sobre el resultado para borrar o recuperar una zona. La imagen no sale de tu computadora.</p>
       </div>
 
       <!-- Paso 1: elegir la imagen -->
@@ -214,9 +214,17 @@
             <canvas id="lienzo-original" class="editor-fondo__lienzo editor-fondo__lienzo--original"></canvas>
           </figure>
           <figure class="editor-fondo__cuadro">
-            <figcaption>Sin fondo <small>los cuadritos son la parte transparente</small></figcaption>
-            <div class="transparente">
-              <canvas id="lienzo-resultado" class="editor-fondo__lienzo"></canvas>
+            <figcaption>Sin fondo <small>clic en una zona para borrarla o recuperarla</small></figcaption>
+            <!-- data-vista cambia el fondo de esta caja (cuadritos, blanco, negro, azul): ver estilos.css -->
+            <div id="caja-resultado" class="transparente vista-fondo" data-vista="cuadritos">
+              <canvas id="lienzo-resultado" class="editor-fondo__lienzo editor-fondo__lienzo--retocable"></canvas>
+            </div>
+            <div class="vistas-fondo" role="radiogroup" aria-label="Ver el resultado sobre">
+              <span class="vistas-fondo__texto">Ver sobre:</span>
+              <label class="vista-fondo-opcion" title="Cuadritos (transparente)"><input type="radio" name="vista-fondo" value="cuadritos" checked /><span class="vista-fondo-opcion__muestra vista-fondo-opcion__muestra--cuadritos"></span></label>
+              <label class="vista-fondo-opcion" title="Blanco"><input type="radio" name="vista-fondo" value="blanco" /><span class="vista-fondo-opcion__muestra vista-fondo-opcion__muestra--blanco"></span></label>
+              <label class="vista-fondo-opcion" title="Negro"><input type="radio" name="vista-fondo" value="negro" /><span class="vista-fondo-opcion__muestra vista-fondo-opcion__muestra--negro"></span></label>
+              <label class="vista-fondo-opcion" title="Azul UNICAH"><input type="radio" name="vista-fondo" value="azul" /><span class="vista-fondo-opcion__muestra vista-fondo-opcion__muestra--azul"></span></label>
             </div>
           </figure>
         </div>
@@ -238,6 +246,13 @@
           <label class="casilla"><input id="solo-exterior" type="checkbox" checked /><span>Quitar solo el fondo de afuera <small>(conserva los blancos dentro del logo)</small></span></label>
           <label class="casilla"><input id="suavizar-bordes" type="checkbox" checked /> Suavizar los bordes</label>
           <label class="casilla"><input id="recortar-sobrante" type="checkbox" checked /> Recortar el espacio vacío alrededor</label>
+
+          <p class="personalizar__etiqueta personalizar__etiqueta--separada">Retoques</p>
+          <p class="nota">¿Quedó blanco dentro de una letra o se borró algo de más? Haz clic sobre esa zona en <strong>Sin fondo</strong>: lo visible se borra y lo transparente se recupera.</p>
+          <div class="retoques-fondo">
+            <button type="button" id="boton-deshacer-retoque" class="boton boton--chico" disabled><span class="icono" aria-hidden="true">undo</span><span class="boton__texto">Deshacer clic</span></button>
+            <button type="button" id="boton-quitar-retoques" class="boton boton--chico"><span class="icono" aria-hidden="true">restart_alt</span><span class="boton__texto">Quitar retoques</span></button>
+          </div>
 
           <div class="acciones">
             <button type="button" id="boton-otra-imagen" class="boton"><span class="icono" aria-hidden="true">swap_horiz</span><span class="boton__texto">Otra imagen</span></button>
@@ -436,16 +451,23 @@
             </div>
 
             <div id="qr-opciones-logo">
-              <label class="control-deslizable">
-                <span>Tamaño <strong data-codigo="tamanoLogo"></strong></span>
-                <input type="range" min="12" max="26" data-ajuste="tamanoLogo" aria-label="Tamaño del logo" />
-              </label>
-              <label class="casilla"><input type="checkbox" data-ajuste="fondoLogo" /> Fondo detrás del logo <small>(se lee mejor)</small></label>
-              <p class="personalizar__etiqueta">Forma del fondo</p>
-              <div class="chips-qr" role="radiogroup" aria-label="Forma del fondo del logo">
-                <label class="chip-qr"><input type="radio" name="qr-forma-logo" value="cuadrado" data-ajuste="formaFondoLogo" /><span><span class="icono" aria-hidden="true">crop_square</span>Cuadrado</span></label>
-                <label class="chip-qr"><input type="radio" name="qr-forma-logo" value="circulo" data-ajuste="formaFondoLogo" /><span><span class="icono" aria-hidden="true">circle</span>Círculo</span></label>
+              <p class="personalizar__etiqueta">Recuadro del logo</p>
+              <!-- Cada opción se dibuja con el logo y los colores actuales (qr.js) -->
+              <div class="formas-qr formas-qr--fila" role="radiogroup" aria-label="Recuadro del logo">
+                <label class="forma-qr"><input type="radio" name="qr-recuadro-logo" value="ninguno" />
+                  <span><span class="forma-qr__dibujo" data-dibujo="recuadro"></span>Sin recuadro</span></label>
+                <label class="forma-qr"><input type="radio" name="qr-recuadro-logo" value="cuadrado" />
+                  <span><span class="forma-qr__dibujo" data-dibujo="recuadro"></span>Cuadrado</span></label>
+                <label class="forma-qr"><input type="radio" name="qr-recuadro-logo" value="circulo" />
+                  <span><span class="forma-qr__dibujo" data-dibujo="recuadro"></span>Círculo</span></label>
               </div>
+              <p class="nota nota-qr">El recuadro separa el logo de los puntos y tiene un borde del color de las esquinas.</p>
+
+              <label class="control-deslizable control-tamano-logo">
+                <span>Tamaño del logo <strong data-codigo="tamanoLogo"></strong></span>
+                <input type="range" min="12" max="26" data-ajuste="tamanoLogo" aria-label="Tamaño del logo" />
+                <span class="control-tamano-logo__extremos" aria-hidden="true"><small>Más pequeño</small><small>Más grande</small></span>
+              </label>
             </div>
             <p class="nota">Consejo: un logo sin fondo (PNG) se ve mejor. Puedes quitárselo con la herramienta "Quitar fondo de logos".</p>
           </div>
@@ -1001,7 +1023,8 @@
         <summary><span class="manual__numero">5</span> Quitar el fondo de un logo<span class="icono flecha-desplegable" aria-hidden="true">keyboard_arrow_down</span></summary>
         <ol>
           <li>En el inicio, abre la lengüeta <b>Herramientas</b> y elige <b>Quitar fondo de logos</b>.</li>
-          <li>Sube la imagen: el fondo se quita solo. Si algo no queda bien, mueve la <b>tolerancia</b> o haz clic sobre el fondo de la imagen original.</li>
+          <li>Sube la imagen: el fondo se quita solo y los bordes quedan sin halo. Si se borró de más o de menos, mueve la <b>tolerancia</b>.</li>
+          <li>¿Quedó blanco dentro de una letra? Haz clic sobre esa zona en <b>Sin fondo</b> para borrarla (o sobre lo transparente para recuperarlo). Con <b>Ver sobre</b> revisas el resultado en negro o azul.</li>
           <li>Pulsa <b>Usar como logo en los diplomas</b>, o <b>Descargar PNG</b> para guardarlo.</li>
         </ol>
         <button type="button" class="boton boton--chico" data-recorrido="herramienta"><span class="icono" aria-hidden="true">visibility</span><span class="boton__texto">Muéstrame dónde</span></button>
@@ -1012,7 +1035,7 @@
         <ol>
           <li>En el inicio, abre la lengüeta <b>Herramientas</b> y elige <b>Generar código QR</b>.</li>
           <li>En <b>Contenido</b> elige qué abrirá: un link, WhatsApp, un correo, la clave del Wi-Fi o un texto. El QR aparece al momento.</li>
-          <li>En <b>Diseño</b> elige una plantilla o cambia la forma de los puntos, las esquinas y los colores. En <b>Logo</b>, el del centro; en <b>Marco</b>, un texto como "ESCANÉAME".</li>
+          <li>En <b>Diseño</b> elige una plantilla o cambia la forma de los puntos, las esquinas y los colores. En <b>Logo</b>, el del centro y su recuadro; en <b>Marco</b>, un texto como "ESCANÉAME".</li>
           <li>Fíjate en el aviso debajo del QR: <b>verde</b> = se leerá fácil; <b>amarillo</b> = te dice qué mejorar.</li>
           <li>Elige <b>PNG</b> (redes, documentos) o <b>SVG</b> (imprenta) y pulsa <b>Descargar</b>, o <b>Copiar</b> para pegarlo directo.</li>
           <li>Antes de imprimirlo, <b>pruébalo con la cámara de tu celular</b>.</li>

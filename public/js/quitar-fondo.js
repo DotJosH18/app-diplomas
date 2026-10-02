@@ -12,11 +12,15 @@
 //    2. Se averigua el color del fondo (el más repetido en los bordes).
 //    3. Se marcan como fondo los píxeles parecidos a ese color:
 //       - "solo el de afuera": se empieza en los bordes y se avanza
-//         a los vecinos parecidos (como el balde de pintura de Paint).
+//         a los vecinos parecidos (como el balde de pintura de Paint),
+//         siguiendo también los degradados suaves.
 //         Así los blancos DENTRO del logo no se borran.
 //       - si no: se borran todos los parecidos, estén donde estén.
-//    4. A los píxeles de fondo se les pone alfa 0 (transparentes).
-//    5. Se recorta el espacio vacío y se dibuja el resultado.
+//    4. Se aplican los "retoques": clic en el resultado para borrar
+//       o recuperar una zona (con Deshacer).
+//    5. A los píxeles de fondo se les pone alfa 0 (transparentes) y
+//       el borde queda semitransparente y SIN halo del color del fondo.
+//    6. Se recorta el espacio vacío y se dibuja el resultado.
 //
 //  (Mostrar u ocultar esta pantalla lo hace navegacion.js.)
 //
@@ -46,6 +50,10 @@ const casillaSoloExterior = document.getElementById('solo-exterior');
 const casillaSuavizar = document.getElementById('suavizar-bordes');
 const casillaRecortar = document.getElementById('recortar-sobrante');
 const botonOtraImagen = document.getElementById('boton-otra-imagen');
+const botonDeshacer = document.getElementById('boton-deshacer-retoque');
+const botonQuitarRetoques = document.getElementById('boton-quitar-retoques');
+const cajaResultado = document.getElementById('caja-resultado');
+const opcionesVistaFondo = document.querySelectorAll('input[name="vista-fondo"]');
 const botonUsarLogo = document.getElementById('boton-usar-logo');
 const botonDescargarPNG = document.getElementById('boton-descargar-png');
 const mensajeFondo = document.getElementById('mensaje-fondo');
@@ -56,6 +64,8 @@ let pixelesOriginales = null;   // los píxeles de la imagen original (ImageData
 let colorFondo = [255, 255, 255]; // [rojo, verde, azul]
 let nombreImagen = 'logo';      // para el nombre del PNG que se descarga
 let temporizadorFondo = null;
+let retoques = [];              // los clics sobre el resultado: { x, y, accion }
+let recorte = { x: 0, y: 0, ancho: 0, alto: 0 }; // qué parte de la imagen se ve en el resultado
 
 
 // =============================================================
@@ -156,6 +166,7 @@ async function cargarImagen(archivo) {
 
   // "Mi logo.jpg" -> "Mi logo"
   nombreImagen = archivo.name.replace(/\.[^.]+$/, '');
+  retoques = []; // imagen nueva: sin retoques
 
   // Color del fondo: el más repetido en los bordes
   colorFondo = detectarColorDeFondo(pixelesOriginales);
@@ -266,125 +277,368 @@ function prepararControles() {
   deslizadorTolerancia.addEventListener('input', function () {
     textoTolerancia.textContent = deslizadorTolerancia.value;
     clearTimeout(temporizadorFondo);
-    temporizadorFondo = setTimeout(procesar, 60);
+    temporizadorFondo = setTimeout(procesar, 120);
   });
   casillaSoloExterior.addEventListener('change', procesar);
   casillaSuavizar.addEventListener('change', procesar);
   casillaRecortar.addEventListener('change', procesar);
   lienzoOriginal.addEventListener('click', elegirFondoConClic);
+  lienzoResultado.addEventListener('click', retocarConClic);
+  botonDeshacer.addEventListener('click', function () {
+    retoques.pop();
+    procesar();
+  });
+  botonQuitarRetoques.addEventListener('click', function () {
+    retoques = [];
+    procesar();
+  });
+
+  // Ver el resultado sobre otro fondo (cuadritos, blanco, negro, azul) para revisar los bordes
+  for (const opcion of opcionesVistaFondo) {
+    opcion.addEventListener('change', function () {
+      cajaResultado.dataset.vista = opcion.value; // el CSS pinta el fondo según data-vista
+    });
+  }
 }
 
 /**
- * Distancia entre el color de un píxel y el del fondo, de 0 (igual) a 100
- * (lo más distinto posible: negro contra blanco).
+ * Clic sobre el resultado:
+ *   sobre algo visible      -> se borra esa zona (ej. el blanco dentro de una letra "O")
+ *   sobre algo transparente -> se recupera esa zona (algo que se borró de más)
  */
-function distanciaAlFondo(datos, i) {
-  const rojo = datos[i] - colorFondo[0];
-  const verde = datos[i + 1] - colorFondo[1];
-  const azul = datos[i + 2] - colorFondo[2];
-  return (Math.sqrt(rojo * rojo + verde * verde + azul * azul) / 441.7) * 100; // 441.7 = distancia de negro a blanco
+function retocarConClic(evento) {
+  if (pixelesOriginales === null) {
+    return;
+  }
+  const rectangulo = lienzoResultado.getBoundingClientRect();
+  const xEnResultado = Math.floor((evento.clientX - rectangulo.left) * (lienzoResultado.width / rectangulo.width));
+  const yEnResultado = Math.floor((evento.clientY - rectangulo.top) * (lienzoResultado.height / rectangulo.height));
+  const alfaAhi = lienzoResultado.getContext('2d').getImageData(xEnResultado, yEnResultado, 1, 1).data[3];
+
+  retoques.push({
+    x: xEnResultado + recorte.x, // el resultado puede estar recortado: se pasa a la imagen original
+    y: yEnResultado + recorte.y,
+    accion: alfaAhi > 127 ? 'borrar' : 'recuperar',
+  });
+  procesar();
 }
 
+/**
+ * Distancia entre dos colores, de 0 (iguales) a 100 (lo más distinto posible:
+ * negro contra blanco). "a" y "b" son posiciones dentro de los datos (r, g, b, a…).
+ */
+function distanciaEntre(datosA, a, datosB, b) {
+  const rojo = datosA[a] - datosB[b];
+  const verde = datosA[a + 1] - datosB[b + 1];
+  const azul = datosA[a + 2] - datosB[b + 2];
+  return (Math.sqrt(rojo * rojo + verde * verde + azul * azul) / 441.7) * 100; // 441.7 = de negro a blanco
+}
+
+/**
+ * Quita el fondo y dibuja el resultado. Son 4 pasos:
+ *   1. marcarFondo        qué píxeles son fondo (balde de pintura o todos los parecidos)
+ *   2. aplicarRetoques    los clics del usuario sobre el resultado (borrar o recuperar zonas)
+ *   3. suavizarBordes     el borde del logo queda semitransparente y sin halo
+ *   4. recortar y dibujar
+ */
 function procesar() {
   if (pixelesOriginales === null) {
     return;
   }
   const ancho = pixelesOriginales.width;
   const alto = pixelesOriginales.height;
-  const origen = pixelesOriginales.data;
   const tolerancia = Number(deslizadorTolerancia.value);
+
+  const esFondo = marcarFondo(pixelesOriginales, tolerancia);
+  aplicarRetoques(esFondo, pixelesOriginales, tolerancia);
+
+  // Copia de la imagen: el fondo queda transparente (alfa 0)
+  const resultado = new ImageData(new Uint8ClampedArray(pixelesOriginales.data), ancho, alto);
+  for (let p = 0; p < ancho * alto; p++) {
+    if (esFondo[p] === 1) {
+      resultado.data[p * 4 + 3] = 0;
+    }
+  }
+  if (casillaSuavizar.checked) {
+    suavizarBordes(resultado, pixelesOriginales, esFondo);
+  }
+
+  // Recortar el espacio vacío (se deja un margen de 2 píxeles)
+  recorte = { x: 0, y: 0, ancho: ancho, alto: alto };
+  if (casillaRecortar.checked) {
+    recorte = areaVisible(resultado.data, ancho, alto, 2);
+  }
+  lienzoResultado.width = recorte.ancho;
+  lienzoResultado.height = recorte.alto;
+  lienzoResultado.getContext('2d').putImageData(resultado, -recorte.x, -recorte.y);
+  botonDeshacer.disabled = retoques.length === 0;
+}
+
+/**
+ * Paso 1. Devuelve esFondo: un 1 por cada píxel que es fondo, un 0 si es logo.
+ *
+ * "Solo el de afuera" = balde de pintura: empieza en los bordes de la imagen y
+ * avanza a los vecinos. Un vecino es fondo si:
+ *   - se parece al color del fondo (según la tolerancia), o
+ *   - se parece al "fondo de por aquí": un color que va cambiando POCO A POCO
+ *     mientras el balde avanza. Así sigue los degradados y sombras suaves,
+ *     pero no se mete en el logo (en un borde el color cambia de golpe y el
+ *     "fondo de por aquí" no alcanza a cambiar tan rápido).
+ */
+function marcarFondo(pixeles, tolerancia) {
+  const ancho = pixeles.width;
+  const alto = pixeles.height;
+  const datos = pixeles.data;
   const total = ancho * alto;
-
-  // Distancia de cada píxel al color del fondo (se calcula una vez)
-  const distancias = new Float32Array(total);
-  for (let p = 0; p < total; p++) {
-    distancias[p] = distanciaAlFondo(origen, p * 4);
-  }
-
-  // ¿Este píxel se parece al fondo? (o ya era transparente)
-  function pareceFondo(p) {
-    return origen[p * 4 + 3] < 10 || distancias[p] <= tolerancia;
-  }
-
-  // esFondo[p] = 1 si el píxel p es fondo
+  const fondo = new Uint8ClampedArray([colorFondo[0], colorFondo[1], colorFondo[2], 255]);
   const esFondo = new Uint8Array(total);
 
-  if (casillaSoloExterior.checked) {
-    // "Balde de pintura": empieza en los bordes y avanza a los vecinos parecidos
-    const pendientes = new Int32Array(total); // lista de píxeles por revisar
-    let cantidad = 0;
-    for (let x = 0; x < ancho; x++) {
-      pendientes[cantidad++] = x;                        // borde de arriba
-      pendientes[cantidad++] = (alto - 1) * ancho + x;   // borde de abajo
-    }
-    for (let y = 0; y < alto; y++) {
-      pendientes[cantidad++] = y * ancho;                // borde izquierdo
-      pendientes[cantidad++] = y * ancho + ancho - 1;    // borde derecho
-    }
+  function pareceFondo(p) {
+    return datos[p * 4 + 3] < 10 || distanciaEntre(datos, p * 4, fondo, 0) <= tolerancia;
+  }
 
-    while (cantidad > 0) {
-      cantidad--;
-      const p = pendientes[cantidad];
-      if (esFondo[p] === 1 || !pareceFondo(p)) {
-        continue;
-      }
-      esFondo[p] = 1;
-      const x = p % ancho;
-      const y = Math.floor(p / ancho);
-      // Los 4 vecinos: arriba, abajo, izquierda, derecha
-      if (y > 0) { pendientes[cantidad++] = p - ancho; }
-      if (y < alto - 1) { pendientes[cantidad++] = p + ancho; }
-      if (x > 0) { pendientes[cantidad++] = p - 1; }
-      if (x < ancho - 1) { pendientes[cantidad++] = p + 1; }
-    }
-  } else {
+  if (!casillaSoloExterior.checked) {
     // Todos los píxeles parecidos al fondo, estén donde estén
     for (let p = 0; p < total; p++) {
       if (pareceFondo(p)) {
         esFondo[p] = 1;
       }
     }
+    return esFondo;
   }
 
-  // Resultado: copia de la imagen con el fondo transparente
-  const resultado = new ImageData(new Uint8ClampedArray(origen), ancho, alto);
-  const datos = resultado.data;
-  for (let p = 0; p < total; p++) {
-    if (esFondo[p] === 1) {
-      datos[p * 4 + 3] = 0;
+  const RAPIDEZ = 0.15;                       // qué tanto se acerca el "fondo de por aquí" a cada píxel nuevo
+  const parecidoAlDeAqui = tolerancia * 0.6;
+  // Límite: el "fondo de por aquí" no puede alejarse mucho del fondo de verdad.
+  // (Sin esto, en un borde difuso el balde iría "trepando" poco a poco hasta el logo.)
+  const alejamientoMaximo = tolerancia * 1.5;
+  const fondoDeAqui = new Float32Array(total * 4); // r, g, b, (sin usar) de cada píxel ya visto
+  const yaVisto = new Uint8Array(total);
+  const desdeDonde = new Int32Array(total);   // de qué vecino llegó el balde a cada píxel
+  const pendientes = new Int32Array(total);   // pila de píxeles por revisar (cada uno entra una vez)
+  let cantidad = 0;
+
+  function agregar(p, desde) {
+    if (yaVisto[p] === 0) {
+      yaVisto[p] = 1;
+      desdeDonde[p] = desde;
+      pendientes[cantidad++] = p;
     }
   }
+  // Empieza por los bordes de la imagen
+  for (let x = 0; x < ancho; x++) {
+    agregar(x, -1);
+    agregar((alto - 1) * ancho + x, -1);
+  }
+  for (let y = 0; y < alto; y++) {
+    agregar(y * ancho, -1);
+    agregar(y * ancho + ancho - 1, -1);
+  }
 
-  // Bordes suaves: los píxeles del logo que tocan el fondo y se le parecen un poco
-  // quedan semitransparentes (así no se ve el "serrucho" ni un halo del color del fondo)
-  if (casillaSuavizar.checked) {
-    const margen = 18; // qué tan lejos de la tolerancia todavía se suaviza
-    for (let p = 0; p < total; p++) {
-      if (esFondo[p] === 1) {
+  while (cantidad > 0) {
+    const p = pendientes[--cantidad];
+    const desde = desdeDonde[p];
+    let entra = pareceFondo(p);
+    if (!entra && desde !== -1) {
+      entra = distanciaEntre(datos, p * 4, fondoDeAqui, desde * 4) <= parecidoAlDeAqui
+        && distanciaEntre(datos, p * 4, fondo, 0) <= alejamientoMaximo;
+    }
+    if (!entra) {
+      continue;
+    }
+    esFondo[p] = 1;
+
+    // El "fondo de por aquí" se acerca un poco al color de este píxel
+    for (let canal = 0; canal < 3; canal++) {
+      const anterior = desde === -1 ? datos[p * 4 + canal] : fondoDeAqui[desde * 4 + canal];
+      fondoDeAqui[p * 4 + canal] = anterior + (datos[p * 4 + canal] - anterior) * RAPIDEZ;
+    }
+
+    const x = p % ancho;
+    const y = Math.floor(p / ancho);
+    // Los 4 vecinos: arriba, abajo, izquierda, derecha
+    if (y > 0) { agregar(p - ancho, p); }
+    if (y < alto - 1) { agregar(p + ancho, p); }
+    if (x > 0) { agregar(p - 1, p); }
+    if (x < ancho - 1) { agregar(p + 1, p); }
+  }
+  return esFondo;
+}
+
+/**
+ * Paso 2. Cada clic del usuario sobre el resultado es un "retoque":
+ *   { x, y, accion: 'borrar' | 'recuperar' }   (x, y en píxeles de la imagen original)
+ * Desde ese punto se pinta con balde la zona de colores parecidos:
+ *   borrar    -> esa zona del logo pasa a ser fondo (ej. el blanco dentro de una letra)
+ *   recuperar -> esa zona de fondo vuelve a ser logo (ej. algo que se borró de más)
+ */
+function aplicarRetoques(esFondo, pixeles, tolerancia) {
+  const ancho = pixeles.width;
+  const alto = pixeles.height;
+  const datos = pixeles.data;
+  const parecido = Math.max(12, tolerancia);
+
+  for (const retoque of retoques) {
+    const inicio = retoque.y * ancho + retoque.x;
+    const valorQueBusca = retoque.accion === 'borrar' ? 0 : 1; // borrar: recorre lo visible; recuperar: lo transparente
+    const valorNuevo = 1 - valorQueBusca;
+    const pendientes = [inicio];
+    while (pendientes.length > 0) {
+      const p = pendientes.pop();
+      if (esFondo[p] !== valorQueBusca) {
         continue;
       }
+      if (distanciaEntre(datos, p * 4, datos, inicio * 4) > parecido) {
+        continue;
+      }
+      esFondo[p] = valorNuevo;
       const x = p % ancho;
       const y = Math.floor(p / ancho);
-      const tocaFondo =
-        (x > 0 && esFondo[p - 1] === 1) || (x < ancho - 1 && esFondo[p + 1] === 1) ||
-        (y > 0 && esFondo[p - ancho] === 1) || (y < alto - 1 && esFondo[p + ancho] === 1);
-      if (tocaFondo) {
-        const cuanto = Math.min(1, Math.max(0, (distancias[p] - tolerancia) / margen)); // 0 = casi fondo, 1 = logo
-        datos[p * 4 + 3] = Math.round(datos[p * 4 + 3] * cuanto);
+      if (y > 0) { pendientes.push(p - ancho); }
+      if (y < alto - 1) { pendientes.push(p + ancho); }
+      if (x > 0) { pendientes.push(p - 1); }
+      if (x < ancho - 1) { pendientes.push(p + 1); }
+    }
+  }
+}
+
+/**
+ * Paso 3. Bordes suaves y sin halo.
+ * En el borde, un píxel suele ser una MEZCLA del color del logo y del fondo
+ * (por eso al quitar un fondo blanco queda una "rayita" clara alrededor).
+ * Para cada píxel de la orilla (el borde y 2 píxeles a cada lado):
+ *   - fondoCerca = el promedio de los píxeles de fondo de alrededor
+ *   - logoCerca  = el píxel del logo de alrededor más distinto al fondo
+ *   - visibilidad (alfa) = qué tan lejos está del fondo, comparado con logoCerca
+ *     (igual al fondo -> 0 transparente;  igual al logo -> 1 visible)
+ *   - y se le quita el fondo a su color:  color = fondo + (color - fondo) / alfa
+ */
+function suavizarBordes(resultado, pixeles, esFondo) {
+  const ancho = pixeles.width;
+  const alto = pixeles.height;
+  const original = pixeles.data;
+  const datos = resultado.data;
+  const RADIO = 2; // la orilla y 2 píxeles a cada lado (los bordes difusos son anchos)
+
+  // Qué píxeles revisar: los que están cerca de la orilla entre fondo y logo
+  const enLaOrilla = new Uint8Array(ancho * alto);
+  for (let y = 0; y < alto; y++) {
+    for (let x = 0; x < ancho; x++) {
+      const p = y * ancho + x;
+      const vecinoDistinto =
+        (x > 0 && esFondo[p - 1] !== esFondo[p]) || (x < ancho - 1 && esFondo[p + 1] !== esFondo[p]) ||
+        (y > 0 && esFondo[p - ancho] !== esFondo[p]) || (y < alto - 1 && esFondo[p + ancho] !== esFondo[p]);
+      if (vecinoDistinto) {
+        // marca la orilla y lo que está a RADIO píxeles de ella, del lado del logo
+        for (let dy = -RADIO; dy <= RADIO; dy++) {
+          for (let dx = -RADIO; dx <= RADIO; dx++) {
+            const nx = x + dx;
+            const ny = y + dy;
+            if (nx >= 0 && ny >= 0 && nx < ancho && ny < alto) {
+              enLaOrilla[ny * ancho + nx] = 1;
+            }
+          }
+        }
       }
     }
   }
 
-  // Recortar el espacio vacío (se deja un margen de 2 píxeles)
-  let recorte = { x: 0, y: 0, ancho: ancho, alto: alto };
-  if (casillaRecortar.checked) {
-    recorte = areaVisible(datos, ancho, alto, 2);
-  }
+  const fondoCerca = new Float32Array(4);
+  for (let p = 0; p < ancho * alto; p++) {
+    if (enLaOrilla[p] === 0 || original[p * 4 + 3] < 10) {
+      continue;
+    }
+    const x = p % ancho;
+    const y = Math.floor(p / ancho);
 
-  // Dibuja el resultado
-  lienzoResultado.width = recorte.ancho;
-  lienzoResultado.height = recorte.alto;
-  lienzoResultado.getContext('2d').putImageData(resultado, -recorte.x, -recorte.y);
+    // Promedio del fondo de alrededor (en una ventana de 7 x 7)
+    let cantidadFondo = 0;
+    fondoCerca[0] = 0; fondoCerca[1] = 0; fondoCerca[2] = 0;
+    for (let dy = -3; dy <= 3; dy++) {
+      for (let dx = -3; dx <= 3; dx++) {
+        const nx = x + dx;
+        const ny = y + dy;
+        if (nx < 0 || ny < 0 || nx >= ancho || ny >= alto) { continue; }
+        const q = ny * ancho + nx;
+        if (esFondo[q] === 1 && original[q * 4 + 3] > 200) {
+          fondoCerca[0] += original[q * 4];
+          fondoCerca[1] += original[q * 4 + 1];
+          fondoCerca[2] += original[q * 4 + 2];
+          cantidadFondo++;
+        }
+      }
+    }
+    if (cantidadFondo === 0) {
+      continue; // el fondo de aquí ya era transparente: no hay nada que mezclar
+    }
+    fondoCerca[0] /= cantidadFondo; fondoCerca[1] /= cantidadFondo; fondoCerca[2] /= cantidadFondo;
+
+    // ¿Con qué color del logo está mezclado? Se prueba con cada píxel del logo de
+    // alrededor: si este píxel queda "en el camino" entre el fondo y ese color,
+    // es una mezcla de los dos. Se queda el color más intenso que cumpla.
+    let alfa = 1;
+    let mejorLargo = 0;
+    for (let dy = -3; dy <= 3; dy++) {
+      for (let dx = -3; dx <= 3; dx++) {
+        const nx = x + dx;
+        const ny = y + dy;
+        if (nx < 0 || ny < 0 || nx >= ancho || ny >= alto) { continue; }
+        const q = ny * ancho + nx;
+        if (esFondo[q] === 1 || q === p) { continue; }
+        const mezcla = mezclaEntre(fondoCerca, original, q * 4, original, p * 4);
+        if (mezcla !== null && mezcla.largo > mejorLargo) {
+          mejorLargo = mezcla.largo;
+          alfa = mezcla.cuanto;
+        }
+      }
+    }
+    if (mejorLargo === 0) {
+      continue; // no se parece a ninguna mezcla: se deja como está
+    }
+
+    if (esFondo[p] === 1 && alfa < 0.25) {
+      continue; // es fondo de verdad: sigue transparente
+    }
+    if (alfa > 0.9) {
+      continue; // es logo de verdad: no se toca
+    }
+    // Se le quita el fondo a su color
+    for (let canal = 0; canal < 3; canal++) {
+      const limpio = fondoCerca[canal] + (original[p * 4 + canal] - fondoCerca[canal]) / Math.max(alfa, 0.05);
+      datos[p * 4 + canal] = Math.round(limpio); // Uint8ClampedArray lo deja entre 0 y 255
+    }
+    datos[p * 4 + 3] = Math.round(original[p * 4 + 3] * alfa);
+  }
+}
+
+/**
+ * ¿El color "c" es una mezcla del fondo "f" y del color del logo "l"?
+ * Piensa en una línea recta (en colores) que va del fondo al logo:
+ *   cuanto = en qué parte de la línea cae c (0 = fondo, 1 = logo)
+ *   si c queda lejos de la línea, NO es una mezcla de esos dos -> null
+ *   largo  = qué tan distinto es el logo del fondo (más largo = más confiable)
+ */
+function mezclaEntre(f, datosL, l, datosC, c) {
+  const lineaR = datosL[l] - f[0];
+  const lineaG = datosL[l + 1] - f[1];
+  const lineaB = datosL[l + 2] - f[2];
+  const largo2 = lineaR * lineaR + lineaG * lineaG + lineaB * lineaB;
+  if (largo2 < 900) {
+    return null; // ese "logo" es casi igual al fondo (menos de 30 de diferencia)
+  }
+  const colorR = datosC[c] - f[0];
+  const colorG = datosC[c + 1] - f[1];
+  const colorB = datosC[c + 2] - f[2];
+  let cuanto = (colorR * lineaR + colorG * lineaG + colorB * lineaB) / largo2;
+  cuanto = Math.min(1, Math.max(0, cuanto));
+  // Qué tan lejos de la línea queda el color
+  const fueraR = colorR - cuanto * lineaR;
+  const fueraG = colorG - cuanto * lineaG;
+  const fueraB = colorB - cuanto * lineaB;
+  if (Math.sqrt(fueraR * fueraR + fueraG * fueraG + fueraB * fueraB) > 24) {
+    return null;
+  }
+  return { cuanto: cuanto, largo: Math.sqrt(largo2) };
 }
 
 /** El rectángulo donde hay algo visible (alfa > 8), con un margen. */

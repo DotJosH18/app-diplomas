@@ -15,13 +15,14 @@
 //
 //  IMPORTA                              DE             PARA
 //  armarSVG, DISENO_INICIAL, PLANTILLAS  qr-dibujo.js   dibujar el QR y los diseños listos
-//  svgDeEsquina, svgDePuntos            qr-dibujo.js   los dibujitos de cada opción de forma
+//  svgDeEsquina, svgDePuntos,           qr-dibujo.js   los dibujitos de cada opción de forma
+//  svgDeRecuadroLogo                    qr-dibujo.js   (y de cada recuadro del logo)
 //  mostrar, ocultar, mostrarMensaje     utilidades.js  mostrar partes y avisos
 //
 //  EXPORTA          LO IMPORTA  PARA
 //  iniciarQR()      main.js     arrancar esta parte
 // =============================================================
-import { armarSVG, svgDeEsquina, svgDePuntos, DISENO_INICIAL, PLANTILLAS } from './qr-dibujo.js';
+import { armarSVG, svgDeEsquina, svgDePuntos, svgDeRecuadroLogo, DISENO_INICIAL, PLANTILLAS } from './qr-dibujo.js';
 import { mostrar, ocultar, mostrarMensaje } from './utilidades.js';
 
 // ---------- Elementos de la página ----------
@@ -237,6 +238,15 @@ function prepararControlesDeDiseno() {
     });
   }
 
+  // "Recuadro del logo": una sola elección que cambia dos cosas del diseño
+  for (const opcion of opcionesRecuadro) {
+    opcion.addEventListener('change', function () {
+      Object.assign(diseno, cambiosDeLaOpcion(opcion));
+      sincronizarControles();
+      programarDibujo();
+    });
+  }
+
   dibujarPlantillas();
   prepararPruebaAlPasarElMouse();
 
@@ -250,6 +260,28 @@ function prepararControlesDeDiseno() {
 }
 
 let esquinasConColorPropio = false;
+
+const opcionesRecuadro = seccion.querySelectorAll('input[name="qr-recuadro-logo"]');
+
+/**
+ * Lo que cambia en el diseño al elegir una opción de forma.
+ *   Casi todas tienen data-ajuste:  { esquinaMarco: 'circulo' }
+ *   El recuadro del logo cambia dos: { fondoLogo: true, formaFondoLogo: 'circulo' }
+ */
+function cambiosDeLaOpcion(input) {
+  if (input.name === 'qr-recuadro-logo') {
+    if (input.value === 'ninguno') {
+      return { fondoLogo: false };
+    }
+    return { fondoLogo: true, formaFondoLogo: input.value };
+  }
+  return { [input.dataset.ajuste]: input.value };
+}
+
+/** Qué recuadro tiene el diseño ahora: 'ninguno', 'cuadrado' o 'circulo'. */
+function recuadroActual() {
+  return diseno.fondoLogo ? diseno.formaFondoLogo : 'ninguno';
+}
 
 function leerControl(control) {
   if (control.type === 'checkbox') {
@@ -299,6 +331,9 @@ function sincronizarControles() {
     const valorActual = diseno[texto.dataset.codigo];
     texto.textContent = typeof valorActual === 'number' ? `${valorActual}%` : valorActual;
   }
+  for (const opcion of opcionesRecuadro) {
+    opcion.checked = opcion.value === recuadroActual();
+  }
   filaDegradado.classList.toggle('apagado', !diseno.degradado);
   cajaOpcionesMarco.classList.toggle('apagado', diseno.marco === 'ninguno');
   marcarPlantillaElegida();
@@ -313,9 +348,11 @@ function sincronizarControles() {
 function dibujarFormas() {
   for (const lugar of dibujosDeFormas) {
     const opcion = lugar.closest('label').querySelector('input');
-    const conEstaOpcion = { ...diseno, [opcion.dataset.ajuste]: opcion.value };
+    const conEstaOpcion = { ...diseno, ...cambiosDeLaOpcion(opcion) };
     if (lugar.dataset.dibujo === 'puntos') {
       lugar.innerHTML = svgDePuntos(conEstaOpcion);   // SVG armado por nosotros (no viene de afuera)
+    } else if (lugar.dataset.dibujo === 'recuadro') {
+      lugar.innerHTML = svgDeRecuadroLogo(conEstaOpcion);
     } else {
       lugar.innerHTML = svgDeEsquina(conEstaOpcion);
     }
@@ -330,7 +367,9 @@ function prepararPruebaAlPasarElMouse() {
   for (const opcion of seccion.querySelectorAll('.forma-qr')) {
     const input = opcion.querySelector('input');
     opcion.addEventListener('mouseenter', function () {
-      probarDiseno({ [input.dataset.ajuste]: input.value });
+      if (!input.disabled) {
+        probarDiseno(cambiosDeLaOpcion(input));
+      }
     });
     opcion.addEventListener('mouseleave', dejarDeProbar);
   }
@@ -432,6 +471,7 @@ function actualizarLogo() {
     diseno.logo = null;
   }
   dibujarMiniaturasDePlantillas(); // las plantillas muestran el mismo logo
+  dibujarFormas();                  // y los dibujitos del recuadro también
   filaLogoPropio.classList.toggle('oculto', !(elegido === 'propio' && logoPropio !== null));
   cajaOpcionesLogo.classList.toggle('apagado', elegido === 'ninguno');
   dibujarQR();
@@ -567,7 +607,7 @@ function problemaDeLectura() {
     }
   }
   if (diseno.logo && !diseno.fondoLogo && diseno.tamanoLogo > 22) {
-    return 'Logo grande y sin fondo: actívale el fondo o hazlo más pequeño.';
+    return 'Logo grande y sin recuadro: ponle un recuadro o hazlo más pequeño.';
   }
   if (diseno.fondoTransparente) {
     return 'Fondo transparente: ponlo siempre sobre un fondo claro.';
