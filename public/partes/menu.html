@@ -1,17 +1,12 @@
-<!-- PARTE: MENÚ: tarjetas de Documentos y Herramientas
-     Se pega en la página desde index.html (busca "@incluir partes/menu.html")
-     Estilos: css/3-pantallas/menu.css
-     Lógica:  js/navegacion.js -->
-<!-- ==================== MENÚ: ELEGIR EL TIPO DE DIPLOMA ==================== -->
-<!-- data-modulo es el id del módulo en el servidor; data-titulo es lo que se muestra arriba -->
+
 <section id="menu" class="menu">
   <div class="menu__encabezado">
-    <p class="chip"><span class="icono" aria-hidden="true">auto_awesome</span>PDF e imagen · uno a la vez o desde Excel</p>
+    <!--<p class="chip"><span class="icono" aria-hidden="true">auto_awesome</span>PDF e imagen · uno a la vez o desde Excel</p>-->
     <h2 class="menu__titulo">¿Qué quieres crear hoy?</h2>
     <p class="menu__subtitulo">Elige una tarjeta para empezar. Arriba cambias entre <b>Documentos</b> y <b>Herramientas</b>.</p>
   </div>
 
-  <!-- Grupo 1: los documentos (cada tarjeta es un módulo del servidor) -->
+  <!-- Modulos de diploma -->
   <div class="menu__opciones" data-grupo="documentos" role="tabpanel" aria-labelledby="lengueta-documentos">
     <button class="opcion" data-modulo="reconocimientos" data-titulo="Reconocimientos">
       <span class="opcion__marco">
@@ -68,8 +63,7 @@
       <span class="opcion__abrir">Abrir <span class="icono" aria-hidden="true">arrow_forward</span></span>
     </button>
 
-    <!-- ← NUEVOS MÓDULOS: las tarjetas nuevas van arriba de esta línea
-         (npm run crear-modulo las agrega aquí; no borres esta marca) -->
+    <!-- Herramientas -->
   </div>
 
   <!-- Grupo 2: las herramientas (no son diplomas): data-herramienta en lugar de data-modulo -->

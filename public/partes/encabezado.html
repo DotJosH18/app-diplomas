@@ -1,11 +1,7 @@
-<!-- PARTE: ENCABEZADO: logo, "Inicio › …", Ayuda y la fila de lengüetas/pestañas
-     Se pega en la página desde index.html (busca "@incluir partes/encabezado.html")
-     Estilos: css/3-pantallas/encabezado.css
-     Lógica:  js/navegacion.js, js/ayuda.js (botón Ayuda) -->
-<!-- ==================== ENCABEZADO ==================== -->
+
+<!-- Encabezado -->
 <header class="encabezado">
   <div class="encabezado__contenido">
-    <!-- Logo + título: también llevan al inicio (como en casi todas las páginas) -->
     <a href="./" id="enlace-marca" class="marca" title="Ir al inicio">
       <img class="marca__logo" src="img/logo-unicah.png" alt="Logo de UNICAH" />
       <div>
@@ -14,11 +10,7 @@
       </div>
     </a>
 
-    <!-- Navegación (se ve dentro de un módulo):   ⌂ Inicio  ›  Placas ▾
-         - "Inicio" vuelve al menú.
-         - El nombre del módulo abre una lista para cambiar a otro directamente.
-           Esa lista la arma navegacion.js copiando las tarjetas del menú, así
-           un módulo nuevo aparece aquí solo con agregar su tarjeta. -->
+    <!-- Navegación -->
     <div class="encabezado__acciones">
     <nav id="navegacion" class="navegacion invisible" aria-label="Navegación">
       <button type="button" id="boton-inicio" class="navegacion__inicio">
@@ -37,17 +29,17 @@
       </details>
     </nav>
 
-    <!-- Ayuda: siempre visible. Abre el manual de usuario (ver ayuda.js) -->
+    <!-- Ayuda - ver ayuda.js -->
     <button type="button" id="boton-ayuda" class="boton-ayuda" title="Manual de usuario">
       <span class="icono" aria-hidden="true">help</span><span class="boton-ayuda__texto">Ayuda</span>
     </button>
     </div>
   </div>
 
-  <!-- Fila de abajo del encabezado (siempre mide lo mismo):
-         - en el inicio: las lengüetas "Documentos" / "Herramientas"
-         - dentro de un documento: las pestañas "Uno a la vez" / "Desde Excel"
-         - en una herramienta: vacía
+  <!-- Fila de abajo del encabezado:
+         - Lengüetas "Documentos" / "Herramientas"
+         - Las pestañas "Uno a la vez" / "Desde Excel"
+         - En una herramienta: vacía
        navegacion.js muestra una u otra. -->
   <div class="encabezado__fila">
     <!-- Cada lengüeta muestra su grupo de tarjetas del menú (data-grupo). El número lo pone navegacion.js. -->
